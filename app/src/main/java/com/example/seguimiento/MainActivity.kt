@@ -13,7 +13,10 @@ import com.example.seguimiento.features.ConfirmacionMascotaFeliz.AdoptionConfirm
 import com.example.seguimiento.features.EsperandoPorTi.EstaEsperandoPorTiScreen
 import com.example.seguimiento.features.EsperandoPorTi.EstaEsperandoViewModel
 import com.example.seguimiento.features.FinalizarRegistro.FinalizarRegistroScreen
+import com.example.seguimiento.features.FormularioDeAdopction.StepFourScreen.StepFourScreen
 import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.StepOneScreen
+import com.example.seguimiento.features.FormularioDeAdopction.StepThreeScreen.StepThreeScreen
+import com.example.seguimiento.features.FormularioDeAdopction.StepTwoScreen.StepTwoScreen
 import com.example.seguimiento.features.HistoriaMascota.PantallaPetAdopta
 import com.example.seguimiento.features.IngresarMascota.PantallaRegistroMascota
  import com.example.seguimiento.features.PantallaRecuperarContrasena.PantallaRecuperarContrasena
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SeguimientoTheme {
                 // Pantalla que estamos editando
-                StepOneScreen()
+                StepFourScreen()
             }
         }
     }
