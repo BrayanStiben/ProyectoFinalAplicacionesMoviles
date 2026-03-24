@@ -1,6 +1,7 @@
 package com.example.seguimiento.core.navigation
 
 sealed class NavRoutes(val route: String) {
+    object Loading : NavRoutes("loading")
     object Login : NavRoutes("login")
     object Home : NavRoutes("home")
     object Register : NavRoutes("register")

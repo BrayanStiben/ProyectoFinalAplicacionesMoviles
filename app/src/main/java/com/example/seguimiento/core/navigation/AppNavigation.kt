@@ -29,6 +29,7 @@ import com.example.seguimiento.features.IngresarMascota.PantallaRegistroMascota
 import com.example.seguimiento.features.Estadisticas.EstadisticasScreen
 import com.example.seguimiento.features.ListaDeSolicitudes.ListaSolicitudesScreen
 import com.example.seguimiento.features.EncontrarMascotas.PantallaAdopcion
+import com.example.seguimiento.Loading.LoadingScreen
 
 @Composable
 fun AppNavigation() {
@@ -37,8 +38,18 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Login.route
+        startDestination = NavRoutes.Loading.route
     ) {
+        composable(NavRoutes.Loading.route) {
+            LoadingScreen(
+                onFinished = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(NavRoutes.Loading.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(NavRoutes.Login.route) {
             LoginScreen(
                 onLoginSuccess = { isAdmin ->
