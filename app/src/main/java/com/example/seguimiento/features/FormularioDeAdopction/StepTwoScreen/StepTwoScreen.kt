@@ -1,5 +1,6 @@
 package com.example.seguimiento.features.FormularioDeAdopction.StepTwoScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,17 +15,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.seguimiento.R
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
 
 // Paleta de colores consistente
 val NaranjaApp = Color(0xFFE67E22)
 val CafeApp = Color(0xFF5D2E17)
 val AzulForm = Color(0xFF42A5F5)
-val FondoApp = Color(0xFFFDF7E7)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,123 +40,133 @@ fun StepTwoScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { 
-                    Text(
-                        "Cuestionario de Adopción", 
-                        color = Color.White, 
-                        fontWeight = FontWeight.Black,
-                        fontSize = 20.sp
-                    ) 
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AzulForm
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Fondo de pantalla
+        Image(
+            painter = painterResource(id = R.drawable.fondo2),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { 
+                        Text(
+                            "Cuestionario de Adopción", 
+                            color = Color.White, 
+                            fontWeight = FontWeight.Black,
+                            fontSize = 20.sp
+                        ) 
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = AzulForm.copy(alpha = 0.9f)
+                    )
                 )
-            )
-        },
-        bottomBar = {
-            BottomNav(selectedItem = 0) { index ->
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
+            },
+            bottomBar = {
+                BottomNav(selectedItem = 0) { index ->
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
                 }
             }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(FondoApp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(32.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(scrollState)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        
-                        // SECCIÓN 1: DATOS MASCOTA
-                        SectionHeader(Icons.Default.Pets, "Datos de la Mascota")
-                        
-                        CustomInput(
-                            label = "Nombre de la mascota", 
-                            value = vm.state.petName,
-                            icon = Icons.Default.Badge
-                        ) { vm.updateState(vm.state.copy(petName = it)) }
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+                        shape = RoundedCornerShape(32.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            
+                            // SECCIÓN 1: DATOS MASCOTA
+                            SectionHeader(Icons.Default.Pets, "Datos de la Mascota")
+                            
+                            CustomInput(
+                                label = "Nombre de la mascota", 
+                                value = vm.state.petName,
+                                icon = Icons.Default.Badge
+                            ) { vm.updateState(vm.state.copy(petName = it)) }
 
-                        CustomInput(
-                            label = "Edad aproximada", 
-                            value = vm.state.petAge,
-                            icon = Icons.Default.Event
-                        ) { vm.updateState(vm.state.copy(petAge = it)) }
+                            CustomInput(
+                                label = "Edad aproximada", 
+                                value = vm.state.petAge,
+                                icon = Icons.Default.Event
+                            ) { vm.updateState(vm.state.copy(petAge = it)) }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        // SECCIÓN 2: HOGAR
-                        SectionHeader(Icons.Default.Home, "Hogar y Familia")
-                        
-                        CustomInput(
-                            label = "Tipo de vivienda", 
-                            value = vm.state.homeType,
-                            icon = Icons.Default.Apartment
-                        ) { vm.updateState(vm.state.copy(homeType = it)) }
+                            // SECCIÓN 2: HOGAR
+                            SectionHeader(Icons.Default.Home, "Hogar y Familia")
+                            
+                            CustomInput(
+                                label = "Tipo de vivienda", 
+                                value = vm.state.homeType,
+                                icon = Icons.Default.Apartment
+                            ) { vm.updateState(vm.state.copy(homeType = it)) }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        // SECCIÓN 3: EXPERIENCIA
-                        SectionHeader(Icons.Default.AutoAwesome, "Experiencia")
-                        
-                        BooleanOption(
-                            question = "¿Tiene patio cercado?", 
-                            value = vm.state.hasFencedYard
-                        ) { vm.updateState(vm.state.copy(hasFencedYard = it)) }
+                            // SECCIÓN 3: EXPERIENCIA
+                            SectionHeader(Icons.Default.AutoAwesome, "Experiencia")
+                            
+                            BooleanOption(
+                                question = "¿Tiene patio cercado?", 
+                                value = vm.state.hasFencedYard
+                            ) { vm.updateState(vm.state.copy(hasFencedYard = it)) }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
-                        // INDICADOR DE AVANCE (Movido al final después de la experiencia)
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            repeat(4) { index ->
-                                val estaCompletado = index <= 1
-                                Surface(
-                                    modifier = Modifier.size(30.dp),
-                                    shape = CircleShape,
-                                    color = if (estaCompletado) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            // INDICADOR DE AVANCE (Movido al final después de la experiencia)
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                repeat(4) { index ->
+                                    val estaCompletado = index <= 1
+                                    Surface(
+                                        modifier = Modifier.size(30.dp),
+                                        shape = CircleShape,
+                                        color = if (estaCompletado) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                    if (index < 3) {
+                                        Box(modifier = Modifier.width(15.dp).height(2.dp).background(if (index < 1) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)))
                                     }
                                 }
-                                if (index < 3) {
-                                    Box(modifier = Modifier.width(15.dp).height(2.dp).background(if (index < 1) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)))
-                                }
                             }
-                        }
 
-                        Button(
-                            onClick = onNext,
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                        ) {
-                            Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                            Button(
+                                onClick = onNext,
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            ) {
+                                Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                            }
                         }
                     }
                 }
@@ -227,7 +240,7 @@ fun BooleanOption(question: String, value: Boolean, onValueChange: (Boolean) -> 
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
             Triple("Buscar", Icons.Default.Search, 1),

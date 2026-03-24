@@ -26,6 +26,9 @@ import com.example.seguimiento.features.FormularioDeAdopction.StepThreeScreen.St
 import com.example.seguimiento.features.FormularioDeAdopction.StepFourScreen.StepFourScreen
 import com.example.seguimiento.features.ConfirmacionMascotaFeliz.AdoptionConfirmationScreen
 import com.example.seguimiento.features.IngresarMascota.PantallaRegistroMascota
+import com.example.seguimiento.features.Estadisticas.EstadisticasScreen
+import com.example.seguimiento.features.ListaDeSolicitudes.ListaSolicitudesScreen
+import com.example.seguimiento.features.EncontrarMascotas.PantallaAdopcion
 
 @Composable
 fun AppNavigation() {
@@ -38,10 +41,11 @@ fun AppNavigation() {
     ) {
         composable(NavRoutes.Login.route) {
             LoginScreen(
-                onLoginSuccess = { 
-                    navController.navigate(NavRoutes.Home.route) {
+                onLoginSuccess = { isAdmin ->
+                    val destination = if (isAdmin) NavRoutes.Estadisticas.route else NavRoutes.Home.route
+                    navController.navigate(destination) {
                         popUpTo(NavRoutes.Login.route) { inclusive = true }
-                    } 
+                    }
                 },
                 onNavigateToRegister = { navController.navigate(NavRoutes.Register.route) },
                 onNavigateToForgotPassword = { navController.navigate(NavRoutes.OlvidoContrasena.route) }
@@ -233,6 +237,46 @@ fun AppNavigation() {
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+            )
+        }
+
+        // Admin Features
+        composable(NavRoutes.Estadisticas.route) {
+            EstadisticasScreen(
+                onNavigateToEstadisticas = { /* Ya estamos aqui */ },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.ListaSolicitudes.route) {
+            ListaSolicitudesScreen(
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { /* Ya estamos aqui */ },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.EncontrarMascotas.route) {
+            PantallaAdopcion(
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { /* Ya estamos aqui */ },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

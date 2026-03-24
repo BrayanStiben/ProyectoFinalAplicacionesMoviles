@@ -193,7 +193,7 @@ fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: 
                 Text(nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("$edad • $ciudad", fontSize = 12.sp, color = Color.Gray)
                 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp) )
                 
                 Button(
                     onClick = onClick,

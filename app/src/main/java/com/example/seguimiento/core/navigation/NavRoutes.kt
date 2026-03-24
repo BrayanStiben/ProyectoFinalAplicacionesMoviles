@@ -32,4 +32,9 @@ sealed class NavRoutes(val route: String) {
 
     // Gestión
     object RegistroMascota : NavRoutes("registro_mascota")
+
+    // Admin Features
+    object Estadisticas : NavRoutes("estadisticas")
+    object ListaSolicitudes : NavRoutes("lista_solicitudes")
+    object EncontrarMascotas : NavRoutes("encontrar_mascotas")
 }

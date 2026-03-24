@@ -24,24 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.seguimiento.R
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
- import androidx.compose.foundation.verticalScroll
- import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-
-import androidx.compose.ui.draw.shadow
-
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
- import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 // --- 1. PALETA DE COLORES VIVOS Y VIBRANTES ---
 val ColorVivoNaranja = Color(0xFFFF6D00)
@@ -49,12 +33,18 @@ val ColorVivoAzul = Color(0xFF0091EA)
 val ColorVivoVerde = Color(0xFF00C853)
 val ColorVivoAmarillo = Color(0xFFFFD600)
 val ColorTextoFuerte = Color(0xFF1A1A1A)
-val ColorBarraBase = Color(0xFFFDF7F2) // Crema sólido de la foto
+val ColorBarraBase = Color(0xFFFDF7F2) 
 
-data class NavItem(val label: String, val icon: ImageVector, val index: Int)
+data class NavItem(val label: String, val icon: ImageVector, val route: String)
 
 @Composable
-fun EstadisticasScreen(viewModel: EstadisticasViewModel = viewModel()) {
+fun EstadisticasScreen(
+    viewModel: EstadisticasViewModel = viewModel(),
+    onNavigateToEstadisticas: () -> Unit = {},
+    onNavigateToListaSolicitudes: () -> Unit = {},
+    onNavigateToEncontrarMascotas: () -> Unit = {},
+    onLogout: () -> Unit = {}
+) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
@@ -71,59 +61,13 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel = viewModel()) {
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             bottomBar = {
-                // --- BARRA SÓLIDA PEGADA AL BORDE (ESTILO FOTO) ---
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(ColorBarraBase)
-                        .shadow(12.dp)
-                ) {
-                    NavigationBar(
-                        containerColor = ColorBarraBase,
-                        tonalElevation = 0.dp,
-                        windowInsets = WindowInsets(0, 0, 0, 0),
-                        modifier = Modifier.height(65.dp)
-                    ) {
-                        val navItems = listOf(
-                            NavItem("Inicio", Icons.Default.Home, 0),
-                            NavItem("Buscar", Icons.Default.Search, 1),
-                            NavItem("Favoritos", Icons.Default.Favorite, 2),
-                            NavItem("Perfil", Icons.Default.Person, 3)
-                        )
-                        navItems.forEach { item ->
-                            val isSelected = state.pantallaSeleccionada == item.index
-                            NavigationBarItem(
-                                selected = isSelected,
-                                onClick = { viewModel.onTabSelected(item.index) },
-                                icon = {
-                                    Icon(
-                                        item.icon,
-                                        null,
-                                        tint = if(isSelected) ColorVivoNaranja else Color.Gray,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                },
-                                label = {
-                                    Text(
-                                        item.label,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if(isSelected) ColorVivoNaranja else Color.Gray
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent)
-                            )
-                        }
-                    }
-                    // Espacio para la barra de gestos del sistema (Sólido)
-                    Spacer(
-                        Modifier
-                            .navigationBarsPadding()
-                            .height(10.dp)
-                            .fillMaxWidth()
-                            .background(ColorBarraBase)
-                    )
-                }
+                AdminBottomBar(
+                    currentRoute = "estadisticas",
+                    onNavigateToEstadisticas = onNavigateToEstadisticas,
+                    onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
+                    onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
+                    onLogout = onLogout
+                )
             }
         ) { paddingValues ->
             Column(
@@ -151,7 +95,7 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel = viewModel()) {
                             "PANEL DE CONTROL",
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 16.sp, // CORREGIDO: .sp para texto
+                            fontSize = 16.sp,
                             color = ColorTextoFuerte,
                             letterSpacing = 1.sp
                         )
@@ -258,7 +202,73 @@ fun EstadisticasScreen(viewModel: EstadisticasViewModel = viewModel()) {
     }
 }
 
-// --- FUNCIONES AUXILIARES CORREGIDAS ---
+@Composable
+fun AdminBottomBar(
+    currentRoute: String,
+    onNavigateToEstadisticas: () -> Unit,
+    onNavigateToListaSolicitudes: () -> Unit,
+    onNavigateToEncontrarMascotas: () -> Unit,
+    onLogout: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(ColorBarraBase)
+            .shadow(12.dp)
+    ) {
+        NavigationBar(
+            containerColor = ColorBarraBase,
+            tonalElevation = 0.dp,
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            modifier = Modifier.height(65.dp)
+        ) {
+            val navItems = listOf(
+                NavItem("Estadísticas", Icons.Default.BarChart, "estadisticas"),
+                NavItem("Solicitudes", Icons.Default.ListAlt, "lista_solicitudes"),
+                NavItem("Mascotas", Icons.Default.Pets, "encontrar_mascotas"),
+                NavItem("Salir", Icons.Default.ExitToApp, "logout")
+            )
+            navItems.forEach { item ->
+                val isSelected = currentRoute == item.route
+                NavigationBarItem(
+                    selected = isSelected,
+                    onClick = {
+                        when (item.route) {
+                            "estadisticas" -> onNavigateToEstadisticas()
+                            "lista_solicitudes" -> onNavigateToListaSolicitudes()
+                            "encontrar_mascotas" -> onNavigateToEncontrarMascotas()
+                            "logout" -> onLogout()
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            item.icon,
+                            null,
+                            tint = if (isSelected) ColorVivoNaranja else Color.Gray,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            item.label,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSelected) ColorVivoNaranja else Color.Gray
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent)
+                )
+            }
+        }
+        Spacer(
+            Modifier
+                .navigationBarsPadding()
+                .height(10.dp)
+                .fillMaxWidth()
+                .background(ColorBarraBase)
+        )
+    }
+}
 
 @Composable
 fun MiniCardViva(title: String, value: String, color: Color, modifier: Modifier, imagen: Painter) {

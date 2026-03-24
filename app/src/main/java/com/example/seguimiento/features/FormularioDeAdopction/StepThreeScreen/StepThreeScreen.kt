@@ -1,5 +1,6 @@
 package com.example.seguimiento.features.FormularioDeAdopction.StepThreeScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,17 +15,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.seguimiento.R
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
 
 // Paleta de colores consistente
 val NaranjaApp = Color(0xFFE67E22)
 val CafeApp = Color(0xFF5D2E17)
 val AzulForm = Color(0xFF42A5F5)
-val FondoApp = Color(0xFFFDF7E7)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,132 +40,142 @@ fun StepThreeScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { 
-                    Text(
-                        "Formulario", 
-                        color = Color.White, 
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    ) 
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = AzulForm
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Fondo de pantalla
+        Image(
+            painter = painterResource(id = R.drawable.fondo2),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { 
+                        Text(
+                            "Formulario", 
+                            color = Color.White, 
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        ) 
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = AzulForm.copy(alpha = 0.9f)
+                    )
                 )
-            )
-        },
-        bottomBar = {
-            BottomNav(selectedItem = 0) { index ->
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
+            },
+            bottomBar = {
+                BottomNav(selectedItem = 0) { index ->
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
                 }
             }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(FondoApp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(32.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(scrollState)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(modifier = Modifier.padding(24.dp)) {
-                        
-                        Text(
-                            text = "Compromiso y Logística",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF5D2E17)
-                        )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+                        shape = RoundedCornerShape(32.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            
+                            Text(
+                                text = "Compromiso y Logística",
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFF5D2E17)
+                            )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        // SECCIÓN 1: PRESUPUESTO
-                        SectionHeaderLocal(Icons.Default.Payments, "Presupuesto")
-                        BooleanOptionLocal(
-                            question = "¿Es consciente de los gastos de alimentación y veterinario?",
-                            value = vm.state.awareOfCosts
-                        ) { vm.updateState(vm.state.copy(awareOfCosts = it)) }
+                            // SECCIÓN 1: PRESUPUESTO
+                            SectionHeaderLocal(Icons.Default.Payments, "Presupuesto")
+                            BooleanOptionLocal(
+                                question = "¿Es consciente de los gastos de alimentación y veterinario?",
+                                value = vm.state.awareOfCosts
+                            ) { vm.updateState(vm.state.copy(awareOfCosts = it)) }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        // SECCIÓN 2: PLAN DE CONTINGENCIA
-                        SectionHeaderLocal(Icons.Default.HealthAndSafety, "Plan de contingencia")
-                        CustomInputLocal(
-                            label = "¿Quién cuidará de la mascota si viaja o se enferma?", 
-                            value = vm.state.contingencyPlan,
-                            icon = Icons.Default.SupportAgent
-                        ) { vm.updateState(vm.state.copy(contingencyPlan = it)) }
+                            // SECCIÓN 2: PLAN DE CONTINGENCIA
+                            SectionHeaderLocal(Icons.Default.HealthAndSafety, "Plan de contingencia")
+                            CustomInputLocalLocal(
+                                label = "¿Quién cuidará de la mascota si viaja o se enferma?", 
+                                value = vm.state.contingencyPlan,
+                                icon = Icons.Default.SupportAgent
+                            ) { vm.updateState(vm.state.copy(contingencyPlan = it)) }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        // SECCIÓN 3: ACUERDO
-                        SectionHeaderLocal(Icons.Default.Gavel, "Acuerdos")
-                        BooleanOptionLocal(
-                            question = "Acuerdo de castración/vacunación: ¿Acepta las normas?",
-                            value = vm.state.acceptsTerms
-                        ) { vm.updateState(vm.state.copy(acceptsTerms = it)) }
+                            // SECCIÓN 3: ACUERDO
+                            SectionHeaderLocal(Icons.Default.Gavel, "Acuerdos")
+                            BooleanOptionLocal(
+                                question = "Acuerdo de castración/vacunación: ¿Acepta las normas?",
+                                value = vm.state.acceptsTerms
+                            ) { vm.updateState(vm.state.copy(acceptsTerms = it)) }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        // SECCIÓN 4: MUDANZAS
-                        SectionHeaderLocal(Icons.Default.LocalShipping, "Mudanzas")
-                        CustomInputLocal(
-                            label = "¿Qué pasaría con la mascota si se muda?", 
-                            value = vm.state.movingPlan,
-                            icon = Icons.Default.Info
-                        ) { vm.updateState(vm.state.copy(movingPlan = it)) }
+                            // SECCIÓN 4: MUDANZAS
+                            SectionHeaderLocal(Icons.Default.LocalShipping, "Mudanzas")
+                            CustomInputLocalLocal(
+                                label = "¿Qué pasaría con la mascota si se muda?", 
+                                value = vm.state.movingPlan,
+                                icon = Icons.Default.Info
+                            ) { vm.updateState(vm.state.copy(movingPlan = it)) }
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                            Spacer(modifier = Modifier.height(32.dp))
 
-                        // INDICADOR DE AVANCE (1, 2 y 3 marcados)
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            repeat(4) { index ->
-                                val estaMarcado = index <= 2
-                                Surface(
-                                    modifier = Modifier.size(30.dp),
-                                    shape = CircleShape,
-                                    color = if (estaMarcado) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            // INDICADOR DE AVANCE (1, 2 y 3 marcados)
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                repeat(4) { index ->
+                                    val estaMarcado = index <= 2
+                                    Surface(
+                                        modifier = Modifier.size(30.dp),
+                                        shape = CircleShape,
+                                        color = if (estaMarcado) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                    if (index < 3) {
+                                        Box(modifier = Modifier.width(15.dp).height(2.dp).background(if (index < 2) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)))
                                     }
                                 }
-                                if (index < 3) {
-                                    Box(modifier = Modifier.width(15.dp).height(2.dp).background(if (index < 2) NaranjaApp else Color.LightGray.copy(alpha = 0.5f)))
-                                }
                             }
-                        }
 
-                        Button(
-                            onClick = onNext,
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                        ) {
-                            Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                            Button(
+                                onClick = onNext,
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            ) {
+                                Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                            }
                         }
                     }
                 }
@@ -189,7 +202,7 @@ fun SectionHeaderLocal(icon: ImageVector, title: String) {
 }
 
 @Composable
-fun CustomInputLocal(label: String, value: String, icon: ImageVector, onValueChange: (String) -> Unit) {
+fun CustomInputLocalLocal(label: String, value: String, icon: ImageVector, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -235,7 +248,7 @@ fun BooleanOptionLocal(question: String, value: Boolean, onValueChange: (Boolean
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
             Triple("Buscar", Icons.Default.Search, 1),

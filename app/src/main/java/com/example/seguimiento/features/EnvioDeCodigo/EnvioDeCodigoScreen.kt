@@ -67,7 +67,7 @@ fun EnvioDeCodigoScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // 1. FONDO
         Image(
-            painter = painterResource(id = R.drawable.fondosolicitud),
+            painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()

@@ -26,12 +26,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.seguimiento.R
 
 // --- COLORES ---
-val CieloGradient = Brush.verticalGradient(listOf(Color(0xFF81D4FA), Color(0xFFB3E5FC)))
 val FondoCard = Color(0xFFFDF7E7)
 val VerdeApp = Color(0xFF7CB342)
-val RojoApp = Color(0xFFE53935)
 val AzulDoc = Color(0xFF4FC3F7)
-val NaranjaApp = Color(0xFFF37021)
 
 @Composable
 fun RefugiosScreen(
@@ -43,38 +40,42 @@ fun RefugiosScreen(
 ) {
     val listaRefugios by viewModel.refugios.collectAsState()
 
-    Scaffold(
-        bottomBar = {
-            BottomNav(
-                selectedItem = 0,
-                onItemSelected = { index ->
-                    when(index) {
-                        0 -> onNavigateToHome()
-                        1 -> onNavigateToFiltros()
-                        3 -> onNavigateToProfile()
+    Box(modifier = Modifier.fillMaxSize()) {
+        // FONDO DE IMAGEN
+        Image(
+            painter = painterResource(id = R.drawable.fondo2),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                BottomNav(
+                    selectedItem = 0,
+                    onItemSelected = { index ->
+                        when(index) {
+                            0 -> onNavigateToHome()
+                            1 -> onNavigateToFiltros()
+                            3 -> onNavigateToProfile()
+                        }
                     }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { onNavigateToRegistroMascota() },
+                    containerColor = Color(0xFFE67E22),
+                    contentColor = Color.White,
+                    shape = CircleShape
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Registrar Mascota")
                 }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigateToRegistroMascota() },
-                containerColor = Color(0xFFE67E22),
-                contentColor = Color.White,
-                shape = CircleShape
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Registrar Mascota")
             }
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(CieloGradient)
-                .padding(padding)
-        ) {
+        ) { padding ->
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
@@ -139,7 +140,7 @@ fun RefugiosScreen(
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val NaranjaApp = Color(0xFFE67E22)
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
             Triple("Buscar", Icons.Default.Search, 1),
@@ -168,7 +169,7 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
 fun TarjetaRefugio(refugio: Refugio, viewModel: RefugioViewModel) {
     Card(
         shape = RoundedCornerShape(25.dp),
-        colors = CardDefaults.cardColors(containerColor = FondoCard),
+        colors = CardDefaults.cardColors(containerColor = FondoCard.copy(alpha = 0.95f)),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp)
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
@@ -195,7 +196,7 @@ fun TarjetaRefugio(refugio: Refugio, viewModel: RefugioViewModel) {
 
 @Composable
 fun SeccionTitulo(titulo: String) {
-    Text(titulo, fontWeight = FontWeight.Bold, fontSize = 19.sp, color = Color(0xFF1B5E20),
+    Text(titulo, fontWeight = FontWeight.Bold, fontSize = 19.sp, color = Color.White,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp))
 }
 

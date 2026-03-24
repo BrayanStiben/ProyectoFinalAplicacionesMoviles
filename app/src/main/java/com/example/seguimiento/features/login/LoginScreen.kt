@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit = {},
+    onLoginSuccess: (isAdmin: Boolean) -> Unit = {},
     onNavigateToRegister: () -> Unit = {},
     onNavigateToForgotPassword: () -> Unit = {}
 ) {
@@ -89,12 +89,12 @@ fun LoginScreen(
                     error = viewModel.password.error
                 )
 
-                // Texto Olvidó Contraseña - Ahora más visible con Negrita y Subrayado
+                // Texto Olvidó Contraseña - Ahora con color Naranja para mayor visibilidad sobre el fondo
                 Text(
                     text = "¿Olvidaste tu contraseña?",
-                    color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFD37506), 
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
                         .align(Alignment.End)
@@ -112,10 +112,16 @@ fun LoginScreen(
                             val pass = viewModel.password.value
 
                             scope.launch {
-                                if (user == "brianmeza1928@gmail.com" && pass == "123456") {
-                                    onLoginSuccess()
-                                } else {
-                                    snackbarHostState.showSnackbar("❌ Credenciales incorrectas")
+                                when {
+                                    user == "admin@gmail.com" && pass == "admin" -> {
+                                        onLoginSuccess(true)
+                                    }
+                                    user == "brianmeza1928@gmail.com" && pass == "123456" -> {
+                                        onLoginSuccess(false)
+                                    }
+                                    else -> {
+                                        snackbarHostState.showSnackbar("❌ Credenciales incorrectas")
+                                    }
                                 }
                             }
                         } else {
@@ -137,7 +143,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Texto de registro
+                // Texto de registro - También resaltado para que no se pierda
                 Row(
                     modifier = Modifier.padding(bottom = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -145,8 +151,8 @@ fun LoginScreen(
                     Text(text = "¿No tienes cuenta? ", color = Color.White, fontSize = 14.sp)
                     Text(
                         text = "Regístrate",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFD37506),
+                        fontWeight = FontWeight.ExtraBold,
                         textDecoration = TextDecoration.Underline,
                         fontSize = 14.sp,
                         modifier = Modifier.clickable { onNavigateToRegister() }

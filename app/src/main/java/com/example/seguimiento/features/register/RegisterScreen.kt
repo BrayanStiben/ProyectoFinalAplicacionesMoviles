@@ -39,7 +39,7 @@ fun RegisterScreen(
     val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 1. FONDO LIMPIO (Sin capa gris)
+        // 1. FONDO LIMPIO
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -129,7 +129,7 @@ fun RegisterScreen(
                 onClick = { onNavigateToLogin() }, 
                 modifier = Modifier.offset(y = (-100).dp)
             ) {
-                Text("¿Ya tienes cuenta? Inicia sesión", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("¿Ya tienes cuenta? Inicia sesión", color = Color(0xFFD37506), fontWeight = FontWeight.ExtraBold)
             }
             
             Spacer(modifier = Modifier.height(20.dp))
