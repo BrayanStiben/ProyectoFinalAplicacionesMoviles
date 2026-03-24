@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,16 +32,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun PantallaPetAdopta(
-    viewModel: HistoriaMascotaViewModel = viewModel()
+    viewModel: HistoriaMascotaViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateBack: () -> Unit = {}
 ) {
     val textoHistoria by viewModel.textoHistoria.collectAsState()
     val estadoPager = rememberPagerState(pageCount = { viewModel.fotosCarrusel.size })
     val scrollState = rememberScrollState()
-    var selectedTab by remember { mutableIntStateOf(0) }
 
     Scaffold(
         bottomBar = {
-            BottomNav(selectedTab) { selectedTab = it }
+            BottomNav(selectedItem = 0) { index -> 
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -62,6 +72,16 @@ fun PantallaPetAdopta(
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // BOTÓN VOLVER
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                    IconButton(
+                        onClick = { onNavigateToHome() },
+                        modifier = Modifier.background(Color.White.copy(alpha = 0.5f), CircleShape)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color(0xFF5D2E17))
+                    }
+                }
+
                 // LOGO GIGANTE
                 Image(
                     painter = painterResource(id = R.drawable.petadopticono),
@@ -79,7 +99,7 @@ fun PantallaPetAdopta(
                     fontWeight = FontWeight.Black,
                     color = Color(0xFF5D2E17),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.offset(y = (-100).dp) // Offset aumentado para que tope
+                    modifier = Modifier.offset(y = (-100).dp)
                 )
 
                 // CAMPO DE TEXTO SUBIDO
@@ -91,7 +111,7 @@ fun PantallaPetAdopta(
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .height(150.dp)
-                        .offset(y = (-80).dp) // Ajustado proporcionalmente
+                        .offset(y = (-80).dp)
                         .shadow(15.dp, RoundedCornerShape(28.dp)),
                     shape = RoundedCornerShape(28.dp),
                     textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
@@ -110,7 +130,7 @@ fun PantallaPetAdopta(
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .height(60.dp)
-                        .offset(y = (-65).dp), // Ajustado proporcionalmente
+                        .offset(y = (-65).dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
@@ -122,7 +142,7 @@ fun PantallaPetAdopta(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = (-45).dp) // Subimos toda la sección de la galería
+                        .offset(y = (-45).dp)
                         .padding(bottom = 30.dp)
                         .shadow(20.dp, RoundedCornerShape(35.dp)),
                     color = Color.White.copy(alpha = 0.98f),
@@ -212,6 +232,7 @@ fun PantallaPetAdopta(
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaAppColor = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -227,8 +248,8 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFFE67E22),
-                    selectedTextColor = Color(0xFFE67E22),
+                    selectedIconColor = NaranjaAppColor,
+                    selectedTextColor = NaranjaAppColor,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,10 +26,24 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun EstaEsperandoPorTiScreen(
-    miViewModel: EstaEsperandoViewModel = viewModel()
+    nombre: String = "",
+    edad: String = "",
+    ubicacion: String = "",
+    url: String = "",
+    miViewModel: EstaEsperandoViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToRequisitos: () -> Unit = {}
 ) {
-    val mascota: Mascota by miViewModel.mascotaDestacada.collectAsState()
-    val tabSeleccionada by miViewModel.tabSeleccionada.collectAsState()
+    // Sincronizamos los datos recibidos con el ViewModel
+    LaunchedEffect(nombre, edad, ubicacion, url) {
+        if (nombre.isNotEmpty()) {
+            miViewModel.seleccionarMascota(Mascota(nombre, edad, ubicacion, url))
+        }
+    }
+
+    val mascotaDestacada by miViewModel.mascotaDestacada.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -36,8 +51,14 @@ fun EstaEsperandoPorTiScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             BottomNav(
-                selectedItem = tabSeleccionada,
-                onItemSelected = { miViewModel.actualizarTab(it) }
+                selectedItem = -1,
+                onItemSelected = { index ->
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
+                }
             )
         }
     ) { padding ->
@@ -48,22 +69,31 @@ fun EstaEsperandoPorTiScreen(
                 .background(Color(0xFF6A994E))
                 .verticalScroll(rememberScrollState())
         ) {
+            // --- BOTÓN VOLVER ---
+            IconButton(
+                onClick = { onNavigateToHome() },
+                modifier = Modifier.padding(16.dp).background(Color.White.copy(alpha = 0.3f), CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+            }
+
             // --- CABECERA CON LOGO GIGANTE Y TEXTOS ---
             HeaderSection()
 
-            // --- TARJETA DE MASCOTA ---
+            // --- TARJETA DE LA MASCOTA SELECCIONADA ---
             Box(modifier = Modifier.offset(y = (-80).dp)) {
-                MascotaCard(mascota) {
+                MascotaCard(mascotaDestacada) {
                     scope.launch {
-                        snackbarHostState.showSnackbar("¡Te ha gustado ${mascota.nombre}! Se ha añadido a tus favoritos.")
+                        snackbarHostState.showSnackbar("¡Te ha gustado ${mascotaDestacada.nombre}! Se ha añadido a tus favoritos.")
                     }
                 }
             }
 
-            // --- ESPACIO ENTRE TARJETA Y SECCIÓN INFERIOR ---
-            Spacer(modifier = Modifier.height(20.dp).offset(y = (-80).dp))
+            // --- ESPACIO EXTRA PARA QUE NO QUEDE PEGADO ---
+            // Aumentamos el espacio aquí para separar la tarjeta de la sección de abajo
+            Spacer(modifier = Modifier.height(60.dp).offset(y = (-80).dp))
 
-            // --- SECCIÓN INFERIOR (HISTORIAS) ---
+            // --- SECCIÓN INFERIOR (HISTORIAS Y ACCIÓN) ---
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -85,8 +115,8 @@ fun EstaEsperandoPorTiScreen(
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
-                                model = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600",
-                                contentDescription = "Gato adoptado",
+                                model = "https://images.pexels.com/photos/4587995/pexels-photo-4587995.jpeg",
+                                contentDescription = "¡Max encontró hogar!",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
@@ -97,7 +127,7 @@ fun EstaEsperandoPorTiScreen(
                                     .padding(12.dp)
                             ) {
                                 Text(
-                                    "¡Encontré a Max en PetAdopta! Ahora es el rey de la casa.",
+                                    "¡Max encontró hogar!",
                                     color = Color.White,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -105,7 +135,7 @@ fun EstaEsperandoPorTiScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
                         "¿Interesado en adoptar?",
@@ -127,13 +157,16 @@ fun EstaEsperandoPorTiScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { miViewModel.ejecutarBusqueda() },
+                        onClick = { onNavigateToRequisitos() },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Buscar Mascota", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text("Iniciar Adopción", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
+                    
+                    // Añadimos un spacer al final para permitir scroll extra
+                    Spacer(modifier = Modifier.height(60.dp))
                 }
             }
         }
@@ -142,6 +175,7 @@ fun EstaEsperandoPorTiScreen(
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaNav = Color(0xFFE67E22) // Cambiado a NaranjaApp del proyecto
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -153,12 +187,12 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
                 icon = { Icon(icon, null) },
-                label = { Text(label) },
+                label = { Text(label, fontSize = 10.sp) },
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFFF37021), // NaranjaApp
-                    selectedTextColor = Color(0xFFF37021),
+                    selectedIconColor = NaranjaNav,
+                    selectedTextColor = NaranjaNav,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )
@@ -202,9 +236,10 @@ fun MascotaCard(mascota: Mascota, onLike: () -> Unit) {
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
                 model = mascota.imagenUrl,
                 contentDescription = mascota.nombre,
@@ -214,22 +249,18 @@ fun MascotaCard(mascota: Mascota, onLike: () -> Unit) {
 
             Column(modifier = Modifier.padding(start = 16.dp).weight(1f)) {
                 Text(mascota.nombre, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Text(mascota.edad, color = Color.Gray)
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("${mascota.edad} • ${mascota.ubicacion}", fontSize = 14.sp, color = Color.Gray)
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     Icon(Icons.Default.LocationOn, null, tint = Color(0xFFE76F51), modifier = Modifier.size(14.dp))
-                    Text(mascota.ubicacion, fontSize = 14.sp, color = Color.Gray)
+                    Text(mascota.ubicacion, fontSize = 12.sp, color = Color.Gray)
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE76F51))
-                    .clickable { onLike() },
-                contentAlignment = Alignment.Center
+            IconButton(
+                onClick = onLike,
+                modifier = Modifier.clip(CircleShape).background(Color(0xFFFEEAE6))
             ) {
-                Icon(Icons.Default.Favorite, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.Favorite, null, tint = Color(0xFFE76F51))
             }
         }
     }

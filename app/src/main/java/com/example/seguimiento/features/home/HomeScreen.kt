@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,12 +27,24 @@ val NaranjaApp = Color(0xFFE67E22)
 val CafeApp = Color(0xFF5D2E17)
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToMascotaDestacada: (String, String, String, String) -> Unit = { _, _, _, _ -> },
+    onNavigateToNutricion: () -> Unit = {},
+    onNavigateToRequisitos: () -> Unit = {},
+    onNavigateToRefugios: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToHistorias: () -> Unit = {}
+) {
     var selectedItem by remember { mutableIntStateOf(0) }
 
     Scaffold(
         bottomBar = {
-            BottomNav(selectedItem) { index -> selectedItem = index }
+            BottomNav(selectedItem) { index -> 
+                selectedItem = index 
+                if (index == 3) onNavigateToProfile()
+                if (index == 1) onNavigateToFiltros()
+            }
         }
     ) { paddingValues ->
         Column(
@@ -61,7 +75,7 @@ fun HomeScreen() {
                             .clip(CircleShape)
                             .background(Color.White.copy(alpha = 0.2f))
                             .border(2.dp, Color.White, CircleShape)
-                            .clickable { /* Ir al perfil */ },
+                            .clickable { onNavigateToProfile() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(30.dp))
@@ -76,10 +90,10 @@ fun HomeScreen() {
                     .padding(top = 25.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                CategoryItem("Perros", Color(0xFF00ACC1), Icons.Default.Pets) { }
-                CategoryItem("Gatos", Color(0xFFFB8C00), Icons.Default.Face) { }
-                CategoryItem("Favoritos", Color(0xFFE53935), Icons.Default.Favorite) { }
-                CategoryItem("Cerca", Color(0xFF7CB342), Icons.Default.LocationOn) { }
+                CategoryItem("Refugios", Color(0xFF00ACC1), Icons.Default.Apartment) { onNavigateToRefugios() }
+                CategoryItem("Nutrición", Color(0xFFFB8C00), Icons.AutoMirrored.Filled.MenuBook) { onNavigateToNutricion() }
+                CategoryItem("Requisitos", Color(0xFFE53935), Icons.AutoMirrored.Filled.ListAlt) { onNavigateToRequisitos() }
+                CategoryItem("Filtros", Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
             }
 
             // --- SECCIÓN RECOMENDADOS ---
@@ -96,9 +110,15 @@ fun HomeScreen() {
                     .horizontalScroll(rememberScrollState())
                     .padding(start = 16.dp, bottom = 20.dp)
             ) {
-                PetCard("Luna", "2 años", "CDMX", "https://images.dog.ceo/breeds/husky/n02110185_1469.jpg") { }
-                PetCard("Feliz Catus", "3 meses", "Gdl", "https://placecats.com/neo/300/200") { }
-                PetCard("Bella", "1 año", "Mty", "https://images.dog.ceo/breeds/retriever-golden/n02099601_3004.jpg") { }
+                PetCard("Luna", "2 años", "CDMX", "https://images.dog.ceo/breeds/husky/n02110185_1469.jpg") {
+                    onNavigateToMascotaDestacada("Luna", "2 años", "CDMX", "https://images.dog.ceo/breeds/husky/n02110185_1469.jpg")
+                }
+                PetCard("Feliz Catus", "3 meses", "Gdl", "https://placecats.com/neo/300/200") {
+                    onNavigateToMascotaDestacada("Feliz Catus", "3 meses", "Gdl", "https://placecats.com/neo/300/200")
+                }
+                PetCard("Bella", "1 año", "Mty", "https://images.dog.ceo/breeds/retriever-golden/n02099601_3004.jpg") {
+                    onNavigateToMascotaDestacada("Bella", "1 año", "Mty", "https://images.dog.ceo/breeds/retriever-golden/n02099601_3004.jpg")
+                }
             }
 
             // --- HISTORIAS FELICES ---
@@ -109,7 +129,7 @@ fun HomeScreen() {
                 modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
             )
 
-            HappyStoryCard { }
+            HappyStoryCard { onNavigateToHistorias() }
 
             Spacer(modifier = Modifier.height(30.dp))
         }
@@ -156,8 +176,7 @@ fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: 
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .width(160.dp)
-            .padding(end = 15.dp)
-            .clickable { onClick() },
+            .padding(end = 15.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -173,6 +192,18 @@ fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("$edad • $ciudad", fontSize = 12.sp, color = Color.Gray)
+                
+                Spacer(modifier = Modifier.height(10.dp))
+                
+                Button(
+                    onClick = onClick,
+                    modifier = Modifier.fillMaxWidth().height(36.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text("Adoptar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

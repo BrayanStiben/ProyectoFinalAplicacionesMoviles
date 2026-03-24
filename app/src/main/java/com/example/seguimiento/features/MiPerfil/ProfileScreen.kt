@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +29,12 @@ val ColorNaranjaApp = Color(0xFFE67E22)
 val ColorTurquesaApp = Color(0xFF439191)
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
+) {
     val context = LocalContext.current
     val nombre by viewModel.nombre.collectAsState()
     val apellido by viewModel.apellido.collectAsState()
@@ -59,14 +65,22 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
     }
 
     Scaffold(
-        bottomBar = { BottomNav(itemSeleccionado) { viewModel.cambiarNavegacion(it) } }
+        bottomBar = { 
+            BottomNav(selectedItem = 3) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
+        }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).background(Color(0xFFF2F2F2))) {
 
             // Header
             Row(modifier = Modifier.fillMaxWidth().background(ColorNaranjaApp).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Surface(modifier = Modifier.size(50.dp).clip(CircleShape), color = Color.White) {
-                    Icon(Icons.Default.Person, contentDescription = null, tint = ColorNaranjaApp)
+                IconButton(onClick = { onNavigateToHome() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("Mi Perfil", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -163,6 +177,7 @@ fun FilaCheck(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Uni
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val ColorNaranjaApp = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -175,7 +190,13 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 selected = selectedItem == indice,
                 onClick = { onItemSelected(indice) },
                 icon = { Icon(icono, contentDescription = titulo) },
-                label = { Text(titulo, fontSize = 10.sp) }
+                label = { Text(titulo, fontSize = 10.sp) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = ColorNaranjaApp,
+                    selectedTextColor = ColorNaranjaApp,
+                    unselectedIconColor = Color.Gray,
+                    indicatorColor = Color(0xFFFFF4C2)
+                )
             )
         }
     }

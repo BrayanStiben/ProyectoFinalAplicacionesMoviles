@@ -30,7 +30,9 @@ val CafeApp = Color(0xFF5D2E17)
 
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel = viewModel()
+    viewModel: RegisterViewModel = viewModel(),
+    onNavigateToFinalize: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -108,7 +110,8 @@ fun RegisterScreen(
                                 } else if (pass != confirmar) {
                                     snackbarHostState.showSnackbar("❌ Las contraseñas no coinciden")
                                 } else {
-                                    snackbarHostState.showSnackbar("✅ Registro exitoso")
+                                    // Simulación de éxito -> Navegar al siguiente paso
+                                    onNavigateToFinalize()
                                 }
                             }
                         },
@@ -123,7 +126,7 @@ fun RegisterScreen(
             
             // Texto de login ajustado al nuevo offset del card
             TextButton(
-                onClick = { /* Navegar al Login */ }, 
+                onClick = { onNavigateToLogin() }, 
                 modifier = Modifier.offset(y = (-100).dp)
             ) {
                 Text("¿Ya tienes cuenta? Inicia sesión", color = Color.White, fontWeight = FontWeight.Bold)
@@ -165,9 +168,9 @@ fun CampoTextoStyle(
             )
         )
 
-        if (campo.error != null) {
+        campo.error?.let { errorText ->
             Text(
-                text = campo.error!!,
+                text = errorText,
                 color = Color.Red,
                 fontSize = 11.sp,
                 modifier = Modifier.padding(start = 12.dp, top = 2.dp)

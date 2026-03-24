@@ -31,7 +31,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
+fun EnvioDeCodigoScreen(
+    viewModel: EnvioDeCodigoViewModel = viewModel(),
+    onCodeVerified: () -> Unit = {},
+    onBackToLogin: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {} // Nuevo parámetro para ir al Home
+) {
     val focusManager = LocalFocusManager.current
     val focusRequesters = remember { List(4) { FocusRequester() } }
     val scrollState = rememberScrollState()
@@ -42,7 +47,11 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
             onDismissRequest = { viewModel.mostrarDialogo = false },
             confirmButton = {
                 Button(
-                    onClick = { viewModel.mostrarDialogo = false },
+                    onClick = { 
+                        viewModel.mostrarDialogo = false
+                        // Ahora al pulsar "¡Guau!" va al Home
+                        onNavigateToHome()
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF37021))
                 ) {
                     Text("¡Guau!", color = Color.White)
@@ -70,9 +79,7 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Sin espacio arriba para que el logo suba
-
-            // 2. LOGO GIGANTE (Aumentado para que "pese" en la pantalla)
+            // 2. LOGO GIGANTE
             Image(
                 painter = painterResource(id = R.drawable.petadopticono),
                 contentDescription = "Logo",
@@ -82,7 +89,7 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                 contentScale = ContentScale.Fit
             )
 
-            // 3. TARJETA (LA CASA) PEGADA AL LOGO
+            // 3. TARJETA
             Card(
                 shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFFDF5E6).copy(alpha = 0.98f)),
@@ -90,7 +97,7 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .offset(y = (-100).dp) // SUBIDA AGRESIVA PARA PEGAR AL LOGO
+                    .offset(y = (-100).dp)
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),
@@ -121,14 +128,12 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                             OutlinedTextField(
                                 value = digit,
                                 onValueChange = { valor ->
-                                    // REGLA: Solo 1 número
                                     if (valor.length <= 1) {
                                         viewModel.onDigitChange(index, valor)
-                                        // Auto-salto
                                         if (valor.isNotEmpty() && index < 3) {
                                             focusRequesters[index + 1].requestFocus()
                                         } else if (valor.isNotEmpty() && index == 3) {
-                                            focusManager.clearFocus() // Cierra teclado en el último
+                                            focusManager.clearFocus()
                                         }
                                     }
                                 },
@@ -137,7 +142,6 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                                     .height(75.dp)
                                     .focusRequester(focusRequesters[index])
                                     .onKeyEvent { event ->
-                                        // Retroceso al borrar
                                         if (event.type == KeyEventType.KeyDown && event.key == Key.Backspace) {
                                             if (digit.isEmpty() && index > 0) {
                                                 focusRequesters[index - 1].requestFocus()
@@ -201,7 +205,7 @@ fun EnvioDeCodigoScreen(viewModel: EnvioDeCodigoViewModel = viewModel()) {
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(bottom = 40.dp)
-                    .clickable { /* Acción Volver */ }
+                    .clickable { onBackToLogin() }
             )
         }
     }

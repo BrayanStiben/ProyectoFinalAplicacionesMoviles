@@ -42,12 +42,14 @@ val VerdeFinal = Color(0xFF4CAF50)
 @Composable
 fun StepFourScreen(
     vm: AdoptionViewModel = viewModel(),
-    onFinish: () -> Unit = {}
+    onFinish: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     var showTermsAndOptionsPopUp by remember { mutableStateOf(false) }
     var showSignaturePad by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) }
 
     // Lanzadores para selección de imágenes
     val launcherDni = rememberLauncherForActivityResult(
@@ -70,7 +72,13 @@ fun StepFourScreen(
             )
         },
         bottomBar = {
-            BottomNavLocal(selectedTab) { selectedTab = it }
+            BottomNavLocal(selectedItem = 0) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { padding ->
         Box(
@@ -319,12 +327,23 @@ fun CustomInputLocalFour(label: String, value: String, onValueChange: (String) -
 @Composable
 fun BottomNavLocal(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar(containerColor = Color.White) {
-        val items = listOf(Triple("Inicio", Icons.Default.Home, 0), Triple("Buscar", Icons.Default.Search, 1), Triple("Favs", Icons.Default.FavoriteBorder, 2), Triple("Perfil", Icons.Default.Person, 3))
+        val items = listOf(
+            Triple("Inicio", Icons.Default.Home, 0),
+            Triple("Buscar", Icons.Default.Search, 1),
+            Triple("Favs", Icons.Default.FavoriteBorder, 2),
+            Triple("Perfil", Icons.Default.Person, 3)
+        )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
-                icon = { Icon(icon, null) }, label = { Text(label) }, selected = selectedItem == index,
+                icon = { Icon(icon, null) },
+                label = { Text(label, fontSize = 10.sp) },
+                selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(selectedIconColor = NaranjaApp, selectedTextColor = NaranjaApp, indicatorColor = Color(0xFFFFF4C2))
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = NaranjaApp,
+                    selectedTextColor = NaranjaApp,
+                    indicatorColor = Color(0xFFFFF4C2)
+                )
             )
         }
     }

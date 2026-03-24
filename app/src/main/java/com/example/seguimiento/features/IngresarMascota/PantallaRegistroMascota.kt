@@ -6,24 +6,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-
-import androidx.compose.ui.draw.clip
-
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.compose.AsyncImage
-
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-
-import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,10 +20,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.seguimiento.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaRegistroMascota(viewModel: MascotaViewModel = viewModel()) {
+fun PantallaRegistroMascota(
+    viewModel: MascotaViewModel = viewModel(),
+    onNavigateBack: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
+) {
     val estado by viewModel.estado.collectAsState()
     val selector = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         viewModel.alSeleccionarFoto(it)
@@ -49,8 +40,8 @@ fun PantallaRegistroMascota(viewModel: MascotaViewModel = viewModel()) {
         topBar = {
             CenterAlignedTopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { /* Volver */ }) {
-                        Icon(Icons.Default.ArrowBackIosNew, "Volver", tint = Color.White)
+                    IconButton(onClick = { onNavigateBack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = Color.White)
                     }
                 },
                 title = {
@@ -64,6 +55,15 @@ fun PantallaRegistroMascota(viewModel: MascotaViewModel = viewModel()) {
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color(0xFFE67E22))
             )
+        },
+        bottomBar = {
+            BottomNav(selectedItem = 0) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { p ->
         Column(Modifier.padding(p).fillMaxSize().background(Color(0xFFFDE3D3)).verticalScroll(rememberScrollState())) {
@@ -121,7 +121,7 @@ fun PantallaRegistroMascota(viewModel: MascotaViewModel = viewModel()) {
                     Spacer(Modifier.height(10.dp))
 
                     Button(
-                        onClick = { viewModel.guardarMascota() },
+                        onClick = { viewModel.guardarMascota(); onNavigateToHome() },
                         modifier = Modifier.fillMaxWidth().height(55.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
                         shape = RoundedCornerShape(30.dp)
@@ -137,4 +137,32 @@ fun PantallaRegistroMascota(viewModel: MascotaViewModel = viewModel()) {
 @Composable fun Etiqueta(t: String) = Text(t, fontWeight = FontWeight.Bold, fontSize = 14.sp)
 @Composable fun CampoEntrada(v: String, p: String, onV: (String) -> Unit) {
     OutlinedTextField(value = v, onValueChange = onV, placeholder = { Text(p) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp))
+}
+
+@Composable
+fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaApp = Color(0xFFE67E22)
+    NavigationBar(containerColor = Color.White) {
+        val items = listOf(
+            Triple("Inicio", Icons.Default.Home, 0),
+            Triple("Buscar", Icons.Default.Search, 1),
+            Triple("Favs", Icons.Default.FavoriteBorder, 2),
+            Triple("Perfil", Icons.Default.Person, 3)
+        )
+
+        items.forEach { (label, icon, index) ->
+            NavigationBarItem(
+                icon = { Icon(icon, null) },
+                label = { Text(label, fontSize = 10.sp) },
+                selected = selectedItem == index,
+                onClick = { onItemSelected(index) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = NaranjaApp,
+                    selectedTextColor = NaranjaApp,
+                    unselectedIconColor = Color.Gray,
+                    indicatorColor = Color(0xFFFFF4C2)
+                )
+            )
+        }
+    }
 }

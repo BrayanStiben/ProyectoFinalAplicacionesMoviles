@@ -1,7 +1,5 @@
 package com.example.seguimiento.features.login
 
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,7 +27,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = viewModel(),
+    onLoginSuccess: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {},
+    onNavigateToForgotPassword: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -64,7 +65,8 @@ fun LoginScreen(
                     .padding(horizontal = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(360.dp))
+                // Bajado un poco (de 280.dp a 310.dp) para equilibrar con el icono
+                Spacer(modifier = Modifier.height(310.dp))
 
                 // Campo Usuario
                 CustomInputField(
@@ -87,6 +89,19 @@ fun LoginScreen(
                     error = viewModel.password.error
                 )
 
+                // Texto Olvidó Contraseña - Ahora más visible con Negrita y Subrayado
+                Text(
+                    text = "¿Olvidaste tu contraseña?",
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 10.dp)
+                        .clickable { onNavigateToForgotPassword() }
+                )
+
                 Spacer(modifier = Modifier.height(25.dp))
 
                 // Botón Iniciar Sesión
@@ -97,8 +112,8 @@ fun LoginScreen(
                             val pass = viewModel.password.value
 
                             scope.launch {
-                                if (user == "meza@1.com" && pass == "123456") {
-                                    snackbarHostState.showSnackbar("✅ Login exitoso")
+                                if (user == "brianmeza1928@gmail.com" && pass == "123456") {
+                                    onLoginSuccess()
                                 } else {
                                     snackbarHostState.showSnackbar("❌ Credenciales incorrectas")
                                 }
@@ -134,9 +149,7 @@ fun LoginScreen(
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         fontSize = 14.sp,
-                        modifier = Modifier.clickable {
-                            scope.launch { snackbarHostState.showSnackbar("Abriendo registro...") }
-                        }
+                        modifier = Modifier.clickable { onNavigateToRegister() }
                     )
                 }
             }

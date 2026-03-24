@@ -4,9 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -29,9 +31,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.seguimiento.R
 
 // Paleta de colores oficial
-val NaranjaApp = Color(0xFFE67E22)
-val CafeApp = Color(0xFF5D2E17)
-val FondoCrema = Color(0xFFFDF7E7)
+val NaranjaAppRequisitos = Color(0xFFE67E22)
+val CafeAppRequisitos = Color(0xFF5D2E17)
+val FondoCremaRequisitos = Color(0xFFFDF7E7)
 
 // 1. DEFINICIÓN DE LA FORMA CURVA
 val BannerCurvoShape = GenericShape { size, _ ->
@@ -47,15 +49,24 @@ val BannerCurvoShape = GenericShape { size, _ ->
 
 @Composable
 fun QueNesecitoParaAdoptar(
-    viewModel: QueNesecitoParaAdoptarViewModel = viewModel()
+    viewModel: QueNesecitoParaAdoptarViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToStepOne: () -> Unit = {}
 ) {
     val seccionActiva by viewModel.seccionSeleccionada.collectAsState()
-    val tabSeleccionada by viewModel.tabSeleccionada.collectAsState()
     val context = LocalContext.current
 
     Scaffold(
         bottomBar = {
-            BottomNav(tabSeleccionada) { viewModel.cambiarTab(it) }
+            BottomNav(selectedItem = 0) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -68,40 +79,61 @@ fun QueNesecitoParaAdoptar(
             )
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // ENCABEZADO CURVO
-                BannerNaranjaHeader()
+                Box(contentAlignment = Alignment.TopStart) {
+                    BannerNaranjaHeader()
+                    IconButton(
+                        onClick = { onNavigateToHome() },
+                        modifier = Modifier.padding(16.dp).background(Color.White.copy(alpha = 0.3f), CircleShape)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                }
 
-                // DISTRIBUCIÓN EQUITATIVA (Solo espacio, sin estirar las tarjetas)
+                // CONTENIDO
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.SpaceEvenly, // Esto reparte el espacio de forma igual entre ellas
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // OPCIÓN 1: TUS DATOS
                     TarjetaRequisito(
                         titulo = "Tus datos",
                         subtitulo = "Documentación y requisitos legales",
                         icono = Icons.Default.AssignmentInd
                     ) { viewModel.abrirPopUp(SeccionAdopcion.TUS_DATOS) }
 
-                    // OPCIÓN 2: CALCULAR COMIDA
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     TarjetaRequisito(
                         titulo = "Calcular comida de animal",
                         subtitulo = "Planes nutricionales a medida",
                         icono = Icons.Default.Calculate
                     ) { viewModel.abrirPopUp(SeccionAdopcion.CALCULAR_COMIDA) }
 
-                    // OPCIÓN 3: HOGAR FELIZ
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     TarjetaRequisito(
                         titulo = "¿Hogar feliz?",
                         subtitulo = "Condiciones ideales de vivienda",
                         icono = Icons.Default.HomeWork
                     ) { viewModel.abrirPopUp(SeccionAdopcion.HOGAR_FELIZ) }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Button(
+                        onClick = { onNavigateToStepOne() },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("IR AL FORMULARIO", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    }
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }
@@ -122,7 +154,7 @@ fun QueNesecitoParaAdoptar(
                                     context.startActivity(intent)
                                 },
                                 modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
+                                colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text("CALCULADORA", fontSize = 9.sp, fontWeight = FontWeight.Bold)
@@ -133,7 +165,7 @@ fun QueNesecitoParaAdoptar(
                                     context.startActivity(intent)
                                 },
                                 modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = CafeApp),
+                                colors = ButtonDefaults.buttonColors(containerColor = CafeAppRequisitos),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text("COMPRAR", fontSize = 10.sp, fontWeight = FontWeight.Bold)
@@ -142,7 +174,7 @@ fun QueNesecitoParaAdoptar(
                     } else {
                         Button(
                             onClick = { viewModel.cerrarPopUp() },
-                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
+                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("ENTENDIDO", fontWeight = FontWeight.Bold)
@@ -153,7 +185,7 @@ fun QueNesecitoParaAdoptar(
                     Text(
                         text = if (seccion == SeccionAdopcion.CALCULAR_COMIDA) "ALIMENTACIÓN" else seccion.name.replace("_", " "),
                         fontWeight = FontWeight.Black,
-                        color = CafeApp
+                        color = CafeAppRequisitos
                     )
                 },
                 text = {
@@ -164,7 +196,7 @@ fun QueNesecitoParaAdoptar(
                         color = Color.DarkGray
                     )
                 },
-                containerColor = FondoCrema,
+                containerColor = FondoCremaRequisitos,
                 shape = RoundedCornerShape(28.dp)
             )
         }
@@ -209,7 +241,7 @@ fun TarjetaRequisito(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp) // Altura fija para todas para que sean iguales
+            .height(100.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -221,14 +253,14 @@ fun TarjetaRequisito(
             Box(
                 modifier = Modifier
                     .size(50.dp)
-                    .background(NaranjaApp.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
+                    .background(Color(0xFFE67E22).copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icono, null, tint = NaranjaApp, modifier = Modifier.size(30.dp))
+                Icon(icono, null, tint = Color(0xFFE67E22), modifier = Modifier.size(30.dp))
             }
             
             Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
-                Text(text = titulo, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = CafeApp)
+                Text(text = titulo, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF5D2E17))
                 Text(text = subtitulo, fontSize = 13.sp, color = Color.Gray)
             }
 
@@ -244,6 +276,7 @@ fun TarjetaRequisito(
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -259,8 +292,8 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
+                    selectedIconColor = NaranjaNav,
+                    selectedTextColor = NaranjaNav,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )

@@ -8,8 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -28,7 +30,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.seguimiento.R
 
 @Composable
-fun PantallaNutricion(viewmodel: NutricionViewModel = viewModel()) {
+fun PantallaNutricion(
+    viewmodel: NutricionViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateBack: () -> Unit = {}
+) {
     val listaRegulaciones by viewmodel.regulaciones.collectAsState()
     val itemSeleccionado by viewmodel.itemSeleccionado.collectAsState()
     val categoriaSel by viewmodel.categoriaSeleccionada.collectAsState()
@@ -39,7 +47,13 @@ fun PantallaNutricion(viewmodel: NutricionViewModel = viewModel()) {
 
     Scaffold(
         bottomBar = {
-            BottomNav(itemSeleccionado) { viewmodel.cambiarNavegacion(it) }
+            BottomNav(selectedItem = 0) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -55,6 +69,14 @@ fun PantallaNutricion(viewmodel: NutricionViewModel = viewModel()) {
             Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.25f)))
 
             Column(modifier = Modifier.fillMaxSize()) {
+                // BOTÓN VOLVER
+                IconButton(
+                    onClick = { onNavigateToHome() },
+                    modifier = Modifier.padding(16.dp).background(Color.White.copy(alpha = 0.3f), CircleShape)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+                }
+
                 Text(
                     text = "Nutrición para\nperros y gatos",
                     fontSize = 28.sp,
@@ -64,7 +86,7 @@ fun PantallaNutricion(viewmodel: NutricionViewModel = viewModel()) {
                     lineHeight = 34.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp, bottom = 20.dp)
+                        .padding(top = 10.dp, bottom = 20.dp)
                 )
 
                 // FILA DE CATEGORÍAS ACTUALIZADA
@@ -204,6 +226,7 @@ fun BotonCategoria(texto: String, seleccionado: Boolean, modifier: Modifier, onC
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaApp = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -219,8 +242,8 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFFE67E22),
-                    selectedTextColor = Color(0xFFE67E22),
+                    selectedIconColor = NaranjaApp,
+                    selectedTextColor = NaranjaApp,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )

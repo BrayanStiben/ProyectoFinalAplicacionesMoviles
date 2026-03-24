@@ -1,10 +1,12 @@
 package com.example.seguimiento.features.Filtros
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.* // IMPORTANTE: Solo Material 3
+import androidx.compose.material3.* 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,16 +25,23 @@ val FondoCrema = Color(0xFFFEF9E7)
 val GrisChip = Color(0xFFE5D3B3)
 val TextoMarron = Color(0xFF5D4037)
 val VerdeLupa = Color(0xFF8BC34A)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaFiltrosAvanzado(modelo: FiltroViewModel = viewModel()) {
+fun PantallaFiltrosAvanzado(
+    modelo: FiltroViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
+) {
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = Color.White) {
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Home, null) }, label = { Text("Inicio") })
-                NavigationBarItem(selected = true, onClick = {}, icon = { Icon(Icons.Default.Search, null) }, label = { Text("Buscar") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Favorite, null) }, label = { Text("Favoritos") })
-                NavigationBarItem(selected = false, onClick = {}, icon = { Icon(Icons.Default.Person, null) }, label = { Text("Perfil") })
+            BottomNav(selectedItem = 1) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
             }
         }
     ) { padding ->
@@ -44,7 +53,12 @@ fun PantallaFiltrosAvanzado(modelo: FiltroViewModel = viewModel()) {
         ) {
             // Encabezado
             Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.ArrowBackIosNew, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                IconButton(
+                    onClick = { onNavigateToHome() },
+                    modifier = Modifier.background(Color.White.copy(alpha = 0.3f), CircleShape)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("Filtrar Búsqueda Avanzada", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
@@ -135,7 +149,7 @@ fun PantallaFiltrosAvanzado(modelo: FiltroViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(
-                    onClick = { },
+                    onClick = { onNavigateToHome() },
                     modifier = Modifier.fillMaxWidth().height(55.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = NaranjaPrincipal)
@@ -151,8 +165,6 @@ fun PantallaFiltrosAvanzado(modelo: FiltroViewModel = viewModel()) {
         }
     }
 }
-
-// --- COMPONENTES MENORES ---
 
 @Composable
 fun SeccionTitulo(texto: String) {
@@ -180,5 +192,33 @@ fun FilaOpcion(texto: String, marcado: Boolean, alCambiar: (Boolean) -> Unit) {
         }
         Spacer(modifier = Modifier.width(12.dp))
         Text(texto, color = TextoMarron)
+    }
+}
+
+@Composable
+fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaNav = Color(0xFFE67E22)
+    NavigationBar(containerColor = Color.White) {
+        val items = listOf(
+            Triple("Inicio", Icons.Default.Home, 0),
+            Triple("Buscar", Icons.Default.Search, 1),
+            Triple("Favs", Icons.Default.FavoriteBorder, 2),
+            Triple("Perfil", Icons.Default.Person, 3)
+        )
+
+        items.forEach { (label, icon, index) ->
+            NavigationBarItem(
+                icon = { Icon(icon, null) },
+                label = { Text(label, fontSize = 10.sp) },
+                selected = selectedItem == index,
+                onClick = { onItemSelected(index) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = NaranjaNav,
+                    selectedTextColor = NaranjaNav,
+                    unselectedIconColor = Color.Gray,
+                    indicatorColor = Color(0xFFFFF4C2)
+                )
+            )
+        }
     }
 }

@@ -31,7 +31,9 @@ val VerdeExito = Color(0xFF4CAF50)
 val RojoDenuncia = Color(0xFFE53935)
 
 @Composable
-fun FinalizarRegistroScreen() {
+fun FinalizarRegistroScreen(
+    onRegistrationFinished: () -> Unit = {}
+) {
     val vm: FinalizarRegistroViewModel = viewModel()
     val deptos by vm.departamentos.collectAsState()
     val municipios by vm.municipiosFiltrados.collectAsState()
@@ -120,7 +122,7 @@ fun FinalizarRegistroScreen() {
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = { /* Registro */ },
+                        onClick = { onRegistrationFinished() },
                         modifier = Modifier.fillMaxWidth().height(58.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CafeApp),
                         shape = RoundedCornerShape(18.dp),

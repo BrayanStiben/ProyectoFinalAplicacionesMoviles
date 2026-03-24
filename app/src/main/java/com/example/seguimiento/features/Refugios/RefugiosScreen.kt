@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,15 +34,37 @@ val AzulDoc = Color(0xFF4FC3F7)
 val NaranjaApp = Color(0xFFF37021)
 
 @Composable
-fun RefugiosScreen(viewModel: RefugioViewModel = viewModel()) {
+fun RefugiosScreen(
+    viewModel: RefugioViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToRegistroMascota: () -> Unit = {}
+) {
     val listaRefugios by viewModel.refugios.collectAsState()
 
     Scaffold(
         bottomBar = {
             BottomNav(
-                selectedItem = viewModel.tabSeleccionada,
-                onItemSelected = { viewModel.tabSeleccionada = it }
+                selectedItem = 0,
+                onItemSelected = { index ->
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
+                }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onNavigateToRegistroMascota() },
+                containerColor = Color(0xFFE67E22),
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Registrar Mascota")
+            }
         }
     ) { padding ->
         Box(
@@ -55,6 +78,16 @@ fun RefugiosScreen(viewModel: RefugioViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
+                    // BOTÓN VOLVER
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        IconButton(
+                            onClick = { onNavigateToHome() },
+                            modifier = Modifier.background(Color.White.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+                        }
+                    }
+
                     // LOGO GIGANTE
                     Image(
                         painter = painterResource(id = R.drawable.petadopticono),
@@ -105,6 +138,7 @@ fun RefugiosScreen(viewModel: RefugioViewModel = viewModel()) {
 
 @Composable
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val NaranjaApp = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -116,7 +150,7 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
                 icon = { Icon(icon, null) },
-                label = { Text(label) },
+                label = { Text(label, fontSize = 10.sp) },
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(

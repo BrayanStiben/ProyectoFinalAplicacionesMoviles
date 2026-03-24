@@ -33,7 +33,10 @@ val VerdeExito = Color(0xFF4CAF50)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdoptionConfirmationScreen(viewModel: AdoptionViewModel = viewModel()) {
+fun AdoptionConfirmationScreen(
+    viewModel: AdoptionViewModel = viewModel(),
+    onNavigateToHome: () -> Unit = {}
+) {
     val uiState by viewModel.uiState.collectAsState()
     var tabSeleccionada by remember { mutableIntStateOf(0) }
 
@@ -53,7 +56,7 @@ fun AdoptionConfirmationScreen(viewModel: AdoptionViewModel = viewModel()) {
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
-                        onClick = { /* Back */ },
+                        onClick = { onNavigateToHome() },
                         modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
@@ -157,10 +160,10 @@ fun AdoptionConfirmationScreen(viewModel: AdoptionViewModel = viewModel()) {
                         }
 
                         TextButton(
-                            onClick = { viewModel.onShareClick() },
+                            onClick = { onNavigateToHome() },
                             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                         ) {
-                            Text("Compartir alegría 🐾", color = NaranjaApp, fontWeight = FontWeight.Bold)
+                            Text("Volver al inicio 🐾", color = NaranjaApp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

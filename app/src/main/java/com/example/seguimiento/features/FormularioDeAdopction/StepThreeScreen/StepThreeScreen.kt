@@ -30,10 +30,12 @@ val FondoApp = Color(0xFFFDF7E7)
 @Composable
 fun StepThreeScreen(
     vm: AdoptionViewModel = viewModel(),
-    onNext: () -> Unit = {}
+    onNext: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    var selectedTab by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -52,7 +54,13 @@ fun StepThreeScreen(
             )
         },
         bottomBar = {
-            BottomNav(selectedTab) { selectedTab = it }
+            BottomNav(selectedItem = 0) { index ->
+                when(index) {
+                    0 -> onNavigateToHome()
+                    1 -> onNavigateToFiltros()
+                    3 -> onNavigateToProfile()
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -237,7 +245,7 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
                 icon = { Icon(icon, null) },
-                label = { Text(label) },
+                label = { Text(label, fontSize = 10.sp) },
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
