@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 
 // --- COLORES ---
@@ -32,7 +32,7 @@ val AzulDoc = Color(0xFF4FC3F7)
 
 @Composable
 fun RefugiosScreen(
-    viewModel: RefugioViewModel = viewModel(),
+    viewModel: RefugioViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},

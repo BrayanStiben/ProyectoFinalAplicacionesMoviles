@@ -2,18 +2,21 @@ package com.example.seguimiento.features.register
 
 import androidx.lifecycle.ViewModel
 import com.example.seguimiento.core.utils.CampoValidado
-
-
-
 import androidx.lifecycle.viewModelScope
+import com.example.seguimiento.Dominio.modelos.User
+import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.core.utils.ResultadoPeticion
-import kotlinx.coroutines.delay
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterViewModel : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     val nombre = CampoValidado("") {
         if (it.isBlank()) "El nombre es obligatorio" else null
@@ -49,7 +52,6 @@ class RegisterViewModel : ViewModel() {
     val resultadoRegistro: StateFlow<ResultadoPeticion?> = _resultadoRegistro.asStateFlow()
 
     fun registrar() {
-
         if (
             !nombre.isValid ||
             !ciudad.isValid ||
@@ -64,8 +66,23 @@ class RegisterViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _resultadoRegistro.value =
-                ResultadoPeticion.Exito("Registro exitoso 🎉 Bienvenido a PetAdopta")
+            val newUser = User(
+                id = java.util.UUID.randomUUID().toString(),
+                name = nombre.value,
+                city = ciudad.value,
+                address = direccion.value,
+                email = correo.value,
+                password = contrasena.value,
+                profilePictureUrl = ""
+            )
+            val result = authRepository.register(newUser)
+            if (result.isSuccess) {
+                _resultadoRegistro.value =
+                    ResultadoPeticion.Exito("Registro exitoso 🎉 Bienvenido a PetAdopta")
+            } else {
+                _resultadoRegistro.value =
+                    ResultadoPeticion.Error("Error al registrar: ${result.exceptionOrNull()?.message}")
+            }
         }
     }
 }

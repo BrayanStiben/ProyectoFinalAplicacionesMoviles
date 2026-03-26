@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 import com.example.seguimiento.core.navigation.AdminBottomBar
@@ -25,7 +25,7 @@ import com.example.seguimiento.core.navigation.AdminBottomBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaSolicitudesScreen(
-    viewModel: AdopcionViewModel = viewModel(),
+    viewModel: AdopcionViewModel = hiltViewModel(),
     onNavigateToEstadisticas: () -> Unit,
     onNavigateToListaSolicitudes: () -> Unit,
     onNavigateToEncontrarMascotas: () -> Unit,

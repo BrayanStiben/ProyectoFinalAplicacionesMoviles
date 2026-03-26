@@ -1,7 +1,7 @@
 package com.example.seguimiento.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -34,7 +34,10 @@ import com.example.seguimiento.Loading.LoadingScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val adoptionViewModel: AdoptionViewModel = viewModel()
+    
+    // Obtenemos el ViewModel compartido para el formulario de adopción usando hiltViewModel()
+    // Esto garantiza que los datos se mantengan mientras navegamos entre los pasos del formulario.
+    val adoptionViewModel: AdoptionViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,

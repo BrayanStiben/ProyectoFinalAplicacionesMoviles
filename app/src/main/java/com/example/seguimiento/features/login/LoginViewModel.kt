@@ -3,15 +3,19 @@ package com.example.seguimiento.features.login
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import com.example.seguimiento.core.utils.CampoValidado
+import com.example.seguimiento.Dominio.repositorios.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     val email = CampoValidado("") { value ->
         when {
             value.isEmpty() -> "El usuario es obligatorio"
-            // Si quieres forzar formato email, descomenta la siguiente línea:
-           !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Email inválido"
+            !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Email inválido"
             else -> null
         }
     }
@@ -27,9 +31,15 @@ class LoginViewModel : ViewModel() {
     val isFormValid: Boolean
         get() = email.isValid && password.isValid
 
+    fun login() {
+        if (isFormValid) {
+            val user = userRepository.login(email.value, password.value)
+            // Manejar resultado del login
+        }
+    }
+
     fun resetForm() {
         email.reset()
         password.reset()
     }
 }
-

@@ -2,12 +2,15 @@ package com.example.seguimiento.Loading
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoadingViewModel : ViewModel() {
+@HiltViewModel
+class LoadingViewModel @Inject constructor() : ViewModel() {
 
     // Estado del progreso (0.0f a 1.0f)
     private val _progress = MutableStateFlow(0.0f)

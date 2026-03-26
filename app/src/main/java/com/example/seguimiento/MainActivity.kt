@@ -6,14 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.seguimiento.core.navigation.AppNavigation
 import com.example.seguimiento.core.theme.SeguimientoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SeguimientoTheme {
-                // Iniciamos la navegación de la aplicación
                 AppNavigation()
             }
         }

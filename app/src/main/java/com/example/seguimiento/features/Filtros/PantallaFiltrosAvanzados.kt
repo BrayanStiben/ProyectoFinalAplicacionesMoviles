@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlin.math.roundToInt
 
 // Colores personalizados
@@ -29,7 +29,7 @@ val VerdeLupa = Color(0xFF8BC34A)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaFiltrosAvanzado(
-    modelo: FiltroViewModel = viewModel(),
+    modelo: FiltroViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {}

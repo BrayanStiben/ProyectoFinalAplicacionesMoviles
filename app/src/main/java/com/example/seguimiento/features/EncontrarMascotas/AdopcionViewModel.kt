@@ -1,9 +1,13 @@
 package com.example.seguimiento.features.EncontrarMascotas
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-class AdopcionViewModel : ViewModel() {
+import javax.inject.Inject
+
+@HiltViewModel
+class AdopcionViewModel @Inject constructor() : ViewModel() {
     private val _listaMascotas = MutableStateFlow(
         listOf(
             Mascota("Luna", "2 años", "Murcia", "Muy juguetona y cariñosa.", "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=600"),

@@ -27,12 +27,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnvioDeCodigoScreen(
-    viewModel: EnvioDeCodigoViewModel = viewModel(),
+    viewModel: EnvioDeCodigoViewModel = hiltViewModel(),
     onCodeVerified: () -> Unit = {},
     onBackToLogin: () -> Unit = {},
     onNavigateToHome: () -> Unit = {} // Nuevo parámetro para ir al Home

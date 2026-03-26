@@ -4,8 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AdoptionViewModel : ViewModel() {
+@HiltViewModel
+class AdoptionViewModel @Inject constructor() : ViewModel() {
     // Estado único para todo el formulario compartido entre pasos
     var state by mutableStateOf(AdoptionFormState())
         private set

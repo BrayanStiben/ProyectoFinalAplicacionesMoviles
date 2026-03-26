@@ -2,7 +2,9 @@ package com.example.seguimiento.features.FinalizarRegistro
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.*
@@ -20,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 
 // Paleta de colores oficial
@@ -32,9 +34,9 @@ val RojoDenuncia = Color(0xFFE53935)
 
 @Composable
 fun FinalizarRegistroScreen(
-    onRegistrationFinished: () -> Unit = {}
+    onRegistrationFinished: () -> Unit = {},
+    vm: FinalizarRegistroViewModel = hiltViewModel()
 ) {
-    val vm: FinalizarRegistroViewModel = viewModel()
     val deptos by vm.departamentos.collectAsState()
     val municipios by vm.municipiosFiltrados.collectAsState()
     val deptoSel by vm.deptoSeleccionado.collectAsState()

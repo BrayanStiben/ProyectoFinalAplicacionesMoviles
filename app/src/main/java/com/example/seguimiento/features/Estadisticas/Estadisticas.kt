@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.font.FontFamily
@@ -39,7 +39,7 @@ data class NavItem(val label: String, val icon: ImageVector, val route: String)
 
 @Composable
 fun EstadisticasScreen(
-    viewModel: EstadisticasViewModel = viewModel(),
+    viewModel: EstadisticasViewModel = hiltViewModel(),
     onNavigateToEstadisticas: () -> Unit = {},
     onNavigateToListaSolicitudes: () -> Unit = {},
     onNavigateToEncontrarMascotas: () -> Unit = {},

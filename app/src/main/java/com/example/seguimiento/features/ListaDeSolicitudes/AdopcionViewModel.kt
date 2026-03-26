@@ -1,17 +1,14 @@
 package com.example.seguimiento.features.ListaDeSolicitudes
 
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-
- import com.example.seguimiento.features.EncontrarMascotas.Mascota
-
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class AdopcionViewModel : ViewModel() {
+@HiltViewModel
+class AdopcionViewModel @Inject constructor() : ViewModel() {
     private val _solicitudes = MutableStateFlow<List<DatosMascota>>(emptyList())
     val solicitudes = _solicitudes.asStateFlow()
 

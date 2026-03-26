@@ -1,22 +1,16 @@
 package com.example.seguimiento.features.Refugios
-import androidx.compose.runtime.getValue // IMPORTANTE
+import androidx.compose.runtime.getValue 
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-// Variable para que la barra inferior cambie de color al hacer clic
+import javax.inject.Inject
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-
-import kotlinx.coroutines.flow.asStateFlow
-
-
-class RefugioViewModel : ViewModel() {
+@HiltViewModel
+class RefugioViewModel @Inject constructor() : ViewModel() {
     // Estado para que la barra inferior cambie de color
     var tabSeleccionada by mutableStateOf(3)
 

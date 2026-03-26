@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 
 // Paleta de colores oficial
@@ -49,7 +49,7 @@ val BannerCurvoShape = GenericShape { size, _ ->
 
 @Composable
 fun QueNesecitoParaAdoptar(
-    viewModel: QueNesecitoParaAdoptarViewModel = viewModel(),
+    viewModel: QueNesecitoParaAdoptarViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},

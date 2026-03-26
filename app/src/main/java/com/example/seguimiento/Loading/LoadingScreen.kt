@@ -24,29 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
- import androidx.compose.foundation.verticalScroll
- import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 // 1. Definición de colores
 val BrandOrange = Color(0xFFE67E00)
@@ -56,7 +35,7 @@ val TextPrimary = Color(0xFFFFFFFF)
 @Composable
 fun LoadingScreen(
     onFinished: () -> Unit,
-    viewModel: LoadingViewModel = viewModel()
+    viewModel: LoadingViewModel = hiltViewModel()
 ) {
     val progress by viewModel.progress.collectAsState()
     val isFinished by viewModel.isFinished.collectAsState()
@@ -66,7 +45,7 @@ fun LoadingScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        androidx.compose.foundation.Image(
+        Image(
             painter = painterResource(id = R.drawable.cargando),
             contentDescription = null,
             contentScale = ContentScale.Crop,
@@ -82,7 +61,7 @@ fun LoadingScreen(
         ) {
             Spacer(modifier = Modifier.weight(0.08f))
 
-            androidx.compose.foundation.Image(
+            Image(
                 painter = painterResource(id = R.drawable.petadopticono),
                 contentDescription = "PetAdopta Logo",
                 modifier = Modifier
@@ -93,7 +72,6 @@ fun LoadingScreen(
 
             Spacer(modifier = Modifier.weight(0.02f))
 
-            // AQUÍ SE LLAMA A LA FUNCIÓN
             PawProgressBar(
                 progress = progress,
                 modifier = Modifier
@@ -125,51 +103,25 @@ fun LoadingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
+                Text(
+                    text = "PetAdopta App v1.2",
+                    color = TextPrimary.copy(alpha = 0.6f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
 
-// 6. TEXTO DE VERSIÓN Y COPYRIGHT
-
-                Column(
-
-                    horizontalAlignment = Alignment.CenterHorizontally,
-
-                    modifier = Modifier.padding(bottom = 16.dp)
-
-                ) {
-
-                    Text(
-
-                        text = "PetAdopta App v1.2",
-
-                        color = TextPrimary.copy(alpha = 0.6f),
-
-                        fontSize = 12.sp,
-
-                        fontWeight = FontWeight.Medium
-
-                    )
-
-                    Text(
-
-                        text = "© Copyright PetAdopta apy Inc.",
-
-                        color = TextPrimary.copy(alpha = 0.5f),
-
-                        fontSize = 10.sp,
-
-                        fontWeight = FontWeight.Normal
-
-                    )
-
-                }
-
-
+                Text(
+                    text = "© Copyright PetAdopta apy Inc.",
+                    color = TextPrimary.copy(alpha = 0.5f),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Normal
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
-// 2. FUNCIÓN COMPOSABLE (Debe estar fuera de la clase ViewModel)
 @Composable
 fun PawProgressBar(
     progress: Float,
@@ -208,5 +160,3 @@ fun PawProgressBar(
         }
     }
 }
-
-// 3. VIEWMODEL

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ fun EstaEsperandoPorTiScreen(
     edad: String = "",
     ubicacion: String = "",
     url: String = "",
-    miViewModel: EstaEsperandoViewModel = viewModel(),
+    miViewModel: EstaEsperandoViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},

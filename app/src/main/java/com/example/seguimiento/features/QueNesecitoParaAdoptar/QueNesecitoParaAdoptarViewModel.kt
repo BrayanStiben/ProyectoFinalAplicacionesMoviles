@@ -1,12 +1,15 @@
 package com.example.seguimiento.features.QueNesecitoParaAdoptar
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
 enum class SeccionAdopcion { TUS_DATOS, CALCULAR_COMIDA, HOGAR_FELIZ }
 
-class QueNesecitoParaAdoptarViewModel : ViewModel() {
+@HiltViewModel
+class QueNesecitoParaAdoptarViewModel @Inject constructor() : ViewModel() {
 
     private val _seccionSeleccionada = MutableStateFlow<SeccionAdopcion?>(null)
     val seccionSeleccionada = _seccionSeleccionada.asStateFlow()

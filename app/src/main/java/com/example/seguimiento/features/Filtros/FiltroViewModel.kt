@@ -4,17 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-import androidx.compose.runtime.*
-
-import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 // --- COLORES PERSONALIZADOS ---
 
 val AzulGps = Color(0xFF2196F3)
 
 // --- VIEWMODEL (LÓGICA DE ESTADO) ---
-class FiltroViewModel : ViewModel() {
+@HiltViewModel
+class FiltroViewModel @Inject constructor() : ViewModel() {
     var tipoMascotaSeleccionado by mutableStateOf("Perros")
     var razaSeleccionada by mutableStateOf("")
     var categoriaEdad by mutableStateOf("Cachorro")

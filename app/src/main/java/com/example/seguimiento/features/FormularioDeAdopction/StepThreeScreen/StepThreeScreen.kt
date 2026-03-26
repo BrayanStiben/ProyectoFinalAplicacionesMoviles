@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
 
@@ -32,7 +32,7 @@ val AzulForm = Color(0xFF42A5F5)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StepThreeScreen(
-    vm: AdoptionViewModel = viewModel(),
+    vm: AdoptionViewModel = hiltViewModel(),
     onNext: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},

@@ -2,15 +2,14 @@ package com.example.seguimiento.features.PantallaRecuperarContrasena
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.seguimiento.core.utils.CampoValidado
-import com.example.seguimiento.core.utils.ResultadoPeticion
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecuperarContrasenaViewModel : ViewModel() {
+@HiltViewModel
+class RecuperarContrasenaViewModel @Inject constructor() : ViewModel() {
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()

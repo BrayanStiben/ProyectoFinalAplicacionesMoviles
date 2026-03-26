@@ -15,14 +15,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 import com.example.seguimiento.core.navigation.AdminBottomBar
 
 @Composable
 fun PantallaAdopcion(
-    viewModel: AdopcionViewModel = viewModel(),
+    viewModel: AdopcionViewModel = hiltViewModel(),
     onNavigateToEstadisticas: () -> Unit,
     onNavigateToListaSolicitudes: () -> Unit,
     onNavigateToEncontrarMascotas: () -> Unit,

@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
 
@@ -43,7 +43,7 @@ val VerdeFinal = Color(0xFF4CAF50)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StepFourScreen(
-    vm: AdoptionViewModel = viewModel(),
+    vm: AdoptionViewModel = hiltViewModel(),
     onFinish: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},

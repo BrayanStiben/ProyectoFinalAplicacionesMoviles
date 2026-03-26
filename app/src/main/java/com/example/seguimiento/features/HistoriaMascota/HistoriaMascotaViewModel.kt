@@ -1,17 +1,14 @@
 package com.example.seguimiento.features.HistoriaMascota
 
-
-import kotlinx.coroutines.flow.asStateFlow
-
-
-import kotlinx.coroutines.flow.asStateFlow
-
-import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-class HistoriaMascotaViewModel : ViewModel() {
+import javax.inject.Inject
+
+@HiltViewModel
+class HistoriaMascotaViewModel @Inject constructor() : ViewModel() {
 
     private val _textoHistoria = MutableStateFlow("")
     val textoHistoria: StateFlow<String> = _textoHistoria.asStateFlow()
