@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import com.example.seguimiento.core.utils.CampoValidado
+import com.example.seguimiento.core.utils.ResultadoPeticion
 import kotlinx.coroutines.launch
 
 // Colores oficiales
@@ -36,9 +37,28 @@ fun RegisterScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val resultadoRegistro by viewModel.resultadoRegistro.collectAsState()
+
+    // Observar el resultado del registro
+    LaunchedEffect(resultadoRegistro) {
+        when (val resultado = resultadoRegistro) {
+            is ResultadoPeticion.Exito -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(resultado.mensaje)
+                    onNavigateToFinalize()
+                }
+            }
+            is ResultadoPeticion.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(resultado.mensaje)
+                }
+            }
+            null -> {}
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 1. FONDO LIMPIO
+        // 1. FONDO
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -63,11 +83,11 @@ fun RegisterScreen(
                     .padding(top = 10.dp)
             )
 
-            // CONTENEDOR FORMULARIO (Más pegado al icono)
+            // CONTENEDOR FORMULARIO
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-110).dp), // Subido más para que tope con el logo
+                    .offset(y = (-110).dp),
                 shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
@@ -86,7 +106,6 @@ fun RegisterScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // ICONOS CORRESPONDIENTES
                     CampoTextoStyle("Nombre completo", viewModel.nombre, Icons.Default.Person)
                     CampoTextoStyle("Ciudad", viewModel.ciudad, Icons.Default.LocationCity)
                     CampoTextoStyle("Dirección", viewModel.direccion, Icons.Default.Home)
@@ -98,21 +117,7 @@ fun RegisterScreen(
 
                     Button(
                         onClick = {
-                            val nombre = viewModel.nombre.value
-                            val correo = viewModel.correo.value
-                            val pass = viewModel.contrasena.value
-                            val confirmar = viewModel.confirmarContrasena.value
-
-                            scope.launch {
-                                if (nombre.isBlank() || correo.isBlank() || pass.isBlank() || confirmar.isBlank()) {
-                                    snackbarHostState.showSnackbar("⚠️ Completa todos los campos")
-                                } else if (pass != confirmar) {
-                                    snackbarHostState.showSnackbar("❌ Las contraseñas no coinciden")
-                                } else {
-                                    // Simulación de éxito -> Navegar al siguiente paso
-                                    onNavigateToFinalize()
-                                }
-                            }
+                            viewModel.registrar()
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
@@ -123,7 +128,6 @@ fun RegisterScreen(
                 }
             }
             
-            // Texto de login ajustado al nuevo offset del card
             TextButton(
                 onClick = { onNavigateToLogin() }, 
                 modifier = Modifier.offset(y = (-100).dp)

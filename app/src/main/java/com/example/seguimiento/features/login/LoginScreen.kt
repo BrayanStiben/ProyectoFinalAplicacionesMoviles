@@ -32,9 +32,25 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit = {},
     onNavigateToForgotPassword: () -> Unit = {}
 ) {
+    val loginState by viewModel.loginState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    // Observamos el estado del login para navegar o mostrar error
+    LaunchedEffect(loginState) {
+        when (val state = loginState) {
+            is LoginResult.Success -> {
+                onLoginSuccess(state.isAdmin)
+                viewModel.resetLoginState()
+            }
+            is LoginResult.Error -> {
+                snackbarHostState.showSnackbar("❌ ${state.message}")
+                viewModel.resetLoginState()
+            }
+            null -> {}
+        }
+    }
 
     val imageResourceId = remember(context) {
         context.resources.getIdentifier("login", "drawable", context.packageName)
@@ -48,7 +64,6 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 1. Imagen de fondo
             if (imageResourceId != 0) {
                 Image(
                     painter = painterResource(id = imageResourceId),
@@ -58,17 +73,14 @@ fun LoginScreen(
                 )
             }
 
-            // 2. Contenido
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Bajado un poco (de 280.dp a 310.dp) para equilibrar con el icono
                 Spacer(modifier = Modifier.height(310.dp))
 
-                // Campo Usuario
                 CustomInputField(
                     value = viewModel.email.value,
                     onValueChange = { viewModel.email.onChange(it) },
@@ -79,7 +91,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Campo Contraseña
                 CustomInputField(
                     value = viewModel.password.value,
                     onValueChange = { viewModel.password.onChange(it) },
@@ -89,7 +100,6 @@ fun LoginScreen(
                     error = viewModel.password.error
                 )
 
-                // Texto Olvidó Contraseña - Ahora con color Naranja para mayor visibilidad sobre el fondo
                 Text(
                     text = "¿Olvidaste tu contraseña?",
                     color = Color(0xFFD37506), 
@@ -104,26 +114,10 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(25.dp))
 
-                // Botón Iniciar Sesión
                 Button(
                     onClick = {
                         if (viewModel.isFormValid) {
-                            val user = viewModel.email.value
-                            val pass = viewModel.password.value
-
-                            scope.launch {
-                                when {
-                                    user == "admin@gmail.com" && pass == "admin" -> {
-                                        onLoginSuccess(true)
-                                    }
-                                    user == "brianmeza1928@gmail.com" && pass == "123456" -> {
-                                        onLoginSuccess(false)
-                                    }
-                                    else -> {
-                                        snackbarHostState.showSnackbar("❌ Credenciales incorrectas")
-                                    }
-                                }
-                            }
+                            viewModel.login()
                         } else {
                             scope.launch {
                                 snackbarHostState.showSnackbar("⚠️ Completa los campos correctamente")
@@ -143,7 +137,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Texto de registro - También resaltado para que no se pierda
                 Row(
                     modifier = Modifier.padding(bottom = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -162,6 +155,7 @@ fun LoginScreen(
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomInputField(
@@ -170,12 +164,12 @@ fun CustomInputField(
     placeholder: String,
     icon: ImageVector,
     isPassword: Boolean = false,
-    error: String? = null // Recibe el error del ViewModel
+    error: String? = null
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp) // Pequeño margen entre campos
+            .padding(vertical = 4.dp)
     ) {
         TextField(
             value = value,
@@ -196,7 +190,7 @@ fun CustomInputField(
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
-                errorContainerColor = Color.White, // Mantiene el fondo blanco aunque haya error
+                errorContainerColor = Color.White,
                 focusedIndicatorColor = if (error != null) Color.Red else Color.Transparent,
                 unfocusedIndicatorColor = if (error != null) Color.Red else Color.Transparent,
                 cursorColor = Color.Black,
@@ -206,11 +200,10 @@ fun CustomInputField(
             singleLine = true
         )
 
-        // Mensaje de error visible en ROJO
         if (error != null) {
             Text(
                 text = error,
-                color = Color(0xFFF44336), // Rojo Material Design visible
+                color = Color(0xFFF44336),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
