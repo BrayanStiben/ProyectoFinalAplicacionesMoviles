@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
+import com.example.seguimiento.features.home.BottomNav
 
 // Paleta de colores oficial
 val NaranjaAppRequisitos = Color(0xFFE67E22)
@@ -52,6 +53,7 @@ fun QueNesecitoParaAdoptar(
     viewModel: QueNesecitoParaAdoptarViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
+    onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
     onNavigateToStepOne: () -> Unit = {}
 ) {
@@ -60,13 +62,13 @@ fun QueNesecitoParaAdoptar(
 
     Scaffold(
         bottomBar = {
-            BottomNav(selectedItem = 0) { index ->
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
-                }
-            }
+            BottomNav(
+                selectedItem = -1,
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToFiltros = onNavigateToFiltros,
+                onNavigateToFavoritos = onNavigateToFavoritos,
+                onNavigateToProfile = onNavigateToProfile
+            )
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -269,34 +271,6 @@ fun TarjetaRequisito(
                 null, 
                 tint = Color.LightGray, 
                 modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val NaranjaNav = Color(0xFFE67E22)
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
-        items.forEach { (label, icon, index) ->
-            NavigationBarItem(
-                icon = { Icon(icon, null) },
-                label = { Text(label) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaNav,
-                    selectedTextColor = NaranjaNav,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
             )
         }
     }

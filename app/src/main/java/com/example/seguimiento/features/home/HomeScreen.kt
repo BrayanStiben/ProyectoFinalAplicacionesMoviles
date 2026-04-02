@@ -4,6 +4,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,29 +42,40 @@ fun HomeScreen(
     onNavigateToRequisitos: () -> Unit = {},
     onNavigateToRefugios: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
+    onNavigateToFavoritos: () -> Unit = {},
     onNavigateToHistorias: () -> Unit = {},
     onNavigateToNotificaciones: () -> Unit = {},
-    onNavigateToMapa: () -> Unit = {}
+    onNavigateToMapa: () -> Unit = {},
+    onNavigateToRegistroMascota: () -> Unit = {}
 ) {
     val userName by viewModel.userName.collectAsState()
+    val userProfilePicture by viewModel.userProfilePicture.collectAsState()
     val mascotasFeed by viewModel.mascotasFeed.collectAsState()
     val mascotasRecomendadas by viewModel.mascotasRecomendadas.collectAsState()
     val selectedItem by viewModel.selectedNavItem.collectAsState()
     val filtroCategoria by viewModel.filtroCategoria.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
 
     val categorias = listOf("Todos", "Perro", "Gato", "Otro")
 
     Scaffold(
         bottomBar = {
-            BottomNav(selectedItem) { index -> 
-                viewModel.onNavItemClicked(index)
-                if (index == 3) onNavigateToProfile()
-                if (index == 1) onNavigateToFiltros()
-            }
+            BottomNav(
+                selectedItem = 0,
+                onNavigateToHome = { /* Ya estamos aqui */ },
+                onNavigateToFiltros = onNavigateToFiltros,
+                onNavigateToFavoritos = onNavigateToFavoritos,
+                onNavigateToProfile = onNavigateToProfile
+            )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToMapa, containerColor = NaranjaApp) {
-                Icon(Icons.Default.Map, "Ver en Mapa", tint = Color.White)
+            FloatingActionButton(
+                onClick = onNavigateToRegistroMascota, 
+                containerColor = NaranjaApp,
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.Add, "Registrar Mascota")
             }
         }
     ) { paddingValues ->
@@ -104,7 +117,16 @@ fun HomeScreen(
                             .clickable { onNavigateToProfile() },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(30.dp))
+                        if (userProfilePicture?.isNotEmpty() == true) {
+                            AsyncImage(
+                                model = userProfilePicture,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(30.dp))
+                        }
                     }
                 }
             }
@@ -149,21 +171,29 @@ fun HomeScreen(
                 }
             }
 
-            // --- FEED DE PUBLICACIONES ---
+            // --- FEED DE PUBLICACIONES (CAROUSEL) ---
             if (mascotasFeed.isEmpty()) {
                 Box(Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
                     Text("No hay publicaciones en esta categoría", color = Color.Gray)
                 }
             } else {
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    mascotasFeed.forEach { mascota ->
-                        FeedCard(
-                            mascota = mascota,
-                            onVotar = { viewModel.votarImportante(mascota.id) },
-                            onClick = { onNavigateToMascotaDestacada(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl) }
-                        )
-                        Spacer(Modifier.height(12.dp))
-                    }
+                val pagerState = rememberPagerState(pageCount = { mascotasFeed.size })
+                
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    pageSpacing = 12.dp
+                ) { page ->
+                    val mascota = mascotasFeed[page]
+                    FeedCard(
+                        mascota = mascota,
+                        currentUserId = currentUser?.id ?: "",
+                        onLike = { viewModel.toggleLike(mascota.id) },
+                        onClick = { onNavigateToMascotaDestacada(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl) }
+                    )
                 }
             }
 
@@ -204,7 +234,17 @@ fun HomeScreen(
 }
 
 @Composable
-fun FeedCard(mascota: Mascota, onVotar: () -> Unit, onClick: () -> Unit) {
+fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClick: () -> Unit) {
+    val isLiked = mascota.likerIds.contains(currentUserId)
+    val otherLikes = if (isLiked) mascota.totalLikes - 1 else mascota.totalLikes
+    
+    val textLikes = when {
+        isLiked && otherLikes > 0 -> "Tú y $otherLikes personas"
+        isLiked -> "Tú"
+        otherLikes > 0 -> "$otherLikes personas"
+        else -> "Sin likes aún"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
@@ -221,15 +261,16 @@ fun FeedCard(mascota: Mascota, onVotar: () -> Unit, onClick: () -> Unit) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(mascota.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("${mascota.tipo} • ${mascota.ubicacion}", fontSize = 14.sp, color = Color.Gray)
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Star, null, tint = Color(0xFFFFC107), modifier = Modifier.size(16.dp))
-                    Text("${mascota.votosImportante} votos", fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp))
-                }
+                Text("${mascota.tipo} • ${mascota.ubicacion}", fontSize = 14.sp, color = Color.Gray, maxLines = 1)
+                Spacer(Modifier.height(4.dp))
+                Text(textLikes, fontSize = 12.sp, color = NaranjaApp, fontWeight = FontWeight.Medium)
             }
-            IconButton(onClick = onVotar) {
-                Icon(Icons.Default.Favorite, "Es importante", tint = Color.Red)
+            IconButton(onClick = onLike) {
+                Icon(
+                    imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Like",
+                    tint = if (isLiked) Color.Red else Color.Gray
+                )
             }
         }
     }
@@ -370,7 +411,14 @@ fun HappyStoryCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+fun BottomNav(
+    selectedItem: Int,
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToFavoritos: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
+) {
+    val NaranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -384,10 +432,17 @@ fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 icon = { Icon(icon, null) },
                 label = { Text(label) },
                 selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
+                onClick = { 
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        2 -> onNavigateToFavoritos()
+                        3 -> onNavigateToProfile()
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
+                    selectedIconColor = NaranjaNav,
+                    selectedTextColor = NaranjaNav,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )

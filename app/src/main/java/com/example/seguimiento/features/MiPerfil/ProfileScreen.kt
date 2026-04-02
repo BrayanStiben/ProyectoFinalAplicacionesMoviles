@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +25,7 @@ import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.R
+import com.example.seguimiento.features.home.BottomNav
 
 val NaranjaApp = Color(0xFFE67E22)
 val VerdeApp = Color(0xFF4CAF50)
@@ -34,7 +35,9 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToFavoritos: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
     val user = state.user
@@ -50,13 +53,13 @@ fun ProfileScreen(
         Scaffold(
             containerColor = Color.Transparent,
             bottomBar = {
-                BottomNav(selectedItem = 3) { index ->
-                    when(index) {
-                        0 -> onNavigateToHome()
-                        1 -> onNavigateToFiltros()
-                        3 -> onNavigateToProfile()
-                    }
-                }
+                BottomNav(
+                    selectedItem = 3,
+                    onNavigateToHome = onNavigateToHome,
+                    onNavigateToFiltros = onNavigateToFiltros,
+                    onNavigateToFavoritos = onNavigateToFavoritos,
+                    onNavigateToProfile = onNavigateToProfile
+                )
             }
         ) { padding ->
             LazyColumn(
@@ -107,6 +110,23 @@ fun ProfileScreen(
                         Text("Puntos: ${user?.points ?: 0} 🏆", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         
                         Spacer(Modifier.height(16.dp))
+                        
+                        // Botón Cerrar Sesión
+                        Button(
+                            onClick = { 
+                                viewModel.logout()
+                                onLogout()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Logout, null, tint = Color.White)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Cerrar Sesión", color = Color.White, fontWeight = FontWeight.Bold)
+                        }
+
+                        Spacer(Modifier.height(24.dp))
                         Text("Mis Publicaciones", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(8.dp))
                     }
@@ -161,6 +181,7 @@ fun UserPostItem(mascota: Mascota, onResolve: () -> Unit, onDelete: () -> Unit) 
                     PublicacionEstado.PENDIENTE -> Color(0xFFFFC107)
                     PublicacionEstado.RECHAZADA -> Color.Red
                     PublicacionEstado.RESUELTA -> Color.Gray
+                    PublicacionEstado.ADOPTADA -> Color(0xFF2196F3)
                 }, fontSize = 12.sp)
             }
             
@@ -172,32 +193,6 @@ fun UserPostItem(mascota: Mascota, onResolve: () -> Unit, onDelete: () -> Unit) 
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, "Borrar", tint = Color.Red)
             }
-        }
-    }
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-        items.forEach { (titulo, icono, indice) ->
-            NavigationBarItem(
-                selected = selectedItem == indice,
-                onClick = { onItemSelected(indice) },
-                icon = { Icon(icono, contentDescription = titulo) },
-                label = { Text(titulo, fontSize = 10.sp) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
-            )
         }
     }
 }

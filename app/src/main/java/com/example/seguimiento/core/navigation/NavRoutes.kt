@@ -25,16 +25,19 @@ sealed class NavRoutes(val route: String) {
     object HistoriasExito : NavRoutes("historias_exito")
     object Notificaciones : NavRoutes("notificaciones")
     object MapaFeed : NavRoutes("mapa_feed")
+    object Favoritos : NavRoutes("favoritos")
 
     // Formulario de Adopción
     object StepOne : NavRoutes("step_one")
     object StepTwo : NavRoutes("step_two")
     object StepThree : NavRoutes("step_three")
     object StepFour : NavRoutes("step_four")
-    object AdoptionConfirmation : NavRoutes("adoption_confirmation")
+    object AdoptionConfirmation : NavRoutes("adoption_confirmation/{requestId}") {
+        fun createRoute(requestId: String) = "adoption_confirmation/$requestId"
+    }
 
     // Gestión
-    object RegistroMascota : NavRoutes("registro_mascota")
+    object RegistroMascota : NavRoutes("register_mascota")
     object EditarMascota : NavRoutes("editar_mascota/{id}") {
         fun createRoute(id: String) = "editar_mascota/$id"
     }
@@ -44,4 +47,13 @@ sealed class NavRoutes(val route: String) {
     object ListaSolicitudes : NavRoutes("lista_solicitudes")
     object EncontrarMascotas : NavRoutes("encontrar_mascotas")
     object GestionUsuarios : NavRoutes("gestion_usuarios")
+    object GestionHistorias : NavRoutes("gestion_historias")
+    object GestionComentarios : NavRoutes("gestion_comentarios")
+    object GestionAdopciones : NavRoutes("gestion_adopciones")
+    object CertificadoAdopcion : NavRoutes("certificado_adopcion/{requestId}") {
+        fun createRoute(requestId: String) = "certificado_adopcion/$requestId"
+    }
+    object CertificadoRechazo : NavRoutes("certificado_rechazo/{requestId}") {
+        fun createRoute(requestId: String) = "certificado_rechazo/$requestId"
+    }
 }

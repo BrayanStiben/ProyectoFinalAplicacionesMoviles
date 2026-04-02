@@ -1,6 +1,10 @@
 package com.example.seguimiento.features.HistoriaMascota
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.seguimiento.R
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,13 +26,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import kotlin.math.absoluteValue
-import androidx.compose.ui.text.TextStyle
+import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 
 @Composable
 fun PantallaPetAdopta(
@@ -39,12 +44,24 @@ fun PantallaPetAdopta(
     onNavigateBack: () -> Unit = {}
 ) {
     val textoHistoria by viewModel.textoHistoria.collectAsState()
-    val estadoPager = rememberPagerState(pageCount = { viewModel.fotosCarrusel.size })
+    val mascotaNombre by viewModel.mascotaNombre.collectAsState()
+    val imagenSeleccionada by viewModel.imagenSeleccionada.collectAsState()
+    val historiasAprobadas by viewModel.historiasAprobadas.collectAsState()
+
+    val estadoPager = rememberPagerState(pageCount = { historiasAprobadas.size.coerceAtLeast(1) })
     val scrollState = rememberScrollState()
+
+    var showDialog by remember { mutableStateOf<HistoriaFeliz?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        viewModel.alSeleccionarImagen(uri)
+    }
 
     Scaffold(
         bottomBar = {
-            BottomNav(selectedItem = 0) { index -> 
+            BottomNavPet(selectedItem = 0) { index -> 
                 when(index) {
                     0 -> onNavigateToHome()
                     1 -> onNavigateToFiltros()
@@ -54,7 +71,7 @@ fun PantallaPetAdopta(
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // IMAGEN DE FONDO (fondo3)
+            // IMAGEN DE FONDO
             Image(
                 painter = painterResource(id = R.drawable.fondo3),
                 contentDescription = null,
@@ -63,7 +80,7 @@ fun PantallaPetAdopta(
             )
 
             // Overlay sutil
-            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.25f)))
+            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.3f)))
 
             Column(
                 modifier = Modifier
@@ -75,8 +92,8 @@ fun PantallaPetAdopta(
                 // BOTÓN VOLVER
                 Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
                     IconButton(
-                        onClick = { onNavigateToHome() },
-                        modifier = Modifier.background(Color.White.copy(alpha = 0.5f), CircleShape)
+                        onClick = { onNavigateBack() },
+                        modifier = Modifier.background(Color.White.copy(alpha = 0.7f), CircleShape)
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color(0xFF5D2E17))
                     }
@@ -88,150 +105,261 @@ fun PantallaPetAdopta(
                     contentDescription = "Logo PetAdopta",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .size(380.dp)
-                        .padding(top = 10.dp)
+                        .size(280.dp)
+                        .padding(top = 0.dp)
                 )
 
-                // TEXTO SUBIDO PARA QUE TOPE CON EL ICONO
+                // TEXTO CASI TOCANDO EL LOGO
                 Text(
                     text = "Comparte tu Historia Feliz",
-                    fontSize = 30.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
                     color = Color(0xFF5D2E17),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.offset(y = (-100).dp)
+                    modifier = Modifier.offset(y = (-55).dp)
                 )
 
-                // CAMPO DE TEXTO SUBIDO
-                OutlinedTextField(
-                    value = textoHistoria,
-                    onValueChange = { viewModel.alCambiarTexto(it) },
-                    placeholder = { Text("¿Cómo conociste a tu mejor amigo?", color = Color.Gray) },
+                // FORMULARIO
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
-                        .height(150.dp)
-                        .offset(y = (-80).dp)
-                        .shadow(15.dp, RoundedCornerShape(28.dp)),
-                    shape = RoundedCornerShape(28.dp),
-                    textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedBorderColor = Color(0xFFE67E22),
-                        unfocusedBorderColor = Color.Transparent
-                    )
-                )
-
-                // BOTÓN SUBIDO
-                Button(
-                    onClick = { viewModel.compartir() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .height(60.dp)
-                        .offset(y = (-65).dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
-                    shape = RoundedCornerShape(30.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
+                        .offset(y = (-40).dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
-                    Text("¡Publicar ahora! 🐾", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                }
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        OutlinedTextField(
+                            value = mascotaNombre,
+                            onValueChange = { viewModel.alCambiarNombreMascota(it) },
+                            placeholder = { Text("Nombre de tu mascota", color = Color.Gray) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFFE67E22),
+                                unfocusedBorderColor = Color.LightGray
+                            )
+                        )
 
-                // CARRUSEL PROFESIONAL SUBIDO
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = (-45).dp)
-                        .padding(bottom = 30.dp)
-                        .shadow(20.dp, RoundedCornerShape(35.dp)),
-                    color = Color.White.copy(alpha = 0.98f),
-                    shape = RoundedCornerShape(35.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(vertical = 25.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(Icons.Default.Favorite, null, tint = Color(0xFFE67E22))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Momentos Inolvidables", fontWeight = FontWeight.Black, fontSize = 22.sp, color = Color(0xFF5D2E17))
-                        }
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                        Spacer(modifier = Modifier.height(25.dp))
+                        OutlinedTextField(
+                            value = textoHistoria,
+                            onValueChange = { viewModel.alCambiarTexto(it) },
+                            placeholder = { Text("¿Cómo conociste a tu mejor amigo?", color = Color.Gray) },
+                            modifier = Modifier.fillMaxWidth().height(100.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFFE67E22),
+                                unfocusedBorderColor = Color.LightGray
+                            )
+                        )
 
-                        HorizontalPager(
-                            state = estadoPager,
-                            modifier = Modifier.fillMaxWidth().height(320.dp),
-                            contentPadding = PaddingValues(horizontal = 60.dp),
-                            pageSpacing = 20.dp
-                        ) { pagina ->
-                            val pageOffset = ((estadoPager.currentPage - pagina) + estadoPager.currentPageOffsetFraction).absoluteValue
-                            
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(0.85f)
-                                    .graphicsLayer {
-                                        val scale = lerp(
-                                            start = 0.85f,
-                                            stop = 1f,
-                                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                        )
-                                        scaleX = scale
-                                        scaleY = scale
-                                        alpha = lerp(
-                                            start = 0.6f,
-                                            stop = 1f,
-                                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                        )
-                                    },
-                                shape = RoundedCornerShape(32.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-                                border = BorderStroke(3.dp, Color.White)
-                            ) {
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        if (imagenSeleccionada != null) {
+                            Box(modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp))) {
                                 AsyncImage(
-                                    model = viewModel.fotosCarrusel[pagina],
+                                    model = imagenSeleccionada,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
                                 )
+                                IconButton(
+                                    onClick = { viewModel.alSeleccionarImagen(null) },
+                                    modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                ) {
+                                    Icon(Icons.Default.Close, null, tint = Color.White)
+                                }
                             }
+                            Spacer(modifier = Modifier.height(12.dp))
                         }
 
-                        Row(
-                            Modifier.padding(top = 25.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                        Button(
+                            onClick = { launcher.launch("image/*") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            border = BorderStroke(2.dp, Color(0xFFE67E22)),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            repeat(viewModel.fotosCarrusel.size) { i ->
-                                val selected = estadoPager.currentPage == i
-                                val width by androidx.compose.animation.core.animateDpAsState(
-                                    targetValue = if (selected) 24.dp else 8.dp, label = ""
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .height(8.dp)
-                                        .width(width)
-                                        .clip(CircleShape)
-                                        .background(if (selected) Color(0xFFE67E22) else Color.LightGray.copy(alpha = 0.6f))
-                                )
-                            }
+                            Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = Color(0xFFE67E22))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(if (imagenSeleccionada == null) "SUBIR FOTO 📸" else "CAMBIAR FOTO", color = Color(0xFFE67E22), fontWeight = FontWeight.Bold)
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { 
+                                viewModel.compartir {
+                                    onNavigateBack() // Vuelve a la pantalla anterior (Estadísticas si es admin)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().height(55.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                        ) {
+                            Text("PUBLICAR AHORA 🐾", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
                         }
                     }
                 }
+
+                // SECCIÓN MOMENTOS INOLVIDABLES (CARRUSEL)
+                Text(
+                    "Momentos Inolvidables",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 24.sp,
+                    color = Color(0xFF5D2E17),
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
+                        .offset(y = (-30).dp)
+                )
+
+                if (historiasAprobadas.isEmpty()) {
+                    Text("¡Las historias de éxito aparecerán aquí!", color = Color.Gray, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, modifier = Modifier.offset(y = (-30).dp))
+                } else {
+                    HorizontalPager(
+                        state = estadoPager,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(360.dp)
+                            .offset(y = (-30).dp),
+                        contentPadding = PaddingValues(horizontal = 40.dp),
+                        pageSpacing = 12.dp
+                    ) { pagina ->
+                        val historia = historiasAprobadas[pagina]
+                        val pageOffset = ((estadoPager.currentPage - pagina) + estadoPager.currentPageOffsetFraction).absoluteValue
+                        
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    val scale = lerp(0.85f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
+                                    scaleX = scale
+                                    scaleY = scale
+                                    alpha = lerp(0.5f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
+                                }
+                                .clickable { showDialog = historia },
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                        ) {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                AsyncImage(
+                                    model = historia.imagenUrl,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = historia.mascotaNombre,
+                                        color = Color(0xFFE67E22),
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 20.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = historia.texto,
+                                        color = Color.DarkGray,
+                                        fontSize = 14.sp,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Person, null, modifier = Modifier.size(14.dp), tint = Color.Gray)
+                                        Spacer(Modifier.width(4.dp))
+                                        Text(historia.autorNombre, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Row(
+                        Modifier
+                            .padding(top = 0.dp)
+                            .offset(y = (-20).dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        repeat(historiasAprobadas.size) { i ->
+                            val selected = estadoPager.currentPage == i
+                            val width by animateDpAsState(targetValue = if (selected) 24.dp else 8.dp, label = "")
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .height(8.dp)
+                                    .width(width)
+                                    .clip(CircleShape)
+                                    .background(if (selected) Color(0xFFE67E22) else Color.LightGray)
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
+    }
+
+    // DIALOGO DETALLE
+    showDialog?.let { historia ->
+        AlertDialog(
+            onDismissRequest = { showDialog = null },
+            confirmButton = {
+                Button(
+                    onClick = { showDialog = null },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22))
+                ) {
+                    Text("Cerrar", color = Color.White)
+                }
+            },
+            title = { 
+                Text(
+                    text = "La historia de ${historia.mascotaNombre}", 
+                    fontWeight = FontWeight.Black, 
+                    color = Color(0xFF5D2E17)
+                ) 
+            },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    AsyncImage(
+                        model = historia.imagenUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
+                            .clip(RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = historia.texto,
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        lineHeight = 22.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Publicado por: ${historia.autorNombre}", fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(30.dp),
+            containerColor = Color.White
+        )
     }
 }
 
 @Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+fun BottomNavPet(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val NaranjaAppColor = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(

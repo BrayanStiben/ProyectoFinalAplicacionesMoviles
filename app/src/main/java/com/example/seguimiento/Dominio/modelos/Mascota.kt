@@ -1,7 +1,7 @@
 package com.example.seguimiento.Dominio.modelos
 
 enum class PublicacionEstado {
-    PENDIENTE, VERIFICADA, RECHAZADA, RESUELTA
+    PENDIENTE, VERIFICADA, RECHAZADA, RESUELTA, ADOPTADA
 }
 
 data class Mascota(
@@ -19,6 +19,8 @@ data class Mascota(
     val autorId: String = "",
     val estado: PublicacionEstado = PublicacionEstado.PENDIENTE,
     val motivoRechazo: String = "",
-    val votosImportante: Int = 0,
+    val likerIds: List<String> = emptyList(), // Usuarios que dieron like
     val resumenIA: String = "" // Para el requisito de IA 4
-)
+) {
+    val totalLikes: Int get() = likerIds.size
+}

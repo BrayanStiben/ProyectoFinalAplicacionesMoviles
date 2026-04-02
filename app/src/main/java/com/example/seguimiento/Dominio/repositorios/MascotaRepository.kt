@@ -12,9 +12,9 @@ interface MascotaRepository {
     fun delete(id: String)
     fun getDestacadas(): List<Mascota>
     
-    // Nuevos métodos para requerimientos
+    // Métodos para requerimientos
     fun getVerificadas(categoria: String?, lat: Double?, lng: Double?, radioKm: Double?): List<Mascota>
     fun getPendientesModeracion(): List<Mascota>
     fun actualizarEstado(id: String, estado: PublicacionEstado, motivo: String = "")
-    fun votarImportante(id: String)
+    fun toggleLike(mascotaId: String, userId: String)
 }

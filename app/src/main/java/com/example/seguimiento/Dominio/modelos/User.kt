@@ -25,9 +25,13 @@ data class User(
     val banReason: String = "",
     val points: Int = 0,
     val level: Int = 1,
-    val badges: List<String> = emptyList(), // IDs of badges
+    val badges: List<String> = emptyList(),
     val lat: Double = 0.0,
-    val lng: Double = 0.0
+    val lng: Double = 0.0,
+    
+    // Nuevos campos para penalización por rechazos
+    val rejectionCount: Int = 0,
+    val penaltyEndTime: Long = 0
 ) {
     fun getLevelName(): String {
         return when (level) {
@@ -38,4 +42,7 @@ data class User(
             else -> "Leyenda"
         }
     }
+    
+    val isPenalized: Boolean 
+        get() = System.currentTimeMillis() < penaltyEndTime
 }

@@ -1,7 +1,7 @@
 package com.example.seguimiento.features.PantallaRecuperarContrasena
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,24 +9,42 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class RecuperarContrasenaViewModel @Inject constructor() : ViewModel() {
+class RecuperarContrasenaViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
 
-    private val _esEmailValido = MutableStateFlow(true)
-    val esEmailValido: StateFlow<Boolean> = _esEmailValido.asStateFlow()
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password.asStateFlow()
 
-    fun onEmailChanged(nuevoEmail: String) {
+    private val _confirmPassword = MutableStateFlow("")
+    val confirmPassword: StateFlow<String> = _confirmPassword.asStateFlow()
+
+    private val _esExitoso = MutableStateFlow(false)
+    val esExitoso: StateFlow<Boolean> = _esExitoso.asStateFlow()
+
+    fun setEmail(nuevoEmail: String) {
         _email.value = nuevoEmail
-        // No mostramos error si está vacío, solo si el formato es incorrecto
-        _esEmailValido.value = if (nuevoEmail.isEmpty()) true
-        else Patterns.EMAIL_ADDRESS.matcher(nuevoEmail).matches()
     }
 
-    fun ejecutarValidacionFinal(): Boolean {
-        val esValido = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
-        _esEmailValido.value = esValido
-        return esValido
+    fun onPasswordChanged(nuevaPass: String) {
+        _password.value = nuevaPass
+    }
+
+    fun onConfirmPasswordChanged(nuevaPass: String) {
+        _confirmPassword.value = nuevaPass
+    }
+
+    fun actualizarContrasena(): Boolean {
+        if (_password.value.isNotEmpty() && _password.value == _confirmPassword.value) {
+            val resultado = userRepository.updatePassword(_email.value, _password.value)
+            if (resultado) {
+                _esExitoso.value = true
+                return true
+            }
+        }
+        return false
     }
 }

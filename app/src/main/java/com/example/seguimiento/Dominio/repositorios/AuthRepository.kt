@@ -9,4 +9,8 @@ interface AuthRepository {
     suspend fun register(user: User): Result<Unit>
     suspend fun logout()
     suspend fun recoverPassword(email: String): Result<Unit>
+    
+    // Nuevos métodos para el código de verificación random
+    fun generateVerificationCode(): String
+    fun getVerificationCode(): String?
 }

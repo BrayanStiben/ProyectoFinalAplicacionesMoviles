@@ -43,6 +43,9 @@ class FinalizarRegistroViewModel @Inject constructor(
     private val _estaCargando = MutableStateFlow(false)
     val estaCargando = _estaCargando.asStateFlow()
 
+    private val _fotoPerfil = MutableStateFlow("")
+    val fotoPerfil = _fotoPerfil.asStateFlow()
+
     init {
         cargarDatos()
     }
@@ -81,6 +84,10 @@ class FinalizarRegistroViewModel @Inject constructor(
         _municipioSeleccionado.value = muni
     }
 
+    fun onFotoChanged(uri: String) {
+        _fotoPerfil.value = uri
+    }
+
     fun setTerminosAceptados(aceptado: Boolean) {
         _terminosAceptados.value = aceptado
     }
@@ -92,7 +99,8 @@ class FinalizarRegistroViewModel @Inject constructor(
             if (user != null) {
                 val updatedUser = user.copy(
                     departamento = _deptoSeleccionado.value,
-                    city = _municipioSeleccionado.value
+                    city = _municipioSeleccionado.value,
+                    profilePictureUrl = _fotoPerfil.value
                 )
                 authRepository.register(updatedUser)
                 onSuccess()

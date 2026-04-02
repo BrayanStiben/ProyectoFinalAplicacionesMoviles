@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -14,17 +15,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
+import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.BottomNav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaRegistroMascota(
+    mascotaId: String? = null,
     viewModel: MascotaViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
@@ -36,6 +41,14 @@ fun PantallaRegistroMascota(
         viewModel.alSeleccionarFoto(it)
     }
 
+    LaunchedEffect(mascotaId) {
+        if (mascotaId != null) {
+            viewModel.cargarMascotaParaEdicion(mascotaId)
+        }
+    }
+
+    val naranjaApp = Color(0xFFE67E22)
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -46,14 +59,14 @@ fun PantallaRegistroMascota(
                 },
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🐶", fontSize = 22.sp) 
+                        Text(if (mascotaId == null) "🐶" else "📝", fontSize = 22.sp) 
                         Spacer(Modifier.width(8.dp))
-                        Text("Ingresar Mascota", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(if (mascotaId == null) "Ingresar Mascota" else "Editar Mascota", color = Color.White, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(8.dp))
-                        Text("🐱", fontSize = 22.sp)
+                        Text(if (mascotaId == null) "🐱" else "✨", fontSize = 22.sp)
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color(0xFFE67E22))
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = naranjaApp)
             )
         },
         bottomBar = {
@@ -95,6 +108,10 @@ fun PantallaRegistroMascota(
                         contentAlignment = Alignment.Center) {
                         if (estado.fotoUri != null) {
                             AsyncImage(model = estado.fotoUri, contentDescription = null, contentScale = ContentScale.Crop)
+                        } else if (mascotaId != null && estado.nombre.isNotEmpty()) {
+                            // Si estamos editando y no hay Uri local, intentamos mostrar la de red si existe en el ViewModel (aunque el estado no la tenga directamente para edición)
+                            // En un caso real, el ViewModel expondría la URL original. Por simplicidad, si el usuario no elige nueva foto, se mantiene la anterior en guardarMascota.
+                            Text("Foto actual mantenida", color = Color.Gray)
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.CameraAlt, null, tint = Color(0xFF00796B))
@@ -115,15 +132,46 @@ fun PantallaRegistroMascota(
                         shape = RoundedCornerShape(10.dp)
                     )
 
-                    Etiqueta("Tipo")
-                    CampoEntrada(estado.tipo, "Tipo (Perro, Gato, etc)") { viewModel.cambiarTipo(it) }
+                    Etiqueta("Tipo de Mascota")
+                    SelectorMascota(
+                        label = "Tipo",
+                        seleccionado = estado.tipo,
+                        opciones = estado.listaTipos,
+                        icon = Icons.Default.Pets
+                    ) { viewModel.cambiarTipo(it) }
 
                     Etiqueta("Raza")
-                    CampoEntrada(estado.raza, "Raza") { viewModel.cambiarRaza(it) }
+                    if (estado.tipo == "Otro") {
+                        OutlinedTextField(
+                            value = estado.raza,
+                            onValueChange = { viewModel.cambiarRaza(it) },
+                            placeholder = { Text("Escribe la raza...") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = naranjaApp,
+                                unfocusedBorderColor = Color.LightGray
+                            )
+                        )
+                    } else {
+                        SelectorMascota(
+                            label = "Raza",
+                            seleccionado = estado.raza,
+                            opciones = estado.listaRazas,
+                            icon = Icons.Default.List,
+                            enabled = estado.tipo.isNotEmpty() && (estado.listaRazas.isNotEmpty() || estado.tipo == "Otro")
+                        ) { viewModel.cambiarRaza(it) }
+                    }
 
                     Etiqueta("Edad")
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(value = estado.edad, onValueChange = { viewModel.cambiarEdad(it) }, modifier = Modifier.weight(1f), shape = RoundedCornerShape(10.dp))
+                        OutlinedTextField(
+                            value = estado.edad,
+                            onValueChange = { viewModel.cambiarEdad(it) },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
                         Text("+", fontWeight = FontWeight.Bold)
                         OutlinedTextField(value = estado.unidadEdad, onValueChange = { viewModel.cambiarUnidadEdad(it) }, modifier = Modifier.weight(1.2f), shape = RoundedCornerShape(10.dp))
                     }
@@ -137,62 +185,43 @@ fun PantallaRegistroMascota(
                         Text("Macho")
                     }
 
-                    Etiqueta("Ubicación")
-                    CampoEntrada(estado.ciudad, "Ciudad") { viewModel.cambiarCiudad(it) }
+                    Etiqueta("Departamento")
+                    SelectorMascota(
+                        label = "Departamento",
+                        seleccionado = estado.departamento,
+                        opciones = estado.listaDepartamentos,
+                        icon = Icons.Default.Map
+                    ) { viewModel.cambiarDepartamento(it) }
+
+                    Etiqueta("Municipio / Ciudad")
+                    SelectorMascota(
+                        label = "Ciudad",
+                        seleccionado = estado.ciudad,
+                        opciones = estado.listaCiudades,
+                        icon = Icons.Default.LocationOn,
+                        enabled = estado.departamento.isNotEmpty()
+                    ) { viewModel.cambiarCiudad(it) }
 
                     Spacer(Modifier.height(10.dp))
 
                     if (estado.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = naranjaApp)
                     } else {
                         Button(
                             onClick = { 
                                 viewModel.guardarMascota {
-                                    onNavigateToHome()
+                                    onNavigateBack()
                                 }
                             },
                             modifier = Modifier.fillMaxWidth().height(55.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
+                            colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
                             shape = RoundedCornerShape(30.dp)
                         ) {
-                            Text("Guardar y Publicar", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Text(if (mascotaId == null) "Guardar y Publicar" else "Actualizar Cambios", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable fun Etiqueta(t: String) = Text(t, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-@Composable fun CampoEntrada(v: String, p: String, onV: (String) -> Unit) {
-    OutlinedTextField(value = v, onValueChange = onV, placeholder = { Text(p) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp))
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val NaranjaApp = Color(0xFFE67E22)
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
-        items.forEach { (label, icon, index) ->
-            NavigationBarItem(
-                icon = { Icon(icon, null) },
-                label = { Text(label, fontSize = 10.sp) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
-            )
         }
     }
 }

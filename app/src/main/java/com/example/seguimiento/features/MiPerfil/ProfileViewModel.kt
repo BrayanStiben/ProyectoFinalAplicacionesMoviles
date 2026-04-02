@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.modelos.User
+import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ProfileUiState(
@@ -21,19 +23,21 @@ data class ProfileUiState(
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val mascotaRepository: MascotaRepository
 ) : ViewModel() {
 
-    // En una app real, obtendríamos el ID del usuario logueado desde un AuthManager
-    private val currentUserId = "1" 
+    // Obtenemos el ID del usuario actual desde el AuthRepository
+    private val currentUserId = authRepository.currentUser.map { it?.id ?: "1" }
 
     val uiState: StateFlow<ProfileUiState> = combine(
         userRepository.users,
-        mascotaRepository.mascotas
-    ) { users, mascotas ->
-        val user = users.find { it.id == currentUserId }
-        val userPosts = mascotas.filter { it.autorId == currentUserId }
+        mascotaRepository.mascotas,
+        currentUserId
+    ) { users, mascotas, userId ->
+        val user = users.find { it.id == userId }
+        val userPosts = mascotas.filter { it.autorId == userId }
         
         ProfileUiState(
             user = user,
@@ -50,5 +54,11 @@ class ProfileViewModel @Inject constructor(
 
     fun deletePost(postId: String) {
         mascotaRepository.delete(postId)
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
     }
 }

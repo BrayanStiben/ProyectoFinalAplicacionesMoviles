@@ -5,14 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EnvioDeCodigoViewModel @Inject constructor() : ViewModel() {
-    // Lista de 4 strings, cada uno será un solo número
+class EnvioDeCodigoViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
     var codigo by mutableStateOf(listOf("", "", "", ""))
         private set
 
@@ -20,17 +22,18 @@ class EnvioDeCodigoViewModel @Inject constructor() : ViewModel() {
         private set
 
     var mostrarDialogo by mutableStateOf(false)
+    var errorCodigo by mutableStateOf(false)
 
     init {
         iniciarTemporizador()
     }
 
     fun onDigitChange(index: Int, valor: String) {
-        // Validación estricta: Solo permite 1 dígito y que sea número
         if (valor.length <= 1 && (valor.isEmpty() || valor.all { it.isDigit() })) {
             val nuevaLista = codigo.toMutableList()
             nuevaLista[index] = valor
             codigo = nuevaLista
+            errorCodigo = false
         }
     }
 
@@ -44,15 +47,14 @@ class EnvioDeCodigoViewModel @Inject constructor() : ViewModel() {
     }
 
     fun confirmarIdentidad() {
-        // Unimos los dígitos para formar el código final
         val codigoCompleto = codigo.joinToString("")
+        val codigoCorrecto = authRepository.getVerificationCode()
 
-        // Verificación exacta: "1234"
-        if (codigoCompleto == "1234") {
+        if (codigoCompleto == codigoCorrecto && codigoCorrecto != null) {
             mostrarDialogo = true
+            errorCodigo = false
         } else {
-            // Log para debug si no es 1234
-            println("Código incorrecto o incompleto: $codigoCompleto")
+            errorCodigo = true
         }
     }
 }

@@ -25,18 +25,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 
-// Paleta de colores oficial
-val NaranjaApp = Color(0xFFE67E22)
-val CafeApp = Color(0xFF5D2E17)
-val FondoCrema = Color(0xFFFDF7E7)
-val VerdeExito = Color(0xFF4CAF50)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdoptionConfirmationScreen(
+    requestId: String = "",
     viewModel: AdoptionViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {}
 ) {
+    LaunchedEffect(requestId) {
+        if (requestId.isNotEmpty()) {
+            viewModel.setRequestId(requestId)
+        }
+    }
+
     val uiState by viewModel.uiState.collectAsState()
     var tabSeleccionada by remember { mutableIntStateOf(0) }
 
@@ -44,40 +45,33 @@ fun AdoptionConfirmationScreen(
         topBar = {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = NaranjaApp,
+                color = Color(0xFFE67E22),
                 shadowElevation = 4.dp
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
-                        .height(64.dp)
-                        .padding(horizontal = 4.dp),
+                        .height(64.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
                         onClick = { onNavigateToHome() },
                         modifier = Modifier.align(Alignment.CenterStart)
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                     }
-                    
-                    Text(
-                        text = "ADOPCIÓN EXITOSA", 
-                        color = Color.White, 
-                        fontWeight = FontWeight.Black,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
-                    )
+                    Text("¡ADOPCIÓN EXITOSA!", color = Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp)
                 }
             }
         },
         bottomBar = {
-            BottomNav(tabSeleccionada) { tabSeleccionada = it }
+            com.example.seguimiento.features.home.BottomNav(selectedItem = -1) { index ->
+                if (index == 0) onNavigateToHome()
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // 1. FONDO DE PANTALLA (fondo3)
             Image(
                 painter = painterResource(id = R.drawable.fondo3),
                 contentDescription = null,
@@ -85,48 +79,30 @@ fun AdoptionConfirmationScreen(
                 contentScale = ContentScale.Crop
             )
 
-            // Overlay sutil
-            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.1f)))
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 2. IMAGEN "FELIZ" (PNG SIN FONDO)
                 Image(
                     painter = painterResource(id = R.drawable.feliz),
-                    contentDescription = "Mascota Feliz",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                        .padding(top = 20.dp),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth().height(250.dp).padding(top = 20.dp),
                     contentScale = ContentScale.Fit
                 )
 
-                // ESPACIO CORREGIDO: Reducido para que la caja suba más
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // TARJETA DE DETALLES PREMIUM
                 Card(
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            // Miniatura redonda con IMAGEN DE INTERNET (Gatito naranja de la foto)
-                            Surface(
-                                modifier = Modifier.size(75.dp),
-                                shape = CircleShape,
-                                border = BorderStroke(3.dp, NaranjaApp)
-                            ) {
+                            Surface(modifier = Modifier.size(70.dp), shape = CircleShape, border = BorderStroke(3.dp, Color(0xFFE67E22))) {
                                 AsyncImage(
-                                    model = "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&q=80&w=300",
+                                    model = uiState.petImg,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize().clip(CircleShape),
                                     contentScale = ContentScale.Crop
@@ -134,41 +110,45 @@ fun AdoptionConfirmationScreen(
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(uiState.petName, fontWeight = FontWeight.Black, fontSize = 24.sp, color = CafeApp)
-                                Text("¡Ya está en casa!", fontSize = 14.sp, color = Color.Gray)
+                                Text(uiState.petName, fontWeight = FontWeight.Black, fontSize = 22.sp, color = Color(0xFF5D2E17))
+                                Text("¡Ya forma parte de tu vida!", fontSize = 14.sp, color = Color.Gray)
                             }
                         }
 
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color.LightGray.copy(alpha = 0.5f))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                         FilaDetalle(Icons.Default.CalendarToday, "Fecha", uiState.date)
-                        FilaDetalle(Icons.Default.Storefront, "Refugio", uiState.shelter)
-                        FilaDetalle(Icons.Default.FamilyRestroom, "Adoptado por", uiState.adoptedBy)
+                        FilaDetalle(Icons.Default.Person, "Adoptante", uiState.adoptedBy)
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text("Resumen de Solicitud:", fontWeight = FontWeight.Bold, color = Color(0xFF5D2E17))
+                        Text(uiState.summary, fontSize = 13.sp, color = Color.DarkGray)
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Surface(color = Color(0xFFE8F5E9), shape = RoundedCornerShape(12.dp)) {
+                            Text(
+                                text = uiState.adminComment,
+                                modifier = Modifier.padding(12.dp),
+                                fontSize = 14.sp,
+                                color = Color(0xFF2E7D32),
+                                lineHeight = 20.sp
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Button(
-                            onClick = { viewModel.onHistoryClick() },
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                        ) {
-                            Icon(Icons.Default.HistoryEdu, null, tint = Color.White)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("VER MI HISTORIA", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
-                        }
-
-                        TextButton(
                             onClick = { onNavigateToHome() },
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text("Volver al inicio 🐾", color = NaranjaApp, fontWeight = FontWeight.Bold)
+                            Text("VOLVER AL INICIO", fontWeight = FontWeight.ExtraBold)
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(30.dp))
             }
         }
     }
@@ -176,40 +156,10 @@ fun AdoptionConfirmationScreen(
 
 @Composable
 fun FilaDetalle(icono: ImageVector, label: String, valor: String) {
-    Row(
-        modifier = Modifier.padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icono, null, tint = NaranjaApp, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(10.dp))
+    Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icono, null, tint = Color(0xFFE67E22), modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
         Text("$label: ", color = Color.Gray, fontSize = 14.sp)
-        Text(valor, color = CafeApp, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
-        items.forEach { (label, icon, index) ->
-            NavigationBarItem(
-                icon = { Icon(icon, null) },
-                label = { Text(label) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
-            )
-        }
+        Text(valor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
     }
 }

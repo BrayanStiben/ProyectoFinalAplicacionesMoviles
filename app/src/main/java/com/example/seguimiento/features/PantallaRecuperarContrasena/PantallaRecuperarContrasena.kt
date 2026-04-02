@@ -8,8 +8,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +20,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,15 +32,37 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaRecuperarContrasena(
-    viewModel: RecuperarContrasenaViewModel = hiltViewModel()
+    email: String = "",
+    viewModel: RecuperarContrasenaViewModel = hiltViewModel(),
+    onPasswordUpdated: () -> Unit = {}
 ) {
-    val email by viewModel.email.collectAsState()
-    val esValido by viewModel.esEmailValido.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val esExitoso by viewModel.esExitoso.collectAsState()
+    
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.setEmail(email)
+    }
+
+    if (esExitoso) {
+        AlertDialog(
+            onDismissRequest = { onPasswordUpdated() },
+            confirmButton = {
+                Button(onClick = { onPasswordUpdated() }) {
+                    Text("Ir al Login")
+                }
+            },
+            title = { Text("¡Éxito!") },
+            text = { Text("Tu contraseña ha sido actualizada correctamente.") },
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // FONDO DE IMAGEN
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -49,120 +74,93 @@ fun PantallaRecuperarContrasena(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             containerColor = Color.Transparent
         ) { paddingValues ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
-                contentAlignment = Alignment.TopCenter
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                Image(
+                    painter = painterResource(id = R.drawable.petadopticono),
+                    contentDescription = null,
+                    modifier = Modifier.size(300.dp).padding(top = 20.dp)
+                )
+
+                Card(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .fillMaxWidth()
+                        .offset(y = (-50).dp),
+                    shape = RoundedCornerShape(40.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+                    elevation = CardDefaults.cardElevation(10.dp)
                 ) {
-                    // LOGO - Grande y centrado
-                    Image(
-                        painter = painterResource(id = R.drawable.petadopticono),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(350.dp) // Tamaño prominente
-                            .padding(top = 20.dp)
-                    )
-
-                    // TARJETA DE FORMULARIO - Elevada con offset negativo
-                    Card(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
-                            .fillMaxWidth()
-                            .offset(y = (-80).dp), // AQUÍ SE SUBE LA CAJA
-                        shape = RoundedCornerShape(40.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-                        elevation = CardDefaults.cardElevation(15.dp)
+                    Column(
+                        modifier = Modifier.padding(25.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            // Icono de Candado
-                            Icon(
-                                painter = painterResource(id = android.R.drawable.ic_lock_idle_lock),
-                                contentDescription = null,
-                                tint = if (esValido) Color(0xFFE6D2B5) else Color(0xFFD32F2F),
-                                modifier = Modifier.size(90.dp)
-                            )
+                        Text(
+                            text = "Nueva Contraseña",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF333333)
+                        )
 
-                            Text(
-                                text = "Recuperar Contraseña",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF333333)
-                            )
+                        Text(
+                            text = "Ingresa tu nueva contraseña para la cuenta $email",
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
 
-                            Text(
-                                text = "Por favor ingrese su correo electrónico para recibir un código de verificación.",
-                                textAlign = TextAlign.Center,
-                                fontSize = 15.sp,
-                                color = Color.Gray,
-                                modifier = Modifier.padding(vertical = 15.dp)
-                            )
-
-                            // Input Email con fondo condicional
-                            OutlinedTextField(
-                                value = email,
-                                onValueChange = { viewModel.onEmailChanged(it) },
-                                isError = !esValido,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(65.dp)
-                                    .background(
-                                        if (esValido) Color(0xFFF7E9D7) else Color(0xFFFFEBEE),
-                                        RoundedCornerShape(20.dp)
-                                    ),
-                                shape = RoundedCornerShape(20.dp),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = if (esValido) Color.Transparent else Color.Red,
-                                    unfocusedIndicatorColor = if (esValido) Color.Transparent else Color.Red,
-                                    errorIndicatorColor = Color.Red
-                                ),
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = if (esValido) Icons.Default.CheckCircle else Icons.Default.Error,
-                                        contentDescription = null,
-                                        tint = if (esValido) Color(0xFF4CAF50) else Color.Red,
-                                        modifier = Modifier.size(30.dp)
-                                    )
-                                },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                                singleLine = true
-                            )
-
-                            Spacer(modifier = Modifier.height(25.dp))
-
-                            // Botón de Enviar
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        if (viewModel.ejecutarValidacionFinal()) {
-                                            snackbarHostState.showSnackbar("Enviando código a $email")
-                                        } else {
-                                            snackbarHostState.showSnackbar("Error: Correo inválido")
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth().height(60.dp),
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
-                            ) {
-                                Text("Enviar Código", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { viewModel.onPasswordChanged(it) },
+                            label = { Text("Contraseña Nueva") },
+                            modifier = Modifier.fillMaxWidth().background(Color(0xFFF7E9D7), RoundedCornerShape(20.dp)),
+                            shape = RoundedCornerShape(20.dp),
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff, null)
+                                }
                             }
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        OutlinedTextField(
+                            value = confirmPassword,
+                            onValueChange = { viewModel.onConfirmPasswordChanged(it) },
+                            label = { Text("Confirmar Contraseña") },
+                            modifier = Modifier.fillMaxWidth().background(Color(0xFFF7E9D7), RoundedCornerShape(20.dp)),
+                            shape = RoundedCornerShape(20.dp),
+                            visualTransformation = PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        )
+
+                        Spacer(modifier = Modifier.height(25.dp))
+
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    if (viewModel.actualizarContrasena()) {
+                                        // El dialogo se encarga
+                                    } else {
+                                        snackbarHostState.showSnackbar("Las contraseñas no coinciden o están vacías")
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().height(60.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
+                        ) {
+                            Text("Guardar Cambios", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
                     }
-
-                    // Espacio extra al fondo para que el scroll respire
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

@@ -46,6 +46,18 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindHistoriaFelizRepository(
+        historiaFelizRepositoryImpl: HistoriaFelizRepositoryImpl
+    ): HistoriaFelizRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAdoptionRepository(
+        adoptionRepositoryImpl: AdoptionRepositoryImpl
+    ): AdoptionRepository
+
+    @Binds
+    @Singleton
     abstract fun bindAIService(
         aiServiceImpl: AIServiceImpl
     ): AIService

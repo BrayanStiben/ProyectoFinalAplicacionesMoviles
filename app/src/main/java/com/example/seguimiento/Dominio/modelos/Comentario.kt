@@ -6,5 +6,6 @@ data class Comentario(
     val autorId: String,
     val autorNombre: String,
     val contenido: String,
-    val fecha: Long = System.currentTimeMillis()
+    val fecha: Long = System.currentTimeMillis(),
+    val parentId: String? = null // Si es null es un comentario principal, si tiene ID es una respuesta
 )

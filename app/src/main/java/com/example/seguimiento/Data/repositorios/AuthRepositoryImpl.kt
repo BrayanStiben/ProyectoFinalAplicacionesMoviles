@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
@@ -16,6 +17,8 @@ class AuthRepositoryImpl @Inject constructor(
 
     private val _currentUser = MutableStateFlow<User?>(null)
     override val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+    
+    private var currentVerificationCode: String? = null
 
     override suspend fun login(email: String, password: String): Result<User> {
         val user = userRepository.login(email, password)
@@ -37,7 +40,16 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun recoverPassword(email: String): Result<Unit> {
-        // Simulación de envío de correo
         return Result.success(Unit)
+    }
+
+    override fun generateVerificationCode(): String {
+        val code = Random.nextInt(1000, 9999).toString()
+        currentVerificationCode = code
+        return code
+    }
+
+    override fun getVerificationCode(): String? {
+        return currentVerificationCode
     }
 }

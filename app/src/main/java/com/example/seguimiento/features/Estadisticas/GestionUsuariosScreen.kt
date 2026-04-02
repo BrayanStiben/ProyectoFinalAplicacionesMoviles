@@ -102,7 +102,7 @@ fun GestionUsuariosScreen(
                     UsuarioCardDetallada(
                         user = user,
                         onBanClick = { userParaBanear = it },
-                        onUnbanClick = { viewModel.desbanearUsuario(it.id) }
+                        onUnbanClick = { viewModel.desbanearUsuario(user.id) }
                     )
                 }
                 Spacer(modifier = Modifier.height(50.dp))
@@ -130,7 +130,9 @@ fun GestionUsuariosScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.banearUsuario(userParaBanear!!.id, motivoBaneo)
+                        userParaBanear?.let {
+                            viewModel.banearUsuario(it.id, motivoBaneo)
+                        }
                         userParaBanear = null
                         motivoBaneo = ""
                     },
@@ -154,6 +156,9 @@ fun UsuarioCardDetallada(
     onBanClick: (User) -> Unit,
     onUnbanClick: (User) -> Unit
 ) {
+    val ColorVivoNaranja = Color(0xFFFF6D00)
+    val ColorVivoVerde = Color(0xFF00C853)
+
     Card(
         modifier = Modifier.fillMaxWidth().shadow(6.dp, RoundedCornerShape(20.dp)),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
@@ -175,19 +180,19 @@ fun UsuarioCardDetallada(
                     Spacer(Modifier.height(4.dp))
                     
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.LocationOn, null, tint = Color(0xFFFF6D00), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.LocationOn, null, tint = ColorVivoNaranja, modifier = Modifier.size(16.dp))
                         Text(
                             text = user.city.ifEmpty { "Ubicación no definida" },
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF6D00)
+                            color = ColorVivoNaranja
                         )
                     }
                 }
                 
                 Column(horizontalAlignment = Alignment.End) {
                     Surface(
-                        color = if(user.role.name == "ADMIN") Color(0xFF0091EA) else Color(0xFF00C853),
+                        color = if(user.role.name == "ADMIN") Color(0xFF0091EA) else ColorVivoVerde,
                         shape = RoundedCornerShape(10.dp)
                     ) {
                         Text(

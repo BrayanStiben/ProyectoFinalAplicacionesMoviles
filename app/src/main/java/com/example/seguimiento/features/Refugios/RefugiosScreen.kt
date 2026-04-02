@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
+import com.example.seguimiento.features.home.BottomNav
 
 // --- COLORES ---
 val FondoCard = Color(0xFFFDF7E7)
@@ -35,6 +35,7 @@ fun RefugiosScreen(
     viewModel: RefugioViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
+    onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
     onNavigateToRegistroMascota: () -> Unit = {}
 ) {
@@ -53,14 +54,11 @@ fun RefugiosScreen(
             containerColor = Color.Transparent,
             bottomBar = {
                 BottomNav(
-                    selectedItem = 0,
-                    onItemSelected = { index ->
-                        when(index) {
-                            0 -> onNavigateToHome()
-                            1 -> onNavigateToFiltros()
-                            3 -> onNavigateToProfile()
-                        }
-                    }
+                    selectedItem = -1, // Ninguno seleccionado en la barra base
+                    onNavigateToHome = onNavigateToHome,
+                    onNavigateToFiltros = onNavigateToFiltros,
+                    onNavigateToFavoritos = onNavigateToFavoritos,
+                    onNavigateToProfile = onNavigateToProfile
                 )
             },
             floatingActionButton = {
@@ -133,34 +131,6 @@ fun RefugiosScreen(
 
                 item { Spacer(Modifier.height(40.dp)) }
             }
-        }
-    }
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val NaranjaApp = Color(0xFFE67E22)
-    NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
-        items.forEach { (label, icon, index) ->
-            NavigationBarItem(
-                icon = { Icon(icon, null) },
-                label = { Text(label, fontSize = 10.sp) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
-            )
         }
     }
 }

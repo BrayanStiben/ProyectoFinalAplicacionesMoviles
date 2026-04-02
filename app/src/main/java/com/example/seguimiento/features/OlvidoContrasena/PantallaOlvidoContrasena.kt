@@ -30,15 +30,49 @@ import kotlinx.coroutines.launch
 @Composable
 fun OlvidoContrasenaScreen(
     viewModel: OlvidoContrasenaViewModel = hiltViewModel(),
-    onNavigateToCode: () -> Unit = {}
+    onNavigateToCode: (String) -> Unit = {}
 ) {
     val email by viewModel.email.collectAsState()
     val esValido by viewModel.esEmailValido.collectAsState()
+    val codigoGenerado by viewModel.codigoGenerado.collectAsState()
+    
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // Pop-up con el código generado
+    if (codigoGenerado != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.limpiarCodigo() },
+            confirmButton = {
+                Button(
+                    onClick = { 
+                        val cod = codigoGenerado
+                        viewModel.limpiarCodigo()
+                        onNavigateToCode(email) 
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
+                ) {
+                    Text("Entendido", color = Color.White)
+                }
+            },
+            title = { Text("Código de Verificación", fontWeight = FontWeight.Bold) },
+            text = { 
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Tu código para restablecer la contraseña es:", textAlign = TextAlign.Center)
+                    Text(
+                        text = codigoGenerado!!, 
+                        fontSize = 32.sp, 
+                        fontWeight = FontWeight.ExtraBold, 
+                        color = Color(0xFFE69160),
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                }
+            },
+            shape = RoundedCornerShape(24.dp)
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // FONDO DE IMAGEN
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -61,22 +95,17 @@ fun OlvidoContrasenaScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // LOGO - Grande y centrado
                     Image(
                         painter = painterResource(id = R.drawable.petadopticono),
                         contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(350.dp) // Tamaño prominente
-                            .padding(top = 20.dp)
+                        modifier = Modifier.size(350.dp).padding(top = 20.dp)
                     )
 
-                    // TARJETA DE FORMULARIO - Elevada con offset negativo
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 24.dp)
                             .fillMaxWidth()
-                            .offset(y = (-80).dp), // AQUÍ SE SUBE LA CAJA
+                            .offset(y = (-80).dp),
                         shape = RoundedCornerShape(40.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
                         elevation = CardDefaults.cardElevation(15.dp)
@@ -85,7 +114,6 @@ fun OlvidoContrasenaScreen(
                             modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Icono de Candado
                             Icon(
                                 painter = painterResource(id = android.R.drawable.ic_lock_idle_lock),
                                 contentDescription = null,
@@ -101,14 +129,13 @@ fun OlvidoContrasenaScreen(
                             )
 
                             Text(
-                                text = "Por favor ingrese su correo electrónico para recibir un código de verificación.",
+                                text = "Ingresa tu correo y te mostraremos un código de seguridad.",
                                 textAlign = TextAlign.Center,
                                 fontSize = 15.sp,
                                 color = Color.Gray,
                                 modifier = Modifier.padding(vertical = 15.dp)
                             )
 
-                            // Input Email con fondo condicional
                             OutlinedTextField(
                                 value = email,
                                 onValueChange = { viewModel.onEmailChanged(it) },
@@ -142,12 +169,11 @@ fun OlvidoContrasenaScreen(
 
                             Spacer(modifier = Modifier.height(25.dp))
 
-                            // Botón de Enviar
                             Button(
                                 onClick = {
                                     scope.launch {
                                         if (viewModel.ejecutarValidacionFinal()) {
-                                            onNavigateToCode()
+                                            viewModel.generarCodigo()
                                         } else {
                                             snackbarHostState.showSnackbar("Error: Correo inválido")
                                         }
@@ -157,13 +183,10 @@ fun OlvidoContrasenaScreen(
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                             ) {
-                                Text("Enviar Código", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                Text("Obtener Código", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
-
-                    // Espacio extra al fondo para que el scroll respire
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

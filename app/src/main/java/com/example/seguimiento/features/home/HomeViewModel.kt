@@ -17,12 +17,18 @@ class HomeViewModel @Inject constructor(
     private val mascotaRepository: MascotaRepository
 ) : ViewModel() {
 
+    val currentUser = authRepository.currentUser
+
     val userName: StateFlow<String> = authRepository.currentUser
         .map { user -> user?.name ?: "Usuario" }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Usuario")
 
+    val userProfilePicture: StateFlow<String?> = authRepository.currentUser
+        .map { user -> user?.profilePictureUrl }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     private val _notificaciones = MutableStateFlow<List<Notificacion>>(listOf(
-        Notificacion("1", "¡Bienvenido!", "Gracias por unirte a PetAdopta."),
+        Notificacion("1", "¡Bienvenido!", "Gracias por unirte a PetAdopt."),
         Notificacion("2", "Nueva mascota cerca", "Un nuevo perrito ha sido publicado en tu zona.", tipo = "ZONA_NUEVA")
     ))
     val notificaciones = _notificaciones.asStateFlow()
@@ -36,7 +42,8 @@ class HomeViewModel @Inject constructor(
     ) { lista, categoria ->
         lista.filter { mascota ->
             val esVisible = mascota.estado == PublicacionEstado.VERIFICADA || 
-                          mascota.estado == PublicacionEstado.RESUELTA
+                          mascota.estado == PublicacionEstado.RESUELTA ||
+                          mascota.estado == PublicacionEstado.ADOPTADA
             val coincideCategoria = categoria == null || mascota.tipo.equals(categoria, ignoreCase = true)
             esVisible && coincideCategoria
         }
@@ -57,7 +64,8 @@ class HomeViewModel @Inject constructor(
         _filtroCategoria.value = categoria
     }
 
-    fun votarImportante(id: String) {
-        mascotaRepository.votarImportante(id)
+    fun toggleLike(id: String) {
+        val userId = currentUser.value?.id ?: return
+        mascotaRepository.toggleLike(id, userId)
     }
 }

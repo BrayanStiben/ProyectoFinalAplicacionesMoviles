@@ -10,23 +10,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -50,7 +47,6 @@ fun StepFourScreen(
     onNavigateToProfile: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    var showTermsAndOptionsPopUp by remember { mutableStateOf(false) }
     var showSignaturePad by remember { mutableStateOf(false) }
 
     // Lanzadores para selección de imágenes
@@ -67,7 +63,6 @@ fun StepFourScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Fondo de pantalla
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -116,7 +111,6 @@ fun StepFourScreen(
                             
                             Text("Formalización Final", fontSize = 22.sp, fontWeight = FontWeight.Black, color = CafeApp)
 
-                            // SECCIÓN 1: CARGA DE ARCHIVOS (CORREGIDO)
                             SectionHeaderLocal(Icons.Default.CloudUpload, "Documentación")
                             FilaCargaArchivoLocal("Foto DNI / Cédula", vm.state.idPhotoUri != null) {
                                 launcherDni.launch("image/*")
@@ -127,7 +121,6 @@ fun StepFourScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // SECCIÓN 2: REFERENCIAS
                             SectionHeaderLocal(Icons.Default.Groups, "Referencias")
                             CustomInputLocalFour("Nombre de Referencia", vm.state.referenceName) { 
                                 vm.updateState(vm.state.copy(referenceName = it)) 
@@ -138,88 +131,66 @@ fun StepFourScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // SECCIÓN 3: FIRMA
-                            SectionHeaderLocal(Icons.Default.Draw, "Firma Digital")
+                            SectionHeaderLocal(Icons.Default.Gavel, "Términos y Condiciones")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = vm.state.termsAccepted,
+                                    onCheckedChange = { vm.updateState(vm.state.copy(termsAccepted = it)) },
+                                    colors = CheckboxDefaults.colors(checkedColor = NaranjaApp)
+                                )
+                                Text(
+                                    "Acepto los términos de adopción responsable.",
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // BOTÓN DE FIRMA DIGITAL DENTRO DE LA SECCIÓN DE TÉRMINOS
                             Button(
-                                onClick = { showTermsAndOptionsPopUp = true },
+                                onClick = { showSignaturePad = true },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (vm.state.termsAccepted || vm.state.signatureBitmap != null) VerdeFinal.copy(alpha = 0.1f) else Color.LightGray.copy(alpha = 0.2f)
+                                    containerColor = if (vm.state.signatureBitmap != null) VerdeFinal.copy(alpha = 0.1f) else Color.LightGray.copy(alpha = 0.2f)
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                val textoFirma = if (vm.state.signatureBitmap != null || vm.state.termsAccepted) "FIRMA/ACUERDO LISTO ✓" else "FIRMAR O ACEPTAR"
-                                Text(textoFirma, color = if(vm.state.signatureBitmap != null || vm.state.termsAccepted) VerdeFinal else CafeApp, fontWeight = FontWeight.Bold)
+                                val textoFirma = if (vm.state.signatureBitmap != null) "FIRMA DIGITAL REGISTRADA ✓" else "FIRMA DIGITAL"
+                                Icon(
+                                    Icons.Default.Draw, 
+                                    contentDescription = null, 
+                                    tint = if(vm.state.signatureBitmap != null) VerdeFinal else CafeApp,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = textoFirma, 
+                                    color = if(vm.state.signatureBitmap != null) VerdeFinal else CafeApp, 
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(32.dp))
 
-                            // INDICADOR DE AVANCE
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                repeat(4) { index ->
-                                    Surface(
-                                        modifier = Modifier.size(30.dp).padding(4.dp),
-                                        shape = CircleShape,
-                                        color = NaranjaApp 
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text("${index + 1}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                        }
-                                    }
-                                    if (index < 3) {
-                                        Box(modifier = Modifier.width(15.dp).height(2.dp).background(NaranjaApp))
-                                    }
-                                }
-                            }
-
-                            // BOTÓN FINALIZAR
                             Button(
-                                onClick = { vm.submitForm(); onFinish() },
+                                onClick = { 
+                                    vm.submitForm {
+                                        onFinish() 
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = VerdeFinal),
                                 shape = RoundedCornerShape(16.dp),
-                                enabled = vm.state.termsAccepted || vm.state.signatureBitmap != null
+                                enabled = vm.state.termsAccepted && vm.state.idPhotoUri != null && vm.state.signatureBitmap != null
                             ) {
-                                Text("FINALIZAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                                Text("ENVIAR SOLICITUD", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
                             }
                         }
                     }
                 }
             }
         }
-    }
-
-    // POP-UPS Y DIÁLOGOS
-    if (showTermsAndOptionsPopUp) {
-        AlertDialog(
-            onDismissRequest = { showTermsAndOptionsPopUp = false },
-            title = { Text("Términos y Condiciones", fontWeight = FontWeight.Black, color = CafeApp) },
-            text = { 
-                Text("Al proceder, usted confirma que toda la información proporcionada es verídica y se compromete al cuidado responsable de la mascota. Prohibida su venta, subasta o maltrato.")
-            },
-            confirmButton = {
-                Button(
-                    onClick = { 
-                        vm.updateState(vm.state.copy(termsAccepted = true))
-                        showTermsAndOptionsPopUp = false 
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = VerdeFinal)
-                ) { Text("ACEPTO TÉRMINOS") }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { 
-                        showSignaturePad = true
-                        showTermsAndOptionsPopUp = false 
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp)
-                ) { Text("FIRMA TÁCTIL") }
-            }
-        )
     }
 
     if (showSignaturePad) {
@@ -263,6 +234,9 @@ fun StepFourScreen(
                                 drawPath(path, Color.Black, style = Stroke(width = 5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
                             }
                         }
+                        if (paths.isEmpty()) {
+                            Text("Firme aquí", modifier = Modifier.align(Alignment.Center), color = Color.LightGray, fontStyle = FontStyle.Italic)
+                        }
                     }
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -271,6 +245,7 @@ fun StepFourScreen(
                         }
                         Button(
                             onClick = { 
+                                // Simulamos captura de firma para el estado
                                 vm.updateState(vm.state.copy(signatureBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)))
                                 showSignaturePad = false 
                             },

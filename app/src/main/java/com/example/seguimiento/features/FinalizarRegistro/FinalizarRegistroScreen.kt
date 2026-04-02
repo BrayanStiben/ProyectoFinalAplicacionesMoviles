@@ -1,8 +1,12 @@
 package com.example.seguimiento.features.FinalizarRegistro
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -23,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.seguimiento.R
 
 // Paleta de colores oficial
@@ -43,11 +48,18 @@ fun FinalizarRegistroScreen(
     val muniSel by vm.municipioSeleccionado.collectAsState()
     val aceptado by vm.terminosAceptados.collectAsState()
     val estaCargando by vm.estaCargando.collectAsState()
+    val fotoSeleccionada by vm.fotoPerfil.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
 
+    // Launcher para la galería
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { vm.onFotoChanged(it.toString()) }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // IMAGEN DE FONDO
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -55,7 +67,6 @@ fun FinalizarRegistroScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Overlay oscuro para contraste
         Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f)))
 
         Column(
@@ -67,23 +78,38 @@ fun FinalizarRegistroScreen(
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             
-            Text(
-                "¡Casi listo!",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                "Finaliza tu perfil para empezar",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
+            Text("¡Casi listo!", fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color.White, textAlign = TextAlign.Center)
+            Text("Finaliza tu perfil para empezar", fontSize = 16.sp, color = Color.White.copy(alpha = 0.8f), textAlign = TextAlign.Center)
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // CONTENEDOR ENCERRADO
+            // SELECTOR DE FOTO DE PERFIL
+            Box(
+                modifier = Modifier
+                    .size(130.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .border(3.dp, Color.White, CircleShape)
+                    .clickable { launcher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                if (fotoSeleccionada.isNotEmpty()) {
+                    AsyncImage(
+                        model = fotoSeleccionada,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.AddAPhoto, null, tint = Color.White, modifier = Modifier.size(40.dp))
+                        Text("Subir foto", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp),
@@ -91,18 +117,13 @@ fun FinalizarRegistroScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
-                    
                     if (estaCargando) {
-                        LinearProgressIndicator(
-                            modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)),
-                            color = NaranjaPrincipal,
-                            trackColor = NaranjaPrincipal.copy(alpha = 0.1f)
-                        )
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)), color = NaranjaPrincipal)
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
                     ItemEstadoCard("Estado del perfil", "Completado", Icons.Default.VerifiedUser)
-                    ItemEstadoCard("Foto de perfil", "Subida con éxito", Icons.Default.PhotoCamera)
+                    ItemEstadoCard("Foto de perfil", if(fotoSeleccionada.isNotEmpty()) "Foto seleccionada" else "Pendiente", Icons.Default.PhotoCamera)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -111,22 +132,11 @@ fun FinalizarRegistroScreen(
                     SelectorModerno("Municipio / Ciudad", muniSel, municipios, Icons.Default.LocationOn, deptoSel.isNotEmpty()) { vm.onMunicipioChanged(it) }
 
                     Spacer(modifier = Modifier.height(20.dp))
-
                     CardTerminosModerno(aceptado = aceptado) { showDialog = true }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        BotonIconoAux("Reportar", Icons.Default.Report, RojoDenuncia, Modifier.weight(1f)) {}
-                        BotonIconoAux("Contrato", Icons.Default.FileDownload, Color(0xFF2980B9), Modifier.weight(1f)) {}
-                    }
-
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = { 
-                            vm.finalizarRegistro { onRegistrationFinished() }
-                        },
+                        onClick = { vm.finalizarRegistro { onRegistrationFinished() } },
                         modifier = Modifier.fillMaxWidth().height(58.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CafeApp),
                         shape = RoundedCornerShape(18.dp),
@@ -141,13 +151,7 @@ fun FinalizarRegistroScreen(
     }
 
     if (showDialog) {
-        VentanaTerminosDetallada(
-            onDismiss = { showDialog = false },
-            onConfirm = {
-                vm.setTerminosAceptados(true)
-                showDialog = false
-            }
-        )
+        VentanaTerminosDetallada(onDismiss = { showDialog = false }, onConfirm = { vm.setTerminosAceptados(true); showDialog = false })
     }
 }
 
