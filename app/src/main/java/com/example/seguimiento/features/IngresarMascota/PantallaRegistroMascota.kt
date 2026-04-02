@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.seguimiento.R
 import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.BottomNav
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +66,7 @@ fun PantallaRegistroMascota(
                         Text(if (mascotaId == null) "🐱" else "✨", fontSize = 22.sp)
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = naranjaApp)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = naranjaApp)
             )
         },
         bottomBar = {
@@ -109,8 +109,6 @@ fun PantallaRegistroMascota(
                         if (estado.fotoUri != null) {
                             AsyncImage(model = estado.fotoUri, contentDescription = null, contentScale = ContentScale.Crop)
                         } else if (mascotaId != null && estado.nombre.isNotEmpty()) {
-                            // Si estamos editando y no hay Uri local, intentamos mostrar la de red si existe en el ViewModel (aunque el estado no la tenga directamente para edición)
-                            // En un caso real, el ViewModel expondría la URL original. Por simplicidad, si el usuario no elige nueva foto, se mantiene la anterior en guardarMascota.
                             Text("Foto actual mantenida", color = Color.Gray)
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -158,8 +156,8 @@ fun PantallaRegistroMascota(
                             label = "Raza",
                             seleccionado = estado.raza,
                             opciones = estado.listaRazas,
-                            icon = Icons.Default.List,
-                            enabled = estado.tipo.isNotEmpty() && (estado.listaRazas.isNotEmpty() || estado.tipo == "Otro")
+                            icon = Icons.AutoMirrored.Filled.List,
+                            enabled = estado.tipo.isNotEmpty() && estado.listaRazas.isNotEmpty()
                         ) { viewModel.cambiarRaza(it) }
                     }
 
@@ -206,11 +204,9 @@ fun PantallaRegistroMascota(
 
                     if (estado.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = naranjaApp)
-
                     } else {
                         Button(
                             onClick = {
-
                                 viewModel.guardarMascota {
                                     onNavigateBack()
                                 }
@@ -223,6 +219,84 @@ fun PantallaRegistroMascota(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun Etiqueta(texto: String) {
+    Text(
+        text = texto,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color(0xFF5D2E17),
+        modifier = Modifier.padding(top = 8.dp)
+    )
+}
+
+@Composable
+fun CampoEntrada(value: String, placeholder: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(placeholder) },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(0xFFE67E22),
+            unfocusedBorderColor = Color.LightGray
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectorMascota(
+    label: String,
+    seleccionado: String,
+    opciones: List<String>,
+    icon: ImageVector,
+    enabled: Boolean = true,
+    onSeleccion: (String) -> Unit
+) {
+    var expandido by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expandido && enabled,
+        onExpandedChange = { if (enabled) expandido = !expandido },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = seleccionado,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            leadingIcon = { Icon(icon, null, tint = Color(0xFFE67E22)) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
+            enabled = enabled,
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = enabled).fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFE67E22),
+                unfocusedBorderColor = Color.LightGray,
+                disabledBorderColor = Color.LightGray.copy(alpha = 0.5f)
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expandido && enabled,
+            onDismissRequest = { expandido = false }
+        ) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(
+                    text = { Text(opcion) },
+                    onClick = {
+                        onSeleccion(opcion)
+                        expandido = false
+                    }
+                )
             }
         }
     }

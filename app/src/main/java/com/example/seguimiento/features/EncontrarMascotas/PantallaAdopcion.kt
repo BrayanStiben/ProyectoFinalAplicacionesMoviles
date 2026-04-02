@@ -2,6 +2,9 @@ package com.example.seguimiento.features.EncontrarMascotas
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -23,6 +27,9 @@ import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.R
 import com.example.seguimiento.core.navigation.AdminBottomBar
 
+val NaranjaApp = Color(0xFFE67E22)
+val CafeApp = Color(0xFF5D2E17)
+
 @Composable
 fun PantallaAdopcion(
     viewModel: AdopcionViewModel = hiltViewModel(),
@@ -33,106 +40,67 @@ fun PantallaAdopcion(
     onLogout: () -> Unit
 ) {
     val mascotas by viewModel.listaMascotas.collectAsState()
-    var indiceActual by remember { mutableStateOf(0) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.fondo),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Scaffold(
-            containerColor = Color.Transparent,
-            bottomBar = {
-                AdminBottomBar(
-                    currentRoute = "encontrar_mascotas",
-                    onNavigateToEstadisticas = onNavigateToEstadisticas,
-                    onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
-                    onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
-                    onLogout = onLogout
-                )
+    Scaffold(
+        bottomBar = {
+            AdminBottomBar(
+                currentRoute = "encontrar_mascotas",
+                onNavigateToEstadisticas = onNavigateToEstadisticas,
+                onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
+                onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
+                onLogout = onLogout
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(Color(0xFFFDFBFA))
+        ) {
+            // --- HEADER ESTILO HOME ---
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
+            ) {
+                Column {
+                    Text(
+                        "Gestión de Mascotas 🐾",
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Administra todas las publicaciones",
+                        color = Color.White.copy(0.9f),
+                        fontSize = 15.sp
+                    )
+                }
             }
-        ) { paddingValues ->
+
             if (mascotas.isNotEmpty()) {
-                val mascotaActual = mascotas[indiceActual.coerceIn(0, mascotas.size - 1)]
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(1), // Cambiado a 1 para tarjetas más legibles con botones
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    // TÍTULO SECCIÓN
-                    Surface(
-                        modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
-                        color = Color.White.copy(alpha = 0.9f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            "GESTIÓN DE MASCOTAS PUBLICADAS",
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 14.sp,
-                            color = Color(0xFFD37506)
-                        )
-                    }
-
-                    // TARJETA CENTRAL
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp, vertical = 10.dp)
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    items(mascotas) { mascota ->
                         TarjetaMascotaAdmin(
-                            mascota = mascotaActual,
-                            onEliminar = { 
-                                viewModel.eliminarMascota(mascotaActual.id)
-                                if (indiceActual >= mascotas.size - 1) indiceActual = 0
-                            },
-                            onEditar = { onNavigateToEditarMascota(mascotaActual.id) }
+                            mascota = mascota,
+                            onEliminar = { viewModel.eliminarMascota(mascota.id) },
+                            onEditar = { onNavigateToEditarMascota(mascota.id) }
                         )
-                    }
-
-                    // CONTROLES DE NAVEGACIÓN (Siguiente Mascota)
-                    Row(
-                        modifier = Modifier
-                            .padding(bottom = 30.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = { indiceActual = if (indiceActual > 0) indiceActual - 1 else mascotas.size - 1 },
-                            modifier = Modifier.size(50.dp).background(Color.White.copy(alpha = 0.8f), CircleShape)
-                        ) {
-                            Icon(Icons.Default.ChevronLeft, "Anterior")
-                        }
-                        
-                        Spacer(Modifier.width(20.dp))
-                        
-                        Text(
-                            text = "${indiceActual + 1} / ${mascotas.size}",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(20.dp)).padding(horizontal = 12.dp, vertical = 4.dp)
-                        )
-
-                        Spacer(Modifier.width(20.dp))
-
-                        IconButton(
-                            onClick = { indiceActual = (indiceActual + 1) % mascotas.size },
-                            modifier = Modifier.size(50.dp).background(Color.White.copy(alpha = 0.8f), CircleShape)
-                        ) {
-                            Icon(Icons.Default.ChevronRight, "Siguiente")
-                        }
                     }
                 }
             } else {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay mascotas para gestionar", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("No hay mascotas para gestionar", color = Color.Gray, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -145,82 +113,138 @@ fun TarjetaMascotaAdmin(
     onEliminar: () -> Unit,
     onEditar: () -> Unit
 ) {
+    var showConfirmDelete by remember { mutableStateOf(false) }
+
+    if (showConfirmDelete) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDelete = false },
+            title = { Text("¿Eliminar mascota?") },
+            text = { Text("Esta acción no se puede deshacer. Se borrará a ${mascota.nombre} del sistema.") },
+            confirmButton = {
+                TextButton(onClick = { 
+                    onEliminar()
+                    showConfirmDelete = false
+                }) {
+                    Text("ELIMINAR", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDelete = false }) {
+                    Text("CANCELAR")
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(8.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Box {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .height(IntrinsicSize.Min)
+        ) {
+            // Imagen a la izquierda
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
                 AsyncImage(
                     model = mascota.imagenUrl,
                     contentDescription = mascota.nombre,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .clip(RoundedCornerShape(20.dp)),
-                    contentScale = ContentScale.Crop
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.petadopticono)
                 )
                 
-                if (mascota.estado == PublicacionEstado.ADOPTADA) {
-                    Surface(
-                        modifier = Modifier.align(Alignment.TopEnd).padding(12.dp),
-                        color = Color(0xFF4CAF50),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("ADOPTADA", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                // Badge de estado
+                val (colorEstado, textoEstado) = when(mascota.estado) {
+                    PublicacionEstado.ADOPTADA -> Color(0xFF4CAF50) to "ADOPTADA"
+                    PublicacionEstado.PENDIENTE -> Color(0xFFFFA000) to "PENDIENTE"
+                    PublicacionEstado.VERIFICADA -> Color(0xFF2196F3) to "VERIFICADA"
+                    else -> Color.Gray to mascota.estado.name
+                }
+                
+                Surface(
+                    modifier = Modifier.align(Alignment.TopStart).padding(4.dp),
+                    color = colorEstado,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        textoEstado,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                        color = Color.White,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Información y botones a la derecha
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = mascota.nombre,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CafeApp,
+                        maxLines = 1
+                    )
+                    Text(
+                        text = "${mascota.tipo} • ${mascota.edad}",
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, null, tint = NaranjaApp, modifier = Modifier.size(12.dp))
+                        Text(text = mascota.ubicacion, fontSize = 12.sp, color = Color.Gray, maxLines = 1)
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = mascota.nombre,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Black,
-                color = Color(0xFF5D2E17)
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Pets, null, tint = Color(0xFFF28B31), modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(text = "${mascota.tipo} • ${mascota.edad}", color = Color.Gray, fontSize = 14.sp)
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                Icon(Icons.Default.LocationOn, null, tint = Color(0xFFF28B31), modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(text = mascota.ubicacion, color = Color.Gray, fontSize = 14.sp)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = onEditar,
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0091EA)),
-                    shape = RoundedCornerShape(12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("EDITAR", fontWeight = FontWeight.Bold)
-                }
+                    FilledTonalButton(
+                        onClick = onEditar,
+                        modifier = Modifier.weight(1f).height(36.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(0xFFE3F2FD),
+                            contentColor = Color(0xFF1976D2)
+                        )
+                    ) {
+                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Editar", fontSize = 12.sp)
+                    }
 
-                Button(
-                    onClick = onEliminar,
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("ELIMINAR", fontWeight = FontWeight.Bold)
+                    FilledTonalButton(
+                        onClick = { showConfirmDelete = true },
+                        modifier = Modifier.weight(1f).height(36.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(0xFFFFEBEE),
+                            contentColor = Color(0xFFD32F2F)
+                        )
+                    ) {
+                        Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Borrar", fontSize = 12.sp)
+                    }
                 }
             }
         }
