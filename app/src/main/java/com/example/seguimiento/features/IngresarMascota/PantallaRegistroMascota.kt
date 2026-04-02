@@ -208,7 +208,8 @@ fun PantallaRegistroMascota(
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally), color = naranjaApp)
                     } else {
                         Button(
-                            onClick = { 
+                            onClick = {
+
                                 viewModel.guardarMascota {
                                     onNavigateBack()
                                 }
