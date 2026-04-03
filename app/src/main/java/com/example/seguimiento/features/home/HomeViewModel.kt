@@ -2,19 +2,27 @@ package com.example.seguimiento.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.seguimiento.Dominio.modelos.Logro
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.Notificacion
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
+import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val mascotaRepository: MascotaRepository
+    private val mascotaRepository: MascotaRepository,
+    private val notificacionRepository: NotificacionRepository,
+    private val logrosRepository: LogrosRepository
 ) : ViewModel() {
 
     val currentUser = authRepository.currentUser
@@ -27,11 +35,16 @@ class HomeViewModel @Inject constructor(
         .map { user -> user?.profilePictureUrl }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    private val _notificaciones = MutableStateFlow<List<Notificacion>>(listOf(
-        Notificacion("1", "¡Bienvenido!", "Gracias por unirte a PetAdopt."),
-        Notificacion("2", "Nueva mascota cerca", "Un nuevo perrito ha sido publicado en tu zona.", tipo = "ZONA_NUEVA")
-    ))
-    val notificaciones = _notificaciones.asStateFlow()
+    val notificaciones: StateFlow<List<Notificacion>> = notificacionRepository.notificaciones
+
+    val todosLosLogros: List<Logro> = logrosRepository.todosLosLogros
+    
+    val logrosObtenidos: StateFlow<List<String>> = authRepository.currentUser
+        .flatMapLatest { user ->
+            if (user == null) flowOf(emptyList())
+            else logrosRepository.getLogrosUsuario(user.id)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _filtroCategoria = MutableStateFlow<String?>(null)
     val filtroCategoria = _filtroCategoria.asStateFlow()
@@ -66,6 +79,27 @@ class HomeViewModel @Inject constructor(
 
     fun toggleLike(id: String) {
         val userId = currentUser.value?.id ?: return
+        val mascota = mascotaRepository.getById(id)
+        
         mascotaRepository.toggleLike(id, userId)
+        
+        // Notificar al autor de la mascota (si no es el mismo usuario)
+        if (mascota != null && mascota.autorId != userId) {
+            notificacionRepository.addNotificacion(
+                titulo = "¡A alguien le gusta tu mascota! ❤️",
+                mensaje = "A un usuario le interesa ${mascota.nombre}. ¡Sigue así!",
+                tipo = "POST_VOTADO",
+                userId = mascota.autorId
+            )
+        }
+        
+        // Lógica de logro: 10 likes
+        viewModelScope.launch {
+            val allMascotas = mascotaRepository.mascotas.value
+            val misLikes = allMascotas.count { it.likerIds.contains(userId) }
+            if (misLikes >= 10) {
+                logrosRepository.ganarLogro(userId, "com_heart")
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ import com.example.seguimiento.Dominio.modelos.AdoptionRequest
 import com.example.seguimiento.Dominio.modelos.AdoptionRequestStatus
 import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ import javax.inject.Inject
 class AdoptionViewModel @Inject constructor(
     private val adoptionRepository: AdoptionRepository,
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
     // Estado único para todo el formulario compartido entre pasos
     var state by mutableStateOf(AdoptionFormState())
@@ -41,7 +43,7 @@ class AdoptionViewModel @Inject constructor(
         )
     }
 
-    fun submitForm(onSuccess: () -> Unit) {
+    fun submitForm(onSuccess: (String) -> Unit) {
         viewModelScope.launch {
             val authUser = authRepository.currentUser.value
             val user = authUser?.let { userRepository.findById(it.id) }
@@ -54,8 +56,9 @@ class AdoptionViewModel @Inject constructor(
                 encodedUserSignature = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
             }
 
+            val requestId = UUID.randomUUID().toString()
             val request = AdoptionRequest(
-                id = UUID.randomUUID().toString(),
+                id = requestId,
                 mascotaId = state.petId,
                 userId = user?.id ?: "anonimo",
                 userName = user?.name ?: "Usuario",
@@ -82,10 +85,18 @@ class AdoptionViewModel @Inject constructor(
             )
             adoptionRepository.submitRequest(request)
             
+            // NOTIFICACIÓN: Solicitud enviada
+            notificacionRepository.addNotificacion(
+                titulo = "Solicitud enviada 📩",
+                mensaje = "Tu solicitud para adoptar a ${state.petName} ha sido recibida y está en proceso de revisión.",
+                tipo = "INFO",
+                userId = user?.id ?: ""
+            )
+            
             // Limpiar el estado para el siguiente uso
             state = AdoptionFormState()
             
-            onSuccess()
+            onSuccess(requestId)
         }
     }
 }

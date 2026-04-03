@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -22,14 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.seguimiento.Dominio.modelos.Refugio
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
 
-// --- COLORES ---
-val FondoCard = Color(0xFFFDF7E7)
-val VerdeApp = Color(0xFF7CB342)
-val AzulDoc = Color(0xFF4FC3F7)
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RefugiosScreen(
     viewModel: RefugioViewModel = hiltViewModel(),
@@ -37,143 +36,147 @@ fun RefugiosScreen(
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
-    onNavigateToRegistroMascota: () -> Unit = {}
+    onNavigateToRegistroRefugio: () -> Unit = {}
 ) {
-    val listaRefugios by viewModel.refugios.collectAsState()
+    val listaRefugios by viewModel.refugiosAprobados.collectAsState()
+    val naranjaApp = Color(0xFFE67E22)
+    val cafeApp = Color(0xFF5D2E17)
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // FONDO DE IMAGEN
-        Image(
-            painter = painterResource(id = R.drawable.fondo2),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Scaffold(
-            containerColor = Color.Transparent,
-            bottomBar = {
-                BottomNav(
-                    selectedItem = -1, // Ninguno seleccionado en la barra base
-                    onNavigateToHome = onNavigateToHome,
-                    onNavigateToFiltros = onNavigateToFiltros,
-                    onNavigateToFavoritos = onNavigateToFavoritos,
-                    onNavigateToProfile = onNavigateToProfile
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { onNavigateToRegistroMascota() },
-                    containerColor = Color(0xFFE67E22),
-                    contentColor = Color.White,
-                    shape = CircleShape
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Registrar Mascota")
+    Scaffold(
+        bottomBar = {
+            BottomNav(
+                selectedItem = -1,
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToFiltros = onNavigateToFiltros,
+                onNavigateToFavoritos = onNavigateToFavoritos,
+                onNavigateToProfile = onNavigateToProfile
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToRegistroRefugio,
+                containerColor = naranjaApp,
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Registrar Refugio")
+            }
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color(0xFFFDFBFA))
+        ) {
+            // --- HEADER ---
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onNavigateToHome,
+                        modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            "Refugios Aliados 🏠",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Encuentra lugares de confianza cerca de ti",
+                            color = Color.White.copy(0.9f),
+                            fontSize = 15.sp
+                        )
+                    }
                 }
             }
-        ) { padding ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    // BOTÓN VOLVER
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                        IconButton(
-                            onClick = { onNavigateToHome() },
-                            modifier = Modifier.background(Color.White.copy(alpha = 0.5f), CircleShape)
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
+
+            if (listaRefugios.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No hay refugios verificados aún", color = Color.Gray, fontWeight = FontWeight.Bold)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(listaRefugios) { refugio ->
+                        TarjetaRefugioPublica(refugio)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TarjetaRefugioPublica(refugio: Refugio) {
+    val naranjaApp = Color(0xFFE67E22)
+    val cafeApp = Color(0xFF5D2E17)
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column {
+            AsyncImage(
+                model = refugio.imagenUrl,
+                contentDescription = refugio.nombre,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.petadopticono)
+            )
+            Column(Modifier.padding(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(refugio.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = cafeApp, modifier = Modifier.weight(1f))
+                    Surface(color = Color(0xFFE8F5E9), shape = RoundedCornerShape(8.dp)) {
+                        Row(Modifier.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Verified, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Verificado", color = Color(0xFF2E7D32), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
-
-                    // LOGO GIGANTE
-                    Image(
-                        painter = painterResource(id = R.drawable.petadopticono),
-                        contentDescription = "Logo",
-                        modifier = Modifier.fillMaxWidth().height(380.dp),
-                        contentScale = ContentScale.Fit
-                    )
-
-                    Text(
-                        "Gestión de Refugios",
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.White
-                        ),
-                        modifier = Modifier.offset(y = (-110).dp)
-                    )
                 }
-
-                // SECCIÓN VERIFICADOS
-                item {
-                    Box(modifier = Modifier.offset(y = (-100).dp)) {
-                        SeccionTitulo("Refugios Verificados")
-                    }
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.LocationOn, null, tint = naranjaApp, modifier = Modifier.size(16.dp))
+                    Text(refugio.direccion, fontSize = 14.sp, color = Color.Gray)
                 }
-                items(listaRefugios.filter { !it.esNuevo }) { refugio ->
-                    Box(modifier = Modifier.offset(y = (-100).dp)) {
-                        TarjetaRefugio(refugio, viewModel)
-                    }
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Phone, null, tint = naranjaApp, modifier = Modifier.size(16.dp))
+                    Text(refugio.telefono, fontSize = 14.sp, color = Color.Gray)
                 }
-
-                // SECCIÓN NUEVOS
-                item {
-                    Box(modifier = Modifier.offset(y = (-100).dp)) {
-                        SeccionTitulo("Nuevas Aplicaciones")
-                    }
-                }
-                items(listaRefugios.filter { it.esNuevo }) { refugio ->
-                    Box(modifier = Modifier.offset(y = (-100).dp)) {
-                        TarjetaRefugio(refugio, viewModel)
-                    }
-                }
-
-                item { Spacer(Modifier.height(40.dp)) }
-            }
-        }
-    }
-}
-
-@Composable
-fun TarjetaRefugio(refugio: Refugio, viewModel: RefugioViewModel) {
-    Card(
-        shape = RoundedCornerShape(25.dp),
-        colors = CardDefaults.cardColors(containerColor = FondoCard.copy(alpha = 0.95f)),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp)
-    ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(50.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Pets, null, tint = if (refugio.verificado) VerdeApp else Color.Gray)
-                }
-                Spacer(Modifier.width(14.dp))
-                Column {
-                    Text(refugio.nombre, fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                    Text(refugio.estado, fontSize = 13.sp, color = Color.Gray)
-                }
-            }
-            Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.End) {
-                if (!refugio.verificado) {
-                    BotonM3("Aprobar", VerdeApp) { viewModel.aprobarRefugio(refugio.id) }
-                } else {
-                    BotonM3("Ver Documentos", AzulDoc) {}
+                Spacer(Modifier.height(12.dp))
+                Text(refugio.descripcion, fontSize = 13.sp, color = Color.DarkGray, maxLines = 3)
+                
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = { /* Acción de contacto */ },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("CONTACTAR REFUGIO", fontWeight = FontWeight.Black)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SeccionTitulo(titulo: String) {
-    Text(titulo, fontWeight = FontWeight.Bold, fontSize = 19.sp, color = Color.White,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp))
-}
-
-@Composable
-fun BotonM3(texto: String, color: Color, onClick: () -> Unit) {
-    Button(onClick = onClick, colors = ButtonDefaults.buttonColors(containerColor = color),
-        shape = RoundedCornerShape(12.dp)) {
-        Text(texto, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }

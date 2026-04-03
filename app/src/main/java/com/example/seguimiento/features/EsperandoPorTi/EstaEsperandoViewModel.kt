@@ -9,6 +9,7 @@ import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -23,7 +24,8 @@ class EstaEsperandoViewModel @Inject constructor(
     private val comentarioRepository: ComentarioRepository,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val adoptionRepository: AdoptionRepository
+    private val adoptionRepository: AdoptionRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 
     private val _mascotaId = MutableStateFlow<String?>(null)
@@ -87,18 +89,42 @@ class EstaEsperandoViewModel @Inject constructor(
     fun toggleLike() {
         val currentMascotaId = _mascotaId.value ?: return
         val user = currentUser.value ?: return
+        val m = mascota.value ?: return
+        
         mascotaRepository.toggleLike(currentMascotaId, user.id)
+        
+        // NOTIFICACIÓN: Like
+        if (m.autorId != user.id) {
+            notificacionRepository.addNotificacion(
+                titulo = "¡Nuevo Like! ❤️",
+                mensaje = "A ${user.name} le gusta tu publicación de ${m.nombre}.",
+                tipo = "POST_VOTADO",
+                userId = m.autorId
+            )
+        }
     }
 
     fun cancelarSolicitud(requestId: String) {
         viewModelScope.launch {
+            val request = adoptionRepository.getById(requestId)
             adoptionRepository.deleteRequest(requestId)
+            
+            // NOTIFICACIÓN: Cancelación
+            if (request != null) {
+                notificacionRepository.addNotificacion(
+                    titulo = "Solicitud cancelada ⚠️",
+                    mensaje = "Has cancelado tu solicitud de adopción para ${request.petName}.",
+                    tipo = "INFO",
+                    userId = request.userId
+                )
+            }
         }
     }
 
     fun agregarComentario(texto: String, parentId: String? = null) {
         val currentId = _mascotaId.value ?: return
         val user = currentUser.value
+        val m = mascota.value ?: return
         viewModelScope.launch {
             val nuevoComentario = Comentario(
                 id = UUID.randomUUID().toString(),
@@ -109,6 +135,16 @@ class EstaEsperandoViewModel @Inject constructor(
                 parentId = parentId
             )
             comentarioRepository.agregarComentario(nuevoComentario)
+
+            // NOTIFICACIÓN: Comentario nuevo al dueño de la mascota
+            if (user != null && m.autorId != user.id) {
+                notificacionRepository.addNotificacion(
+                    titulo = "Nuevo comentario 💬",
+                    mensaje = "${user.name} comentó en la publicación de ${m.nombre}.",
+                    tipo = "COMENTARIO_NUEVO",
+                    userId = m.autorId
+                )
+            }
         }
     }
 }

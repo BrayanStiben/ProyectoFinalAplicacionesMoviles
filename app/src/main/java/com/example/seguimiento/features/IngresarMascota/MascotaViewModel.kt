@@ -8,15 +8,13 @@ import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.servicios.AIService
 import com.example.seguimiento.features.FinalizarRegistro.CityResponse
 import com.example.seguimiento.features.FinalizarRegistro.ColombiaApiService
 import com.example.seguimiento.features.FinalizarRegistro.DepartmentResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -41,11 +39,14 @@ data class CatBreed(val name: String)
 class MascotaViewModel @Inject constructor(
     private val mascotaRepository: MascotaRepository,
     private val authRepository: AuthRepository,
+    private val notificacionRepository: NotificacionRepository,
     private val aiService: AIService
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoFormularioMascota())
     val estado: StateFlow<EstadoFormularioMascota> = _estado.asStateFlow()
+
+    val currentUser = authRepository.currentUser
 
     private var idEdicion: String? = null
 
@@ -107,7 +108,6 @@ class MascotaViewModel @Inject constructor(
                     departamento = depto,
                     ciudad = ciudad,
                     fotoUri = if (mascota.imagenUrl.startsWith("http")) null else Uri.parse(mascota.imagenUrl),
-                    // Nota: Para imágenes de red no cargamos el Uri local, pero mantenemos la URL original si no se cambia
                 ) }
                 
                 if (depto.isNotEmpty()) {
@@ -207,6 +207,24 @@ class MascotaViewModel @Inject constructor(
             )
 
             mascotaRepository.save(mascotaParaGuardar)
+
+            // NOTIFICACIÓN DE CREACIÓN/EDICIÓN
+            if (idEdicion == null) {
+                notificacionRepository.addNotificacion(
+                    titulo = "¡Mascota registrada! 🐾",
+                    mensaje = "Has registrado a ${datos.nombre} con éxito. Un administrador revisará la publicación pronto.",
+                    tipo = "INFO",
+                    userId = userId
+                )
+            } else {
+                notificacionRepository.addNotificacion(
+                    titulo = "¡Mascota actualizada! ✨",
+                    mensaje = "Los cambios en la información de ${datos.nombre} se han guardado.",
+                    tipo = "INFO",
+                    userId = userId
+                )
+            }
+
             _estado.update { it.copy(isLoading = false) }
             onSuccess()
         }

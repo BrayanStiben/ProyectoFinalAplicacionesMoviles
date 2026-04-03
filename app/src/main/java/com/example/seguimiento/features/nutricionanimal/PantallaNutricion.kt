@@ -2,9 +2,7 @@ package com.example.seguimiento.features.nutricionanimal
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,110 +16,143 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
+import com.example.seguimiento.features.home.BottomNav
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaNutricion(
     viewmodel: NutricionViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateToFavoritos: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     val listaRegulaciones by viewmodel.regulaciones.collectAsState()
-    val itemSeleccionado by viewmodel.itemSeleccionado.collectAsState()
     val categoriaSel by viewmodel.categoriaSeleccionada.collectAsState()
     val context = LocalContext.current
     
     var showDialog by remember { mutableStateOf(false) }
     var urlToOpen by remember { mutableStateOf("") }
 
+    val naranjaApp = Color(0xFFE67E22)
+    val cafeApp = Color(0xFF5D2E17)
+
     Scaffold(
         bottomBar = {
-            BottomNav(selectedItem = 0) { index ->
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
-                }
-            }
+            BottomNav(
+                selectedItem = -1,
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToFiltros = onNavigateToFiltros,
+                onNavigateToFavoritos = onNavigateToFavoritos,
+                onNavigateToProfile = onNavigateToProfile
+            )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // Imagen de Fondo (fondo2)
-            Image(
-                painter = painterResource(id = R.drawable.fondo2),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // Overlay sutil para legibilidad
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.25f)))
-
-            Column(modifier = Modifier.fillMaxSize()) {
-                // BOTÓN VOLVER
-                IconButton(
-                    onClick = { onNavigateToHome() },
-                    modifier = Modifier.padding(16.dp).background(Color.White.copy(alpha = 0.3f), CircleShape)
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
-                }
-
-                Text(
-                    text = "Nutrición para\nperros y gatos",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 34.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp, bottom = 20.dp)
-                )
-
-                // FILA DE CATEGORÍAS ACTUALIZADA
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    BotonCategoria("Nutrición", categoriaSel == "nutricion", Modifier.weight(1f)) {
-                        viewmodel.seleccionarCategoria("nutricion")
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color(0xFFFDFBFA))
+        ) {
+            // --- HEADER ESTILO UNIFICADO ---
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onNavigateToHome,
+                        modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                     }
-                    BotonCategoria("Necesidades de adopción", categoriaSel == "necesidades", Modifier.weight(1.5f)) {
-                        viewmodel.seleccionarCategoria("necesidades")
-                    }
-                    BotonCategoria("Así funciona", categoriaSel == "asifunciona", Modifier.weight(1f)) {
-                        viewmodel.seleccionarCategoria("asifunciona")
-                    }
-                    BotonCategoria("Acerca de", categoriaSel == "acerca", Modifier.weight(1f)) {
-                        viewmodel.seleccionarCategoria("acerca")
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            "Guía de Nutrición 🍖",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Consejos para una vida saludable",
+                            color = Color.White.copy(0.9f),
+                            fontSize = 15.sp
+                        )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            // --- FILA DE CATEGORÍAS ---
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    "Nutrición" to "nutricion",
+                    "Necesidades" to "necesidades",
+                    "Así funciona" to "asifunciona",
+                    "Acerca de" to "acerca"
+                ).forEach { (label, slug) ->
+                    val isSelected = categoriaSel == slug
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { viewmodel.seleccionarCategoria(slug) },
+                        label = { Text(label) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = naranjaApp,
+                            selectedLabelColor = Color.White,
+                            containerColor = Color.White,
+                            labelColor = cafeApp
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = Color.LightGray,
+                            selectedBorderColor = naranjaApp,
+                            borderWidth = 1.dp,
+                            selectedBorderWidth = 2.dp
+                        )
+                    )
+                }
+            }
 
-                // LISTA DE TARJETAS SIN CHECKBOX
+            // --- CONTENIDO ---
+            if (listaRegulaciones.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = naranjaApp)
+                }
+            } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 24.dp)
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(listaRegulaciones) { item ->
-                        TarjetaRegulacion(item) {
+                        TarjetaInformativa(item) {
                             urlToOpen = item.url
                             showDialog = true
                         }
                     }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
                 }
             }
         }
@@ -130,66 +161,75 @@ fun PantallaNutricion(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Abrir Enlace", fontWeight = FontWeight.Bold) },
-            text = { Text("¿Estás seguro de abrir la url?") },
+            title = { Text("Ver más detalles", fontWeight = FontWeight.Bold, color = cafeApp) },
+            text = { Text("¿Deseas abrir el enlace externo para leer más sobre este tema?") },
             confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlToOpen))
-                    context.startActivity(intent)
-                }) {
-                    Text("Sí", color = Color(0xFFE67E22), fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = {
+                        showDialog = false
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlToOpen))
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = naranjaApp)
+                ) {
+                    Text("CONTINUAR", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("No", color = Color.Gray)
+                    Text("CANCELAR", color = Color.Gray)
                 }
-            }
+            },
+            shape = RoundedCornerShape(20.dp)
         )
     }
 }
 
 @Composable
-fun TarjetaRegulacion(regulacion: Regulacion, onClick: () -> Unit) {
+fun TarjetaInformativa(regulacion: Regulacion, onClick: () -> Unit) {
+    val naranjaApp = Color(0xFFE67E22)
+    val cafeApp = Color(0xFF5D2E17)
+
     Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Imagen del Icono adaptada al tamaño del contenedor (65dp)
-            Surface(
-                modifier = Modifier.size(65.dp),
-                color = Color(0xFFE67E22).copy(alpha = 0.1f),
-                shape = RoundedCornerShape(14.dp)
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(naranjaApp.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = regulacion.imagenRecurso),
+                    painter = painterResource(id = if (regulacion.imagenRecurso != 0) regulacion.imagenRecurso else R.drawable.petadopticono),
                     contentDescription = null,
-                    modifier = Modifier.padding(8.dp).fillMaxSize(),
-                    contentScale = ContentScale.Fit
+                    modifier = Modifier.size(35.dp)
                 )
             }
             
-            Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
+            Spacer(Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = regulacion.titulo, 
-                    fontWeight = FontWeight.ExtraBold, 
-                    fontSize = 16.sp,
-                    color = Color(0xFF5D2E17)
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 17.sp,
+                    color = cafeApp
                 )
                 Text(
                     text = regulacion.subtitulo, 
-                    fontSize = 12.sp, 
+                    fontSize = 13.sp, 
                     color = Color.Gray,
-                    lineHeight = 16.sp
+                    maxLines = 2
                 )
             }
             
@@ -198,55 +238,6 @@ fun TarjetaRegulacion(regulacion: Regulacion, onClick: () -> Unit) {
                 contentDescription = null, 
                 tint = Color.LightGray, 
                 modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun BotonCategoria(texto: String, seleccionado: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    Surface(
-        modifier = modifier.height(55.dp).clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        color = if (seleccionado) Color(0xFFE67E22) else Color.White.copy(alpha = 0.9f),
-        shadowElevation = 2.dp
-    ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
-            Text(
-                text = texto,
-                color = if (seleccionado) Color.White else Color(0xFF5D2E17),
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp, // Tamaño reducido para que quepa "Necesidades de adopción"
-                textAlign = TextAlign.Center,
-                lineHeight = 12.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val NaranjaApp = Color(0xFFE67E22)
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
-        items.forEach { (label, icon, index) ->
-            NavigationBarItem(
-                icon = { Icon(icon, null) },
-                label = { Text(label) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaApp,
-                    selectedTextColor = NaranjaApp,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
             )
         }
     }

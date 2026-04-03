@@ -7,6 +7,7 @@ import com.example.seguimiento.Dominio.modelos.AdoptionRequestStatus
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class GestionAdopcionesViewModel @Inject constructor(
     private val adoptionRepository: AdoptionRepository,
     private val mascotaRepository: MascotaRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 
     val requests: StateFlow<List<AdoptionRequest>> = adoptionRepository.requests
@@ -30,6 +32,14 @@ class GestionAdopcionesViewModel @Inject constructor(
             adoptionRepository.updateRequestStatus(request.id, AdoptionRequestStatus.APPROVED)
             mascotaRepository.actualizarEstado(request.mascotaId, PublicacionEstado.ADOPTADA)
             userRepository.resetRejectionCount(request.userId)
+
+            // NOTIFICACIÓN: Adopción aprobada
+            notificacionRepository.addNotificacion(
+                titulo = "¡Adopción Aprobada! 🐾🎉",
+                mensaje = "¡Felicidades! Tu solicitud para adoptar a ${request.petName} ha sido aprobada. Revisa tu correo para los siguientes pasos.",
+                tipo = "INFO",
+                userId = request.userId
+            )
         }
     }
 
@@ -42,6 +52,14 @@ class GestionAdopcionesViewModel @Inject constructor(
             
             val user = userRepository.findById(request.userId)
             if (user != null) {
+                // NOTIFICACIÓN: Adopción rechazada
+                notificacionRepository.addNotificacion(
+                    titulo = "Solicitud de Adopción ❌",
+                    mensaje = "Lo sentimos, tu solicitud para adoptar a ${request.petName} no ha sido aprobada en esta ocasión.",
+                    tipo = "INFO",
+                    userId = request.userId
+                )
+
                 // Si llegamos a 3 o más intentos
                 if (user.rejectionCount >= 3) {
                     // Aplicar penalización de 1 minuto
@@ -53,6 +71,14 @@ class GestionAdopcionesViewModel @Inject constructor(
                         request.id, 
                         3, 
                         userWithPenalty?.penaltyEndTime ?: 0L
+                    )
+
+                    // NOTIFICACIÓN: Penalización
+                    notificacionRepository.addNotificacion(
+                        titulo = "Cuenta Suspendida Temporalmente ⚠️",
+                        mensaje = "Has alcanzado el límite de rechazos. Tu cuenta ha sido suspendida por 1 minuto.",
+                        tipo = "INFO",
+                        userId = request.userId
                     )
                     
                     // Resetear contador del PERFIL para la próxima vez que intente (después de la penalización)

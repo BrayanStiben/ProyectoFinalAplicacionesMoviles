@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdopcionViewModel @Inject constructor(
-    private val mascotaRepository: MascotaRepository
+    private val mascotaRepository: MascotaRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 
     // El admin ve todas las mascotas para gestión completa
@@ -21,7 +23,17 @@ class AdopcionViewModel @Inject constructor(
 
     fun eliminarMascota(id: String) {
         viewModelScope.launch {
+            val mascota = mascotaRepository.getById(id)
             mascotaRepository.delete(id)
+            
+            if (mascota != null) {
+                notificacionRepository.addNotificacion(
+                    titulo = "Publicación Eliminada 🗑️",
+                    mensaje = "Tu publicación de ${mascota.nombre} ha sido eliminada por un administrador.",
+                    tipo = "INFO",
+                    userId = mascota.autorId
+                )
+            }
         }
     }
 }

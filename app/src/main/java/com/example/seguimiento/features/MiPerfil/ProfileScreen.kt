@@ -3,7 +3,6 @@ package com.example.seguimiento.features.MiPerfil
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,13 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.seguimiento.Dominio.modelos.Mascota
-import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
 
 val NaranjaApp = Color(0xFFE67E22)
 val VerdeApp = Color(0xFF4CAF50)
+val CafeApp = Color(0xFF5D2E17)
 
 @Composable
 fun ProfileScreen(
@@ -37,6 +35,8 @@ fun ProfileScreen(
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToMisAdopciones: () -> Unit = {},
+    onNavigateToMisPublicaciones: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -94,9 +94,25 @@ fun ProfileScreen(
 
                         Spacer(Modifier.height(12.dp))
                         Text(user?.name ?: "Usuario", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(user?.getLevelName() ?: "Novato", fontSize = 16.sp, color = Color.White.copy(0.9f))
                         
-                        Spacer(Modifier.height(20.dp))
+                        // Badge de Rango justo debajo del nombre
+                        user?.let { u ->
+                            Surface(
+                                color = u.getLevelColor(),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.padding(top = 4.dp)
+                            ) {
+                                Text(
+                                    u.getLevelName(),
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Black
+                                )
+                            }
+                        }
+                        
+                        Spacer(Modifier.height(24.dp))
 
                         // Dashboard de Estadísticas Personales
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -107,9 +123,36 @@ fun ProfileScreen(
 
                         Spacer(Modifier.height(20.dp))
                         
-                        Text("Puntos: ${user?.points ?: 0} 🏆", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Puntos totales: ${user?.points ?: 0} 🏆", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(32.dp))
+
+                        // --- SECCIÓN: DETALLE DE CUENTA ---
+                        Text(
+                            "Detalle de cuenta", 
+                            fontSize = 22.sp, 
+                            fontWeight = FontWeight.Black, 
+                            color = Color.White, 
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                        )
+
+                        // Botón: Mis Adopciones
+                        ProfileActionButton(
+                            text = "Mis Mascotas Adoptadas", 
+                            icon = Icons.Default.Pets,
+                            onClick = onNavigateToMisAdopciones
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        // Botón: Mis Publicaciones
+                        ProfileActionButton(
+                            text = "Mis Publicaciones", 
+                            icon = Icons.Default.FormatListBulleted,
+                            onClick = onNavigateToMisPublicaciones
+                        )
+
+                        Spacer(Modifier.height(32.dp))
                         
                         // Botón Cerrar Sesión
                         Button(
@@ -126,21 +169,33 @@ fun ProfileScreen(
                             Text("Cerrar Sesión", color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
-                        Spacer(Modifier.height(24.dp))
-                        Text("Mis Publicaciones", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.fillMaxWidth())
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(40.dp))
                     }
                 }
-
-                items(state.userPosts) { mascota ->
-                    UserPostItem(
-                        mascota = mascota,
-                        onResolve = { viewModel.resolvePost(mascota.id) },
-                        onDelete = { viewModel.deletePost(mascota.id) }
-                    )
-                    Spacer(Modifier.height(8.dp))
-                }
             }
+        }
+    }
+}
+
+@Composable
+fun ProfileActionButton(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, contentDescription = null, tint = NaranjaApp, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.width(16.dp))
+            Text(text, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = CafeApp, modifier = Modifier.weight(1f))
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
         }
     }
 }
@@ -150,49 +205,11 @@ fun StatCard(label: String, value: String, color: Color, modifier: Modifier) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(0.9f))
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
     ) {
         Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(value, fontSize = 22.sp, fontWeight = FontWeight.Black, color = color)
             Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
-        }
-    }
-}
-
-@Composable
-fun UserPostItem(mascota: Mascota, onResolve: () -> Unit, onDelete: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(0.95f))
-    ) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            AsyncImage(
-                model = mascota.imagenUrl,
-                contentDescription = null,
-                modifier = Modifier.size(70.dp).clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(mascota.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(mascota.estado.name, color = when(mascota.estado) {
-                    PublicacionEstado.VERIFICADA -> VerdeApp
-                    PublicacionEstado.PENDIENTE -> Color(0xFFFFC107)
-                    PublicacionEstado.RECHAZADA -> Color.Red
-                    PublicacionEstado.RESUELTA -> Color.Gray
-                    PublicacionEstado.ADOPTADA -> Color(0xFF2196F3)
-                }, fontSize = 12.sp)
-            }
-            
-            if (mascota.estado == PublicacionEstado.VERIFICADA) {
-                IconButton(onClick = onResolve) {
-                    Icon(Icons.Default.CheckCircle, "Finalizar", tint = VerdeApp)
-                }
-            }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, "Borrar", tint = Color.Red)
-            }
         }
     }
 }

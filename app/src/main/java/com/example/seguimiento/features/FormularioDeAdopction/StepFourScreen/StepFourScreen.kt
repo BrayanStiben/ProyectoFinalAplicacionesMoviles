@@ -41,7 +41,7 @@ val VerdeFinal = Color(0xFF4CAF50)
 @Composable
 fun StepFourScreen(
     vm: AdoptionViewModel = hiltViewModel(),
-    onFinish: () -> Unit = {},
+    onFinish: (String) -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {}
@@ -175,8 +175,8 @@ fun StepFourScreen(
 
                             Button(
                                 onClick = { 
-                                    vm.submitForm {
-                                        onFinish() 
+                                    vm.submitForm { id ->
+                                        onFinish(id)
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),

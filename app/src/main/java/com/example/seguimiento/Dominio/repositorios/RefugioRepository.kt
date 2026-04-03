@@ -1,6 +1,7 @@
 package com.example.seguimiento.Dominio.repositorios
 
 import com.example.seguimiento.Dominio.modelos.Refugio
+import com.example.seguimiento.Dominio.modelos.RefugioEstado
 import kotlinx.coroutines.flow.StateFlow
 
 interface RefugioRepository {
@@ -9,4 +10,5 @@ interface RefugioRepository {
     fun getById(id: String): Refugio?
     fun save(refugio: Refugio)
     fun delete(id: String)
+    fun actualizarEstado(id: String, estado: RefugioEstado)
 }

@@ -3,9 +3,10 @@ package com.example.seguimiento.Data.repositorios
 import com.example.seguimiento.Dominio.modelos.User
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -15,15 +16,25 @@ class AuthRepositoryImpl @Inject constructor(
     private val userRepository: UserRepository
 ) : AuthRepository {
 
-    private val _currentUser = MutableStateFlow<User?>(null)
-    override val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+    private val _loggedUserId = MutableStateFlow<String?>(null)
+    
+    override val currentUser: StateFlow<User?> = _loggedUserId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(null)
+            else userRepository.users.map { users -> users.find { it.id == id } }
+        }
+        .stateIn(
+            scope = CoroutineScope(Dispatchers.Main),
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
     
     private var currentVerificationCode: String? = null
 
     override suspend fun login(email: String, password: String): Result<User> {
         val user = userRepository.login(email, password)
         return if (user != null) {
-            _currentUser.value = user
+            _loggedUserId.value = user.id
             Result.success(user)
         } else {
             Result.failure(Exception("Credenciales inválidas"))
@@ -32,11 +43,12 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun register(user: User): Result<Unit> {
         userRepository.save(user)
+        _loggedUserId.value = user.id
         return Result.success(Unit)
     }
 
     override suspend fun logout() {
-        _currentUser.value = null
+        _loggedUserId.value = null
     }
 
     override suspend fun recoverPassword(email: String): Result<Unit> {

@@ -12,6 +12,8 @@ sealed class NavRoutes(val route: String) {
     
     // Exploración y Educación
     object Profile : NavRoutes("profile")
+    object MisAdopciones : NavRoutes("mis_adopciones")
+    object MisPublicaciones : NavRoutes("mis_publicaciones")
     object MascotaDestacada : NavRoutes("mascota_destacada/{id}/{nombre}/{edad}/{ubicacion}/{url}") {
         fun createRoute(id: String, nombre: String, edad: String, ubicacion: String, url: String): String {
             val encodedUrl = java.net.URLEncoder.encode(url, "UTF-8")
@@ -21,11 +23,14 @@ sealed class NavRoutes(val route: String) {
     object Nutricion : NavRoutes("nutricion")
     object RequisitosAdopcion : NavRoutes("requisitos_adopcion")
     object Refugios : NavRoutes("refugios")
+    object RegistroRefugio : NavRoutes("registro_refugio")
+    object Tienda : NavRoutes("tienda")
     object FiltrosAvanzados : NavRoutes("filtros_avanzados")
     object HistoriasExito : NavRoutes("historias_exito")
     object Notificaciones : NavRoutes("notificaciones")
     object MapaFeed : NavRoutes("mapa_feed")
     object Favoritos : NavRoutes("favoritos")
+    object Logros : NavRoutes("logros")
 
     // Formulario de Adopción
     object StepOne : NavRoutes("step_one")
@@ -44,12 +49,16 @@ sealed class NavRoutes(val route: String) {
 
     // Admin Features
     object Estadisticas : NavRoutes("estadisticas")
+    object ReportesDetallados : NavRoutes("admin_reportes")
+    object GestionTienda : NavRoutes("admin_tienda")
+    object HistorialVentas : NavRoutes("admin_ventas")
     object ListaSolicitudes : NavRoutes("lista_solicitudes")
     object EncontrarMascotas : NavRoutes("encontrar_mascotas")
     object GestionUsuarios : NavRoutes("gestion_usuarios")
     object GestionHistorias : NavRoutes("gestion_historias")
     object GestionComentarios : NavRoutes("gestion_comentarios")
     object GestionAdopciones : NavRoutes("gestion_adopciones")
+    object GestionRefugios : NavRoutes("gestion_refugios")
     object CertificadoAdopcion : NavRoutes("certificado_adopcion/{requestId}") {
         fun createRoute(requestId: String) = "certificado_adopcion/$requestId"
     }

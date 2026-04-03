@@ -79,8 +79,6 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     override suspend fun resetRejectionCount(userId: String) {
         _users.update { list ->
             list.map { user ->
-                // NOTA: Solo reseteamos el contador, NO la penalización.
-                // La penalización se limpia sola cuando pasa el tiempo (ahora < penaltyEndTime)
                 if (user.id == userId) user.copy(rejectionCount = 0) else user
             }
         }
@@ -96,19 +94,87 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         }
     }
 
+    override suspend fun addPoints(userId: String, points: Int) {
+        _users.update { list ->
+            list.map { user ->
+                if (user.id == userId) {
+                    user.copy(points = user.points + points)
+                } else user
+            }
+        }
+    }
+
+    override suspend fun addBadge(userId: String, badgeId: String) {
+        _users.update { list ->
+            list.map { user ->
+                if (user.id == userId && !user.badges.contains(badgeId)) {
+                    user.copy(badges = user.badges + badgeId)
+                } else user
+            }
+        }
+    }
+
     private fun fetchUsers(): List<User> {
         return listOf(
-
             User(
-                id = "3",
+                id = "user_colaborador",
+                name = "Carlos Colaborador",
+                city = "Bogotá",
+                departamento = "Cundinamarca",
+                address = "Calle 10",
+                email = "colaborador@gmail.com",
+                password = "123",
+                profilePictureUrl = "https://picsum.photos/200?random=10",
+                role = UserRole.USER,
+                points = 450 
+            ),
+            User(
+                id = "user_protector",
+                name = "Patricia Protectora",
+                city = "Medellín",
+                departamento = "Antioquia",
+                address = "Carrera 20",
+                email = "protector@gmail.com",
+                password = "123",
+                profilePictureUrl = "https://picsum.photos/200?random=11",
+                role = UserRole.USER,
+                points = 850 
+            ),
+            User(
+                id = "user_heroe",
+                name = "Humberto Héroe",
+                city = "Cali",
+                departamento = "Valle del Cauca",
+                address = "Avenida 30",
+                email = "heroe@gmail.com",
+                password = "123",
+                profilePictureUrl = "https://picsum.photos/200?random=12",
+                role = UserRole.USER,
+                points = 1200 
+            ),
+            User(
+                id = "user_leyenda",
+                name = "Luis Leyenda",
+                city = "Barranquilla",
+                departamento = "Atlántico",
+                address = "Calle 40",
+                email = "leyenda@gmail.com",
+                password = "123",
+                profilePictureUrl = "https://picsum.photos/200?random=13",
+                role = UserRole.USER,
+                points = 2000 
+            ),
+            User(
+                id = "admin_id",
                 name = "Administrador",
                 city = "Armenia",
                 departamento = "Quindío",
-                address = "Calle Admin",
+                address = "Oficina Central",
                 email = "admin@gmail.com",
                 password = "admin",
-                profilePictureUrl = "https://picsum.photos/200?random=3",
-                role = UserRole.ADMIN
+                profilePictureUrl = "https://picsum.photos/200?random=1",
+                role = UserRole.ADMIN,
+                points = 5000
             )
         )
     }

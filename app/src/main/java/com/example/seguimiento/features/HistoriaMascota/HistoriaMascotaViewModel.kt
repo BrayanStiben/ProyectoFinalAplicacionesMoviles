@@ -8,6 +8,7 @@ import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.HistoriaFelizRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,12 +16,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HistoriaMascotaViewModel @Inject constructor(
     private val repository: HistoriaFelizRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 
     private val _textoHistoria = MutableStateFlow("")
@@ -65,6 +68,17 @@ class HistoriaMascotaViewModel @Inject constructor(
             estado = if (esAdmin) HistoriaEstado.APROBADA else HistoriaEstado.PENDIENTE
         )
         repository.save(historia)
+
+        // NOTIFICACIÓN: Historia compartida
+        if (currentUser != null) {
+            notificacionRepository.addNotificacion(
+                titulo = "¡Historia compartida! ✨",
+                mensaje = "Tu historia con ${_mascotaNombre.value} ha sido enviada y está en revisión.",
+                tipo = "INFO",
+                userId = currentUser.id
+            )
+        }
+
         // Reset fields
         _textoHistoria.value = ""
         _mascotaNombre.value = ""
@@ -73,10 +87,34 @@ class HistoriaMascotaViewModel @Inject constructor(
     }
 
     fun aprobarHistoria(id: String) {
-        repository.actualizarEstado(id, HistoriaEstado.APROBADA)
+        viewModelScope.launch {
+            val historia = repository.historias.value.find { it.id == id }
+            repository.actualizarEstado(id, HistoriaEstado.APROBADA)
+            
+            if (historia != null) {
+                notificacionRepository.addNotificacion(
+                    titulo = "¡Historia Aprobada! 🌟",
+                    mensaje = "Tu historia sobre ${historia.mascotaNombre} ya es pública.",
+                    tipo = "INFO",
+                    userId = historia.autorId
+                )
+            }
+        }
     }
 
     fun rechazarHistoria(id: String) {
-        repository.actualizarEstado(id, HistoriaEstado.RECHAZADA)
+        viewModelScope.launch {
+            val historia = repository.historias.value.find { it.id == id }
+            repository.actualizarEstado(id, HistoriaEstado.RECHAZADA)
+
+            if (historia != null) {
+                notificacionRepository.addNotificacion(
+                    titulo = "Historia no aprobada 📝",
+                    mensaje = "Tu historia sobre ${historia.mascotaNombre} no cumple con las normas actuales.",
+                    tipo = "INFO",
+                    userId = historia.autorId
+                )
+            }
+        }
     }
 }

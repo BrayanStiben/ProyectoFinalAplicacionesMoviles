@@ -14,8 +14,12 @@ interface UserRepository {
     fun getUsuariosConEstadisticas(): List<UsuarioEstadisticas>
     fun deleteAccount(id: String)
     
-    // Nuevos métodos para penalizaciones
+    // Nuevos métodos para penalizaciones y sistema de logros
     suspend fun incrementRejectionCount(userId: String)
     suspend fun resetRejectionCount(userId: String)
     suspend fun applyPenalty(userId: String, durationMillis: Long)
+    
+    // Sistema de Logros y Puntos
+    suspend fun addPoints(userId: String, points: Int)
+    suspend fun addBadge(userId: String, badgeId: String)
 }

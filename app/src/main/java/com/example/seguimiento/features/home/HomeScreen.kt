@@ -2,6 +2,7 @@ package com.example.seguimiento.features.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -17,16 +18,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.seguimiento.Dominio.modelos.Logro
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.R
 
@@ -46,7 +49,9 @@ fun HomeScreen(
     onNavigateToHistorias: () -> Unit = {},
     onNavigateToNotificaciones: () -> Unit = {},
     onNavigateToMapa: () -> Unit = {},
-    onNavigateToRegistroMascota: () -> Unit = {}
+    onNavigateToRegistroMascota: () -> Unit = {},
+    onNavigateToLogros: () -> Unit = {},
+    onNavigateToTienda: () -> Unit = {}
 ) {
     val userName by viewModel.userName.collectAsState()
     val userProfilePicture by viewModel.userProfilePicture.collectAsState()
@@ -86,7 +91,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .background(Color(0xFFFDFBFA))
         ) {
-            // --- HEADER ---
+            // --- HEADER SIN LÍNEAS NI RANGOS ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,42 +101,58 @@ fun HomeScreen(
                     )
                     .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Hola, $userName 🐾", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-                        Text("¡Encuentra tu mascota ideal!", color = Color.White.copy(0.9f), fontSize = 16.sp)
+                        Text("Hola, $userName 🐾", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text("¡Encuentra tu mascota ideal!", color = Color.White.copy(0.9f), fontSize = 14.sp)
+                        Text("${currentUser?.points ?: 0} pts", color = Color.White.copy(0.8f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
                     
-                    IconButton(onClick = onNavigateToNotificaciones) {
-                        Icon(Icons.Default.Notifications, null, tint = Color.White, modifier = Modifier.size(28.dp))
-                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onNavigateToLogros) {
+                            Icon(Icons.Default.EmojiEvents, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                        }
 
-                    Spacer(Modifier.width(8.dp))
+                        IconButton(onClick = onNavigateToNotificaciones) {
+                            BadgedBox(badge = {
+                                if (viewModel.notificaciones.value.any { !it.leida }) {
+                                    Badge(containerColor = Color.Red)
+                                }
+                            }) {
+                                Icon(Icons.Default.Notifications, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                            }
+                        }
 
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .border(2.dp, Color.White, CircleShape)
-                            .clickable { onNavigateToProfile() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (userProfilePicture?.isNotEmpty() == true) {
-                            AsyncImage(
-                                model = userProfilePicture,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize().clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(30.dp))
+                        Spacer(Modifier.width(8.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f))
+                                .border(2.dp, Color.White, CircleShape)
+                                .clickable { onNavigateToProfile() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (userProfilePicture?.isNotEmpty() == true) {
+                                AsyncImage(
+                                    model = userProfilePicture,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                            }
                         }
                     }
                 }
             }
 
-            // --- CATEGORÍAS ---
+            // --- CATEGORÍAS MEJORADAS CON TIENDA ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -139,8 +160,8 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 CategoryItem("Refugios", Color(0xFF00ACC1), Icons.Default.Apartment) { onNavigateToRefugios() }
+                CategoryItem("Tienda", Color(0xFFFF9800), Icons.Default.Storefront) { onNavigateToTienda() }
                 CategoryItem("Nutrición", Color(0xFFFB8C00), Icons.AutoMirrored.Filled.MenuBook) { onNavigateToNutricion() }
-                CategoryItem("Requisitos", Color(0xFFE53935), Icons.AutoMirrored.Filled.ListAlt) { onNavigateToRequisitos() }
                 CategoryItem("Filtros", Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
             }
 

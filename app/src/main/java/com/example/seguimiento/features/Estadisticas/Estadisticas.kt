@@ -1,11 +1,11 @@
 package com.example.seguimiento.features.Estadisticas
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,31 +16,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.text.font.FontFamily
 import com.example.seguimiento.core.navigation.AdminBottomBar
 
-// --- PALETA DE COLORES ---
-val ColorVivoNaranja = Color(0xFFFF6D00)
-val ColorVivoAzul = Color(0xFF0091EA)
-val ColorVivoVerde = Color(0xFF00C853)
-val ColorVivoAmarillo = Color(0xFFFFD600)
-val ColorVivoRojo = Color(0xFFD32F2F)
-val ColorTextoFuerte = Color(0xFF1A1A1A)
-val ColorCafeApp = Color(0xFF5D2E17)
+// --- PALETA DE COLORES OFICIAL ---
+val NaranjaApp = Color(0xFFE67E22)
+val CafeApp = Color(0xFF5D2E17)
+val GrisSuave = Color(0xFFF5F5F5)
 
 @Composable
 fun EstadisticasScreen(
@@ -52,6 +44,10 @@ fun EstadisticasScreen(
     onNavigateToGestionHistorias: () -> Unit = {},
     onNavigateToGestionComentarios: () -> Unit = {},
     onNavigateToGestionAdopciones: () -> Unit = {},
+    onNavigateToGestionRefugios: () -> Unit = {},
+    onNavigateToReportesDetallados: () -> Unit = {},
+    onNavigateToGestionTienda: () -> Unit = {},
+    onNavigateToHistorialVentas: () -> Unit = {},
     onNavigateToRegistroMascota: () -> Unit = {},
     onNavigateToHistorias: () -> Unit = {},
     onLogout: () -> Unit = {}
@@ -59,202 +55,155 @@ fun EstadisticasScreen(
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.fondo),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = Color.Transparent,
-            bottomBar = {
-                AdminBottomBar(
-                    currentRoute = "estadisticas",
-                    onNavigateToEstadisticas = onNavigateToEstadisticas,
-                    onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
-                    onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
-                    onLogout = onLogout
-                )
-            }
-        ) { paddingValues ->
-            Column(
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color(0xFFFDFBFA),
+        bottomBar = {
+            AdminBottomBar(
+                currentRoute = "estadisticas",
+                onNavigateToEstadisticas = onNavigateToEstadisticas,
+                onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
+                onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
+                onLogout = onLogout
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+        ) {
+            // --- HEADER ESTILO UNIFICADO ---
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
             ) {
-                Spacer(Modifier.height(25.dp))
-
-                // --- TÍTULO ---
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color.White.copy(alpha = 0.9f),
-                    shape = RoundedCornerShape(15.dp),
-                    shadowElevation = 4.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text("PANEL DE CONTROL", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = ColorTextoFuerte)
-                        Text(" • ", fontWeight = FontWeight.Black, fontSize = 18.sp, color = ColorVivoNaranja)
-                        Text("ADMINISTRACIÓN", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = ColorVivoNaranja)
-                    }
+                Column {
+                    Text(
+                        "Panel Administrativo 🛡️",
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Centro de Control y Gestión",
+                        color = Color.White.copy(0.9f),
+                        fontSize = 15.sp
+                    )
                 }
+            }
 
-                Spacer(Modifier.height(20.dp))
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Spacer(Modifier.height(24.dp))
 
-                // --- FILA DE CONTADORES PRINCIPALES ---
+                // --- SECCIÓN: MÉTRICAS CLAVE ---
+                Text("RESUMEN OPERATIVO", fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
+                
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Adopciones Pendientes
-                    Card(
-                        modifier = Modifier.weight(1f).height(110.dp).clickable { onNavigateToGestionAdopciones() },
-                        colors = CardDefaults.cardColors(containerColor = ColorVivoVerde),
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        Column(Modifier.fillMaxSize().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                            Icon(Icons.Default.VolunteerActivism, null, tint = Color.White, modifier = Modifier.size(24.dp))
-                            Text("${state.adoptionRequestsCount}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White)
-                            Text("SOLICITUDES", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.9f))
-                        }
-                    }
-                    // Mascotas por Moderar
-                    Card(
-                        modifier = Modifier.weight(1f).height(110.dp).clickable { onNavigateToListaSolicitudes() },
-                        colors = CardDefaults.cardColors(containerColor = ColorVivoNaranja),
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        Column(Modifier.fillMaxSize().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                            Icon(Icons.Default.NewReleases, null, tint = Color.White, modifier = Modifier.size(24.dp))
-                            Text("${state.petModerationCount}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White)
-                            Text("MODERACIÓN", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.9f))
-                        }
-                    }
-                }
+                    MetricMiniCard(
+                        label = "SOLICITUDES",
+                        value = state.adoptionRequestsCount.toString(),
+                        icon = Icons.Default.VolunteerActivism,
+                        color = Color(0xFF4CAF50),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToGestionAdopciones() }
+                    
+                    MetricMiniCard(
+                        label = "MODERACIÓN",
+                        value = state.petModerationCount.toString(),
+                        icon = Icons.Default.NewReleases,
+                        color = NaranjaApp,
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToListaSolicitudes() }
 
-                Spacer(Modifier.height(16.dp))
-
-                // --- SECCIÓN DE GESTIÓN RÁPIDA ---
-                Text("GESTIÓN DE CONTENIDO", fontWeight = FontWeight.Black, fontSize = 14.sp, color = ColorCafeApp, modifier = Modifier.padding(start = 4.dp, bottom = 12.dp))
-
-                // Moderar Chat
-                Card(
-                    modifier = Modifier.fillMaxWidth().height(70.dp).padding(bottom = 10.dp).clickable { onNavigateToGestionComentarios() },
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Row(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(40.dp).background(ColorVivoAzul.copy(alpha = 0.1f), CircleShape), contentAlignment = Alignment.Center) {
-                            Icon(Icons.AutoMirrored.Filled.Comment, null, tint = ColorVivoAzul, modifier = Modifier.size(20.dp))
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Text("MODERAR CHAT COMUNITARIO", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        Icon(Icons.Default.ChevronRight, null, tint = Color.LightGray)
-                    }
-                }
-
-                // Historias Felices
-                Card(
-                    modifier = Modifier.fillMaxWidth().height(70.dp).padding(bottom = 10.dp).clickable { onNavigateToGestionHistorias() },
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Row(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(40.dp).background(ColorCafeApp.copy(alpha = 0.1f), CircleShape), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.HistoryEdu, null, tint = ColorCafeApp, modifier = Modifier.size(20.dp))
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Text("HISTORIAS FELICES PENDIENTES", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        Icon(Icons.Default.ChevronRight, null, tint = Color.LightGray)
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                // --- ACCIONES DE CREACIÓN ---
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
-                        onClick = onNavigateToRegistroMascota,
-                        modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = ColorCafeApp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text("NUEVA MASCOTA", fontSize = 11.sp, fontWeight = FontWeight.Black)
-                    }
-                    Button(
-                        onClick = onNavigateToHistorias,
-                        modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = ColorVivoNaranja),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Icon(Icons.Default.AutoAwesome, null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text("NUEVA HISTORIA", fontSize = 11.sp, fontWeight = FontWeight.Black)
-                    }
+                    MetricMiniCard(
+                        label = "USUARIOS",
+                        value = state.usuariosTotales.toString(),
+                        icon = Icons.Default.Group,
+                        color = Color(0xFF2196F3),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToGestionUsuarios() }
                 }
 
                 Spacer(Modifier.height(24.dp))
 
-                // --- ESTADÍSTICAS DE USUARIOS ---
-                Text("CONTROL DE USUARIOS", fontWeight = FontWeight.Black, fontSize = 14.sp, color = ColorCafeApp, modifier = Modifier.padding(start = 4.dp, bottom = 12.dp))
+                // --- SECCIÓN: HERRAMIENTAS DE GESTIÓN (BOTONES CON COLOR) ---
+                Text("HERRAMIENTAS DE GESTIÓN", fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
 
-                Card(
-                    modifier = Modifier.fillMaxWidth().clickable { onNavigateToGestionUsuarios() },
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(24.dp),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(45.dp).background(ColorVivoAmarillo.copy(alpha = 0.1f), CircleShape), contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Group, null, tint = ColorVivoAmarillo)
-                            }
-                            Spacer(Modifier.width(16.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text("USUARIOS REGISTRADOS", fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                                Text("${state.usuariosTotales + state.usuariosBaneados} en total", color = Color.Gray, fontSize = 11.sp)
-                            }
-                            Text("${state.usuariosTotales}", fontSize = 24.sp, fontWeight = FontWeight.Black, color = ColorVivoVerde)
-                        }
-                        
-                        HorizontalDivider(Modifier.padding(vertical = 16.dp), thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.5f))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(45.dp).background(ColorVivoRojo.copy(alpha = 0.1f), CircleShape), contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Block, null, tint = ColorVivoRojo)
-                            }
-                            Spacer(Modifier.width(16.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text("USUARIOS BANEADOS", fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                                Text("Sin acceso a la plataforma", color = Color.Gray, fontSize = 11.sp)
-                            }
-                            Text("${state.usuariosBaneados}", fontSize = 24.sp, fontWeight = FontWeight.Black, color = ColorVivoRojo)
-                        }
-                    }
+                // Fila 1
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ColorfulAdminButton(
+                        title = "Gestión Tienda",
+                        icon = Icons.Default.Storefront,
+                        containerColor = Color(0xFFFF9800),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToGestionTienda() }
+
+                    ColorfulAdminButton(
+                        title = "Reportes Gráficos",
+                        icon = Icons.Default.BarChart,
+                        containerColor = Color(0xFF673AB7),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToReportesDetallados() }
                 }
 
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(10.dp))
 
-                // --- GRÁFICA SEMANAL ---
-                Card(
-                    modifier = Modifier.fillMaxWidth().height(240.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Text("ACTIVIDAD SEMANAL", fontWeight = FontWeight.Black, fontSize = 14.sp, color = ColorTextoFuerte)
-                        Spacer(Modifier.height(20.dp))
-                        Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceEvenly) {
-                            state.estadisticasSemanales.forEach { data -> BarChartViva(data) }
-                        }
-                    }
+                // Fila 2
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ColorfulAdminButton(
+                        title = "Historial Ventas",
+                        icon = Icons.Default.ReceiptLong,
+                        containerColor = Color(0xFF0091EA),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToHistorialVentas() }
+
+                    ColorfulAdminButton(
+                        title = "Gestión Refugios",
+                        icon = Icons.Default.Apartment,
+                        containerColor = Color(0xFF00ACC1),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToGestionRefugios() }
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                // Fila 3
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ColorfulAdminButton(
+                        title = "Moderar Chat",
+                        icon = Icons.AutoMirrored.Filled.Comment,
+                        containerColor = Color(0xFF009688),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToGestionComentarios() }
+
+                    ColorfulAdminButton(
+                        title = "Subir Mascota",
+                        icon = Icons.Default.AddCircle,
+                        containerColor = NaranjaApp,
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToRegistroMascota() }
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                // Fila 4
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ColorfulAdminButton(
+                        title = "Subir Historia",
+                        icon = Icons.Default.AutoAwesome,
+                        containerColor = Color(0xFFFFC107),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToHistorias() }
+                    
+                    // Botón de relleno para mantener el grid
+                    Box(modifier = Modifier.weight(1f))
                 }
 
                 Spacer(Modifier.height(40.dp))
@@ -264,15 +213,50 @@ fun EstadisticasScreen(
 }
 
 @Composable
-fun BarChartViva(data: BarData) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(contentAlignment = Alignment.BottomCenter) {
-            Box(Modifier.width(18.dp).height(120.dp).background(Color(0xFFF5F5F5), RoundedCornerShape(10.dp)))
-            Column {
-                if (data.valueOrange > 0) Box(Modifier.width(18.dp).height((data.valueOrange / 6).dp).background(ColorVivoNaranja, RoundedCornerShape(10.dp)))
-                if (data.valueBlue > 0) Box(Modifier.width(18.dp).height((data.valueBlue / 6).dp).background(ColorVivoAzul, RoundedCornerShape(10.dp)))
-            }
+fun ColorfulAdminButton(title: String, icon: ImageVector, containerColor: Color, modifier: Modifier, onClick: () -> Unit) {
+    Card(
+        modifier = modifier
+            .height(75.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, null, tint = Color.White, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = title,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White,
+                lineHeight = 14.sp
+            )
         }
-        Text(data.label, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color.Gray, modifier = Modifier.padding(top = 8.dp))
+    }
+}
+
+@Composable
+fun MetricMiniCard(label: String, value: String, icon: ImageVector, color: Color, modifier: Modifier, onClick: () -> Unit) {
+    Card(
+        modifier = modifier.height(90.dp).clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, null, tint = color, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.height(4.dp))
+            Text(value, fontSize = 20.sp, fontWeight = FontWeight.Black, color = CafeApp)
+            Text(label, fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+        }
     }
 }

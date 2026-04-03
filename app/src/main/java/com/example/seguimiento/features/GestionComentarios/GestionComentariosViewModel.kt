@@ -6,7 +6,9 @@ import com.example.seguimiento.Dominio.modelos.Comentario
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
+import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,7 +24,9 @@ data class MascotaConComentarios(
 class GestionComentariosViewModel @Inject constructor(
     private val comentarioRepository: ComentarioRepository,
     private val mascotaRepository: MascotaRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val logrosRepository: LogrosRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 
     val mascotasConComentarios: StateFlow<List<MascotaConComentarios>> = combine(
@@ -39,13 +43,33 @@ class GestionComentariosViewModel @Inject constructor(
 
     fun eliminarComentario(id: String) {
         viewModelScope.launch {
+            val comentario = comentarioRepository.todosLosComentarios.value.find { it.id == id }
             comentarioRepository.eliminarComentario(id)
+            
+            if (comentario != null) {
+                // LOGRO NEGATIVO: Comentario Imprudente
+                logrosRepository.ganarLogro(comentario.autorId, "sys_imprudente")
+                
+                // Notificación
+                notificacionRepository.addNotificacion(
+                    titulo = "Comentario eliminado ⚠️",
+                    mensaje = "Uno de tus comentarios fue eliminado por no cumplir las normas.",
+                    tipo = "INFO",
+                    userId = comentario.autorId
+                )
+            }
         }
     }
 
     fun censurarComentario(id: String) {
         viewModelScope.launch {
+            val comentario = comentarioRepository.todosLosComentarios.value.find { it.id == id }
             comentarioRepository.censurarComentario(id, "[Este comentario ha sido censurado por el administrador]")
+            
+            if (comentario != null) {
+                // LOGRO NEGATIVO: Comentario Imprudente
+                logrosRepository.ganarLogro(comentario.autorId, "sys_imprudente")
+            }
         }
     }
 

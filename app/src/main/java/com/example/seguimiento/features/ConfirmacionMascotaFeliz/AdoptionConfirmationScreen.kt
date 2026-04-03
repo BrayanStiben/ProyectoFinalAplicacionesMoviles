@@ -12,20 +12,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
+import com.example.seguimiento.features.home.BottomNav
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun AdoptionConfirmationScreen(
     requestId: String = "",
@@ -39,7 +39,6 @@ fun AdoptionConfirmationScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    var tabSeleccionada by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -61,14 +60,20 @@ fun AdoptionConfirmationScreen(
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                     }
-                    Text("¡ADOPCIÓN EXITOSA!", color = Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                    Text(
+                        "¡ADOPCIÓN EXITOSA!",
+                        color = Color.White,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 18.sp
+                    )
                 }
             }
         },
         bottomBar = {
-            com.example.seguimiento.features.home.BottomNav(selectedItem = -1) { index ->
-                if (index == 0) onNavigateToHome()
-            }
+            BottomNav(
+                selectedItem = -1,
+                onNavigateToHome = onNavigateToHome
+            )
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -100,7 +105,11 @@ fun AdoptionConfirmationScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Surface(modifier = Modifier.size(70.dp), shape = CircleShape, border = BorderStroke(3.dp, Color(0xFFE67E22))) {
+                            Surface(
+                                modifier = Modifier.size(70.dp),
+                                shape = CircleShape,
+                                border = BorderStroke(3.dp, Color(0xFFE67E22))
+                            ) {
                                 AsyncImage(
                                     model = uiState.petImg,
                                     contentDescription = null,
@@ -110,8 +119,17 @@ fun AdoptionConfirmationScreen(
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(uiState.petName, fontWeight = FontWeight.Black, fontSize = 22.sp, color = Color(0xFF5D2E17))
-                                Text("¡Ya forma parte de tu vida!", fontSize = 14.sp, color = Color.Gray)
+                                Text(
+                                    uiState.petName,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 22.sp,
+                                    color = Color(0xFF5D2E17)
+                                )
+                                Text(
+                                    "¡Ya forma parte de tu vida!",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
                             }
                         }
 
@@ -119,14 +137,18 @@ fun AdoptionConfirmationScreen(
 
                         FilaDetalle(Icons.Default.CalendarToday, "Fecha", uiState.date)
                         FilaDetalle(Icons.Default.Person, "Adoptante", uiState.adoptedBy)
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Text("Resumen de Solicitud:", fontWeight = FontWeight.Bold, color = Color(0xFF5D2E17))
+
+                        Text(
+                            "Resumen de Solicitud:",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF5D2E17)
+                        )
                         Text(uiState.summary, fontSize = 13.sp, color = Color.DarkGray)
 
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Surface(color = Color(0xFFE8F5E9), shape = RoundedCornerShape(12.dp)) {
                             Text(
                                 text = uiState.adminComment,
@@ -156,7 +178,10 @@ fun AdoptionConfirmationScreen(
 
 @Composable
 fun FilaDetalle(icono: ImageVector, label: String, valor: String) {
-    Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(icono, null, tint = Color(0xFFE67E22), modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text("$label: ", color = Color.Gray, fontSize = 14.sp)

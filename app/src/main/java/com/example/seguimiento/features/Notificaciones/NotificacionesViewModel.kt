@@ -1,27 +1,34 @@
 package com.example.seguimiento.features.Notificaciones
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.Notificacion
+import com.example.seguimiento.Dominio.repositorios.AuthRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
-class NotificacionesViewModel @Inject constructor() : ViewModel() {
+class NotificacionesViewModel @Inject constructor(
+    private val notificacionRepository: NotificacionRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
-    private val _notificaciones = MutableStateFlow<List<Notificacion>>(listOf(
-        Notificacion("1", "¡Bienvenido!", "Gracias por unirte a PetAdopta."),
-        Notificacion("2", "Nueva mascota cerca", "Un nuevo perrito ha sido publicado en tu zona.", tipo = "ZONA_NUEVA"),
-        Notificacion("3", "Publicación Verificada", "Tu publicación de 'Rex' ha sido aprobada por un moderador.", tipo = "INFO"),
-        Notificacion("4", "Nuevo Comentario", "Alguien ha comentado en tu publicación.", tipo = "COMENTARIO_NUEVO")
-    ))
-    val notificaciones: StateFlow<List<Notificacion>> = _notificaciones.asStateFlow()
+    val notificaciones: StateFlow<List<Notificacion>> = combine(
+        notificacionRepository.notificaciones,
+        authRepository.currentUser
+    ) { lista, user ->
+        lista.filter { notif ->
+            notif.userId == "" || notif.userId == user?.id
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun marcarComoLeida(id: String) {
-        _notificaciones.value = _notificaciones.value.map {
-            if (it.id == id) it.copy(leida = true) else it
-        }
+        notificacionRepository.marcarComoLeida(id)
+    }
+
+    fun limpiarTodo() {
+        notificacionRepository.clearAll()
     }
 }

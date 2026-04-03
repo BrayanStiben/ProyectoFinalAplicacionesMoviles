@@ -20,6 +20,8 @@ import com.example.seguimiento.features.EsperandoPorTi.EstaEsperandoPorTiScreen
 import com.example.seguimiento.features.nutricionanimal.PantallaNutricion
 import com.example.seguimiento.features.QueNesecitoParaAdoptar.QueNesecitoParaAdoptar
 import com.example.seguimiento.features.Refugios.RefugiosScreen
+import com.example.seguimiento.features.Refugios.RegistroRefugioScreen
+import com.example.seguimiento.features.Refugios.GestionRefugiosScreen
 import com.example.seguimiento.features.Filtros.PantallaFiltrosAvanzado
 import com.example.seguimiento.features.HistoriaMascota.PantallaPetAdopta
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
@@ -40,6 +42,13 @@ import com.example.seguimiento.features.ListaDeSolicitudes.ListaSolicitudesScree
 import com.example.seguimiento.features.EncontrarMascotas.PantallaAdopcion
 import com.example.seguimiento.features.Notificaciones.NotificacionesScreen
 import com.example.seguimiento.features.Favoritos.FavoritosScreen
+import com.example.seguimiento.features.Logros.LogrosScreen
+import com.example.seguimiento.features.MisAdopciones.MisAdopcionesScreen
+import com.example.seguimiento.features.MisPublicaciones.MisPublicacionesScreen
+import com.example.seguimiento.features.ReportesAdmin.ReportesScreen
+import com.example.seguimiento.features.Mercado.TiendaScreen
+import com.example.seguimiento.features.MercadoAdmin.TiendaAdminScreen
+import com.example.seguimiento.features.HistorialCompras.HistorialComprasScreen
 import com.example.seguimiento.Loading.LoadingScreen
 
 @Composable
@@ -88,7 +97,29 @@ fun AppNavigation() {
                 onNavigateToHistorias = { navController.navigate(NavRoutes.HistoriasExito.route) },
                 onNavigateToNotificaciones = { navController.navigate(NavRoutes.Notificaciones.route) },
                 onNavigateToMapa = { navController.navigate(NavRoutes.MapaFeed.route) },
-                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) }
+                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) },
+                onNavigateToLogros = { navController.navigate(NavRoutes.Logros.route) },
+                onNavigateToTienda = { navController.navigate(NavRoutes.Tienda.route) }
+            )
+        }
+
+        composable(NavRoutes.Tienda.route) {
+            TiendaScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+            )
+        }
+
+        composable(NavRoutes.Logros.route) {
+            LogrosScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
             )
         }
 
@@ -120,7 +151,11 @@ fun AppNavigation() {
 
         composable(NavRoutes.Notificaciones.route) {
             NotificacionesScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
             )
         }
 
@@ -129,12 +164,38 @@ fun AppNavigation() {
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { /* Ya estamos aquí */ },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToMisAdopciones = { navController.navigate(NavRoutes.MisAdopciones.route) },
+                onNavigateToMisPublicaciones = { navController.navigate(NavRoutes.MisPublicaciones.route) },
                 onLogout = {
                     navController.navigate(NavRoutes.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             ) 
+        }
+
+        composable(NavRoutes.MisAdopciones.route) {
+            MisAdopcionesScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
+                onNavigateToDetail = { id, nombre, edad, ubicacion, url ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
+                }
+            )
+        }
+
+        composable(NavRoutes.MisPublicaciones.route) {
+            MisPublicacionesScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+            )
         }
 
         composable(NavRoutes.Favoritos.route) {
@@ -186,8 +247,19 @@ fun AppNavigation() {
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
-                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) }
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToRegistroRefugio = { navController.navigate(NavRoutes.RegistroRefugio.route) }
             ) 
+        }
+
+        composable(NavRoutes.RegistroRefugio.route) {
+            RegistroRefugioScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+            )
         }
 
         composable(NavRoutes.RegistroMascota.route) {
@@ -222,8 +294,68 @@ fun AppNavigation() {
                 onNavigateToGestionHistorias = { navController.navigate(NavRoutes.GestionHistorias.route) },
                 onNavigateToGestionAdopciones = { navController.navigate(NavRoutes.GestionAdopciones.route) },
                 onNavigateToGestionComentarios = { navController.navigate(NavRoutes.GestionComentarios.route) },
+                onNavigateToGestionRefugios = { navController.navigate(NavRoutes.GestionRefugios.route) },
+                onNavigateToReportesDetallados = { navController.navigate(NavRoutes.ReportesDetallados.route) },
+                onNavigateToGestionTienda = { navController.navigate(NavRoutes.GestionTienda.route) },
+                onNavigateToHistorialVentas = { navController.navigate(NavRoutes.HistorialVentas.route) },
                 onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) },
                 onNavigateToHistorias = { navController.navigate(NavRoutes.HistoriasExito.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.HistorialVentas.route) {
+            HistorialComprasScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.GestionTienda.route) {
+            TiendaAdminScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.GestionRefugios.route) {
+            GestionRefugiosScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.ReportesDetallados.route) {
+            ReportesScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
                 onLogout = {
                     navController.navigate(NavRoutes.Login.route) {
                         popUpTo(0) { inclusive = true }
@@ -301,7 +433,14 @@ fun AppNavigation() {
             GestionComentariosScreen(onNavigateBack = { navController.popBackStack() })
         }
         
-        composable(NavRoutes.Nutricion.route) { PantallaNutricion() }
+        composable(NavRoutes.Nutricion.route) {
+            PantallaNutricion(
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+            )
+        }
         composable(NavRoutes.RequisitosAdopcion.route) {
             QueNesecitoParaAdoptar(
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
@@ -351,7 +490,25 @@ fun AppNavigation() {
         composable(NavRoutes.StepOne.route) { StepOneScreen(vm = adoptionViewModel, onNext = { navController.navigate(NavRoutes.StepTwo.route) }) }
         composable(NavRoutes.StepTwo.route) { StepTwoScreen(vm = adoptionViewModel, onNext = { navController.navigate(NavRoutes.StepThree.route) }) }
         composable(NavRoutes.StepThree.route) { StepThreeScreen(vm = adoptionViewModel, onNext = { navController.navigate(NavRoutes.StepFour.route) }) }
-        composable(NavRoutes.StepFour.route) { StepFourScreen(vm = adoptionViewModel, onFinish = { navController.popBackStack(NavRoutes.Home.route, false) }) }
-        composable(NavRoutes.AdoptionConfirmation.route) { AdoptionConfirmationScreen(onNavigateToHome = { navController.navigate(NavRoutes.Home.route) }) }
+        composable(NavRoutes.StepFour.route) { StepFourScreen(vm = adoptionViewModel, onFinish = { requestId ->
+            navController.navigate(NavRoutes.AdoptionConfirmation.createRoute(requestId)) {
+                popUpTo(NavRoutes.StepOne.route) { inclusive = true }
+            }
+        }) }
+        
+        composable(
+            route = NavRoutes.AdoptionConfirmation.route,
+            arguments = listOf(navArgument("requestId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val requestId = backStackEntry.arguments?.getString("requestId") ?: ""
+            AdoptionConfirmationScreen(
+                requestId = requestId,
+                onNavigateToHome = { 
+                    navController.navigate(NavRoutes.Home.route) {
+                        popUpTo(NavRoutes.Home.route) { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }

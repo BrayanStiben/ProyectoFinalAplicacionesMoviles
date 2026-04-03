@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.core.utils.CampoValidado
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.modelos.UserRole
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val notificacionRepository: NotificacionRepository,
+    private val logrosRepository: LogrosRepository
 ) : ViewModel() {
 
     val email = CampoValidado("") { value ->
@@ -47,6 +51,18 @@ class LoginViewModel @Inject constructor(
                 val result = authRepository.login(email.value, password.value)
                 if (result.isSuccess) {
                     val user = result.getOrNull()
+                    
+                    // --- REQUISITO: NOTIFICACIÓN Y LOGRO SOLO AL LOGUEARSE ---
+                    user?.let {
+                        logrosRepository.ganarLogro(it.id, "sys_bienvenido")
+                        notificacionRepository.addNotificacion(
+                            titulo = "¡Hola de nuevo, ${it.name}! 🐾",
+                            mensaje = "Qué alegría verte. Explora las nuevas mascotas que buscan un hogar hoy.",
+                            tipo = "INFO",
+                            userId = it.id
+                        )
+                    }
+
                     _loginState.value = LoginResult.Success(isAdmin = user?.role == UserRole.ADMIN)
                 } else {
                     _loginState.value = LoginResult.Error("Credenciales incorrectas")

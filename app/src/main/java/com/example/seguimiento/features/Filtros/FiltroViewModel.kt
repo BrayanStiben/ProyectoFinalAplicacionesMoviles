@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
+import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -13,9 +14,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FiltroViewModel @Inject constructor(
-    private val mascotaRepository: MascotaRepository
+    private val mascotaRepository: MascotaRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     
+    val currentUser = authRepository.currentUser
+
     // Estados de habilitación (Inician en true)
     var habilitarNombre by mutableStateOf(true)
     var habilitarTipo by mutableStateOf(true)

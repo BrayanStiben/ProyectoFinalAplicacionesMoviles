@@ -58,6 +58,24 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindNotificacionRepository(
+        notificacionRepositoryImpl: NotificacionRepositoryImpl
+    ): NotificacionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLogrosRepository(
+        logrosRepositoryImpl: LogrosRepositoryImpl
+    ): LogrosRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTiendaRepository(
+        tiendaRepositoryImpl: TiendaRepositoryImpl
+    ): TiendaRepository
+
+    @Binds
+    @Singleton
     abstract fun bindAIService(
         aiServiceImpl: AIServiceImpl
     ): AIService
