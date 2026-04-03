@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
+import com.example.seguimiento.features.necesidades.SeccionNecesidades
+import com.example.seguimiento.features.asifunciona.SeccionAsiFunciona
+import com.example.seguimiento.features.acercade.SeccionAcercaDe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,37 +125,31 @@ fun PantallaNutricion(
                             selectedLabelColor = Color.White,
                             containerColor = Color.White,
                             labelColor = cafeApp
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isSelected,
-                            borderColor = Color.LightGray,
-                            selectedBorderColor = naranjaApp,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 2.dp
                         )
                     )
                 }
             }
 
-            // --- CONTENIDO ---
-            if (listaRegulaciones.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = naranjaApp)
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(listaRegulaciones) { item ->
-                        TarjetaInformativa(item) {
-                            urlToOpen = item.url
-                            showDialog = true
+            // --- CONTENIDO DINÁMICO ---
+            Box(modifier = Modifier.weight(1f)) {
+                when (categoriaSel) {
+                    "nutricion" -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(listaRegulaciones) { item ->
+                                TarjetaInformativa(item) {
+                                    urlToOpen = item.url
+                                    showDialog = true
+                                }
+                            }
                         }
                     }
-                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    "necesidades" -> SeccionNecesidades()
+                    "asifunciona" -> SeccionAsiFunciona()
+                    "acerca" -> SeccionAcercaDe()
                 }
             }
         }

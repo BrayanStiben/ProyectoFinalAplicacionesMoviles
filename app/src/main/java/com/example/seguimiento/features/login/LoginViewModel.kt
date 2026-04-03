@@ -54,7 +54,7 @@ class LoginViewModel @Inject constructor(
                     
                     // --- REQUISITO: NOTIFICACIÓN Y LOGRO SOLO AL LOGUEARSE ---
                     user?.let {
-                        logrosRepository.ganarLogro(it.id, "sys_bienvenido")
+                        logrosRepository.ganarLogro(it.id, "sys_1")
                         notificacionRepository.addNotificacion(
                             titulo = "¡Hola de nuevo, ${it.name}! 🐾",
                             mensaje = "Qué alegría verte. Explora las nuevas mascotas que buscan un hogar hoy.",

@@ -55,6 +55,9 @@ class AdopcionViewModel @Inject constructor(
             mascotaRepository.actualizarEstado(id, PublicacionEstado.RECHAZADA, motivo)
             
             if (mascota != null) {
+                // GANAR LOGRO: Popular (por rechazo de publicación)
+                logrosRepository.ganarLogro(mascota.autorId, "per_2")
+
                 notificacionRepository.addNotificacion(
                     titulo = "Publicación Rechazada ❌",
                     mensaje = "Tu publicación de ${mascota.nombre} no fue aprobada. Motivo: $motivo",

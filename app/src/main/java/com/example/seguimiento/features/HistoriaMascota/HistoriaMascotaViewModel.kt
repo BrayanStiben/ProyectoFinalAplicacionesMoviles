@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoriaMascotaViewModel @Inject constructor(
     private val repository: HistoriaFelizRepository,
-    private val authRepository: AuthRepository,
+    val authRepository: AuthRepository,
     private val notificacionRepository: NotificacionRepository
 ) : ViewModel() {
 

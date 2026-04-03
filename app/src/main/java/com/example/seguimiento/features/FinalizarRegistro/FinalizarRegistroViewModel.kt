@@ -95,17 +95,26 @@ class FinalizarRegistroViewModel @Inject constructor(
     fun finalizarRegistro(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _estaCargando.value = true
-            val user = authRepository.currentUser.value
-            if (user != null) {
+            try {
+                // Forzamos la espera al usuario actual. 
+                // filterNotNull().first() se suscribe al StateFlow y espera el primer valor no nulo.
+                val user = authRepository.currentUser.filterNotNull().first()
+                
                 val updatedUser = user.copy(
                     departamento = _deptoSeleccionado.value,
                     city = _municipioSeleccionado.value,
                     profilePictureUrl = _fotoPerfil.value
                 )
-                authRepository.register(updatedUser)
-                onSuccess()
+                
+                val result = authRepository.register(updatedUser)
+                if (result.isSuccess) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _estaCargando.value = false
             }
-            _estaCargando.value = false
         }
     }
 }

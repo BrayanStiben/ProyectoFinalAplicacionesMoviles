@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ChevronRight
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -163,7 +163,7 @@ fun TarjetaAdopcionExitosa(item: AdopcionConMascota, onClick: () -> Unit) {
             }
             
             Icon(
-                Icons.AutoMirrored.Filled.ChevronRight,
+                Icons.Default.ChevronRight,
                 contentDescription = null, 
                 tint = Color.LightGray
             )

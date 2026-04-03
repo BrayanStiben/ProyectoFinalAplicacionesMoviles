@@ -19,7 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import kotlin.math.absoluteValue
 import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
+import com.example.seguimiento.Dominio.modelos.UserRole
+import com.example.seguimiento.core.navigation.AdminBottomBar
 
 @Composable
 fun PantallaPetAdopta(
@@ -41,12 +43,17 @@ fun PantallaPetAdopta(
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToEstadisticas: () -> Unit = {},
+    onNavigateToListaSolicitudes: () -> Unit = {},
+    onNavigateToEncontrarMascotas: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     val textoHistoria by viewModel.textoHistoria.collectAsState()
     val mascotaNombre by viewModel.mascotaNombre.collectAsState()
     val imagenSeleccionada by viewModel.imagenSeleccionada.collectAsState()
     val historiasAprobadas by viewModel.historiasAprobadas.collectAsState()
+    val currentUser by viewModel.authRepository.currentUser.collectAsState()
 
     val estadoPager = rememberPagerState(pageCount = { historiasAprobadas.size.coerceAtLeast(1) })
     val scrollState = rememberScrollState()
@@ -61,11 +68,21 @@ fun PantallaPetAdopta(
 
     Scaffold(
         bottomBar = {
-            BottomNavPet(selectedItem = 0) { index -> 
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
+            if (currentUser?.role == UserRole.ADMIN) {
+                AdminBottomBar(
+                    currentRoute = "historias_exito",
+                    onNavigateToEstadisticas = onNavigateToEstadisticas,
+                    onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
+                    onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
+                    onLogout = onLogout
+                )
+            } else {
+                BottomNavPet(selectedItem = 0) { index -> 
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
                 }
             }
         }
@@ -193,7 +210,7 @@ fun PantallaPetAdopta(
                         Button(
                             onClick = { 
                                 viewModel.compartir {
-                                    onNavigateBack() // Vuelve a la pantalla anterior (Estadísticas si es admin)
+                                    onNavigateBack()
                                 }
                             },
                             modifier = Modifier.fillMaxWidth().height(55.dp),
@@ -360,7 +377,7 @@ fun PantallaPetAdopta(
 
 @Composable
 fun BottomNavPet(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val NaranjaAppColor = Color(0xFFE67E22)
+    val naranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
             Triple("Inicio", Icons.Default.Home, 0),
@@ -376,8 +393,8 @@ fun BottomNavPet(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                 selected = selectedItem == index,
                 onClick = { onItemSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaAppColor,
-                    selectedTextColor = NaranjaAppColor,
+                    selectedIconColor = naranjaNav,
+                    selectedTextColor = naranjaNav,
                     unselectedIconColor = Color.Gray,
                     indicatorColor = Color(0xFFFFF4C2)
                 )

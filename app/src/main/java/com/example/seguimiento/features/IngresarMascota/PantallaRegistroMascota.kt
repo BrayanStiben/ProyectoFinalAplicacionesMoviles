@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.seguimiento.Dominio.modelos.UserRole
+import com.example.seguimiento.core.navigation.AdminBottomBar
 import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.BottomNav
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,9 +36,14 @@ fun PantallaRegistroMascota(
     onNavigateBack: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToFiltros: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToEstadisticas: () -> Unit = {},
+    onNavigateToListaSolicitudes: () -> Unit = {},
+    onNavigateToEncontrarMascotas: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     val estado by viewModel.estado.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val selector = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         viewModel.alSeleccionarFoto(it)
     }
@@ -70,11 +77,21 @@ fun PantallaRegistroMascota(
             )
         },
         bottomBar = {
-            BottomNav(selectedItem = 0) { index ->
-                when(index) {
-                    0 -> onNavigateToHome()
-                    1 -> onNavigateToFiltros()
-                    3 -> onNavigateToProfile()
+            if (currentUser?.role == UserRole.ADMIN) {
+                AdminBottomBar(
+                    currentRoute = "encontrar_mascotas",
+                    onNavigateToEstadisticas = onNavigateToEstadisticas,
+                    onNavigateToListaSolicitudes = onNavigateToListaSolicitudes,
+                    onNavigateToEncontrarMascotas = onNavigateToEncontrarMascotas,
+                    onLogout = onLogout
+                )
+            } else {
+                BottomNav(selectedItem = 0) { index ->
+                    when(index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToFiltros()
+                        3 -> onNavigateToProfile()
+                    }
                 }
             }
         }

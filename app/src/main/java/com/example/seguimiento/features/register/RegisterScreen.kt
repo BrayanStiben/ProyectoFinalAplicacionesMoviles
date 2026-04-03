@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -130,7 +131,17 @@ fun RegisterScreen(
                 onClick = { onNavigateToLogin() }, 
                 modifier = Modifier.offset(y = (-100).dp)
             ) {
-                Text("¿Ya tienes cuenta? Inicia sesión", color = Color(0xFFD37506), fontWeight = FontWeight.ExtraBold)
+                Text(
+                    text = "¿Ya tienes cuenta? Inicia sesión", 
+                    color = Color.White, 
+                    fontWeight = FontWeight.Black,
+                    style = LocalTextStyle.current.copy(
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.5f),
+                            blurRadius = 8f
+                        )
+                    )
+                )
             }
             
             Spacer(modifier = Modifier.height(20.dp))
@@ -138,7 +149,9 @@ fun RegisterScreen(
 
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp) // Elevamos el snackbar para que sea visible
         )
     }
 }

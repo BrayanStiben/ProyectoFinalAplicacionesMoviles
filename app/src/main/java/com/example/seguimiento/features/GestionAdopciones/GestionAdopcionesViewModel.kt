@@ -6,6 +6,7 @@ import com.example.seguimiento.Dominio.modelos.AdoptionRequest
 import com.example.seguimiento.Dominio.modelos.AdoptionRequestStatus
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
+import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
@@ -21,7 +22,8 @@ class GestionAdopcionesViewModel @Inject constructor(
     private val adoptionRepository: AdoptionRepository,
     private val mascotaRepository: MascotaRepository,
     private val userRepository: UserRepository,
-    private val notificacionRepository: NotificacionRepository
+    private val notificacionRepository: NotificacionRepository,
+    private val logrosRepository: LogrosRepository
 ) : ViewModel() {
 
     val requests: StateFlow<List<AdoptionRequest>> = adoptionRepository.requests
@@ -49,6 +51,9 @@ class GestionAdopcionesViewModel @Inject constructor(
             
             // Incrementar contador de rechazos en el usuario
             userRepository.incrementRejectionCount(request.userId)
+            
+            // GANAR LOGRO: Influencer (por rechazo de adopción)
+            logrosRepository.ganarLogro(request.userId, "com_4")
             
             val user = userRepository.findById(request.userId)
             if (user != null) {

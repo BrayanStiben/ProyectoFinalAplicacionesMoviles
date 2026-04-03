@@ -3,83 +3,93 @@ package com.example.seguimiento.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.seguimiento.features.home.HomeScreen
-import com.example.seguimiento.features.home.MapaFeedScreen
-import com.example.seguimiento.features.login.LoginScreen
-import com.example.seguimiento.features.register.RegisterScreen
+import com.example.seguimiento.features.Loading.LoadingScreen
+import com.example.seguimiento.features.CertificadoAdopcion.CertificadoAdopcionScreen
+import com.example.seguimiento.features.CertificadoRechazo.CertificadoRechazoScreen
+import com.example.seguimiento.features.ConfirmacionMascotaFeliz.AdoptionConfirmationScreen
+import com.example.seguimiento.features.EncontrarMascotas.PantallaAdopcion
 import com.example.seguimiento.features.EnvioDeCodigo.EnvioDeCodigoScreen
-import com.example.seguimiento.features.FinalizarRegistro.FinalizarRegistroScreen
-import com.example.seguimiento.features.OlvidoContrasena.OlvidoContrasenaScreen
-import com.example.seguimiento.features.PantallaRecuperarContrasena.PantallaRecuperarContrasena
-import com.example.seguimiento.features.MiPerfil.ProfileScreen
-import com.example.seguimiento.features.EsperandoPorTi.EstaEsperandoPorTiScreen
-import com.example.seguimiento.features.nutricionanimal.PantallaNutricion
-import com.example.seguimiento.features.QueNesecitoParaAdoptar.QueNesecitoParaAdoptar
-import com.example.seguimiento.features.Refugios.RefugiosScreen
-import com.example.seguimiento.features.Refugios.RegistroRefugioScreen
-import com.example.seguimiento.features.Refugios.GestionRefugiosScreen
+import com.example.seguimiento.features.Estadisticas.EstadisticasScreen
+import com.example.seguimiento.features.Estadisticas.GestionHistoriasScreen
+import com.example.seguimiento.features.Estadisticas.GestionUsuariosScreen
+import com.example.seguimiento.features.Favoritos.FavoritosScreen
 import com.example.seguimiento.features.Filtros.PantallaFiltrosAvanzado
-import com.example.seguimiento.features.HistoriaMascota.PantallaPetAdopta
+import com.example.seguimiento.features.FinalizarRegistro.FinalizarRegistroScreen
 import com.example.seguimiento.features.FormularioDeAdopction.AdoptionViewModel
 import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.StepOneScreen
 import com.example.seguimiento.features.FormularioDeAdopction.StepTwoScreen.StepTwoScreen
 import com.example.seguimiento.features.FormularioDeAdopction.StepThreeScreen.StepThreeScreen
 import com.example.seguimiento.features.FormularioDeAdopction.StepFourScreen.StepFourScreen
-import com.example.seguimiento.features.ConfirmacionMascotaFeliz.AdoptionConfirmationScreen
-import com.example.seguimiento.features.IngresarMascota.PantallaRegistroMascota
-import com.example.seguimiento.features.Estadisticas.EstadisticasScreen
-import com.example.seguimiento.features.GestionUsuarios.GestionUsuariosScreen
-import com.example.seguimiento.features.GestionHistorias.GestionHistoriasScreen
 import com.example.seguimiento.features.GestionAdopciones.GestionAdopcionesScreen
 import com.example.seguimiento.features.GestionComentarios.GestionComentariosScreen
-import com.example.seguimiento.features.CertificadoAdopcion.CertificadoAdopcionScreen
-import com.example.seguimiento.features.CertificadoRechazo.CertificadoRechazoScreen
+import com.example.seguimiento.features.HistoriaMascota.PantallaPetAdopta
+import com.example.seguimiento.features.IngresarMascota.PantallaRegistroMascota
 import com.example.seguimiento.features.ListaDeSolicitudes.ListaSolicitudesScreen
-import com.example.seguimiento.features.EncontrarMascotas.PantallaAdopcion
+import com.example.seguimiento.features.Mercado.TiendaScreen
+import com.example.seguimiento.features.MercadoAdmin.TiendaAdminScreen
+import com.example.seguimiento.features.MiPerfil.ProfileScreen
 import com.example.seguimiento.features.Notificaciones.NotificacionesScreen
-import com.example.seguimiento.features.Favoritos.FavoritosScreen
+import com.example.seguimiento.features.OlvidoContrasena.OlvidoContrasenaScreen
+import com.example.seguimiento.features.PantallaRecuperarContrasena.PantallaRecuperarContrasena
+import com.example.seguimiento.features.QueNesecitoParaAdoptar.QueNesecitoParaAdoptar
+import com.example.seguimiento.features.Refugios.GestionRefugiosScreen
+import com.example.seguimiento.features.Refugios.RegistroRefugioScreen
+import com.example.seguimiento.features.ReportesAdmin.ReportesScreen
+import com.example.seguimiento.features.home.HomeScreen
+import com.example.seguimiento.features.home.MapaFeedScreen
+import com.example.seguimiento.features.historialcompras.HistorialComprasScreen
+import com.example.seguimiento.features.login.LoginScreen
+import com.example.seguimiento.features.nutricionanimal.PantallaNutricion
+import com.example.seguimiento.features.register.RegisterScreen
+import com.example.seguimiento.features.EsperandoPorTi.EstaEsperandoPorTiScreen
 import com.example.seguimiento.features.Logros.LogrosScreen
 import com.example.seguimiento.features.MisAdopciones.MisAdopcionesScreen
 import com.example.seguimiento.features.MisPublicaciones.MisPublicacionesScreen
-import com.example.seguimiento.features.ReportesAdmin.ReportesScreen
-import com.example.seguimiento.features.Mercado.TiendaScreen
-import com.example.seguimiento.features.MercadoAdmin.TiendaAdminScreen
-import com.example.seguimiento.features.HistorialCompras.HistorialComprasScreen
-import com.example.seguimiento.Loading.LoadingScreen
+import com.example.seguimiento.features.Refugios.RefugiosScreen
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val adoptionViewModel: AdoptionViewModel = hiltViewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = NavRoutes.Loading.route
-    ) {
+    NavHost(navController = navController, startDestination = NavRoutes.Loading.route) {
         composable(NavRoutes.Loading.route) {
-            LoadingScreen(
-                onFinished = {
-                    navController.navigate(NavRoutes.Login.route) {
-                        popUpTo(NavRoutes.Loading.route) { inclusive = true }
-                    }
+            LoadingScreen(onFinished = {
+                navController.navigate(NavRoutes.Login.route) {
+                    popUpTo(NavRoutes.Loading.route) { inclusive = true }
                 }
-            )
+            })
         }
 
         composable(NavRoutes.Login.route) {
             LoginScreen(
                 onLoginSuccess = { isAdmin ->
-                    val destination = if (isAdmin) NavRoutes.Estadisticas.route else NavRoutes.Home.route
-                    navController.navigate(destination) {
+                    val dest = if (isAdmin) NavRoutes.Estadisticas.route else NavRoutes.Home.route
+                    navController.navigate(dest) {
                         popUpTo(NavRoutes.Login.route) { inclusive = true }
                     }
                 },
                 onNavigateToRegister = { navController.navigate(NavRoutes.Register.route) },
                 onNavigateToForgotPassword = { navController.navigate(NavRoutes.OlvidoContrasena.route) }
+            )
+        }
+
+        composable(NavRoutes.Register.route) {
+            RegisterScreen(
+                onNavigateToFinalize = { navController.navigate(NavRoutes.FinalizarRegistro.route) },
+                onNavigateToLogin = { navController.popBackStack() }
+            )
+        }
+
+        composable(NavRoutes.FinalizarRegistro.route) {
+            FinalizarRegistroScreen(
+                onRegistrationFinished = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(NavRoutes.Register.route) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -132,23 +142,6 @@ fun AppNavigation() {
             )
         }
 
-        composable(NavRoutes.Register.route) {
-            RegisterScreen(
-                onNavigateToFinalize = { navController.navigate(NavRoutes.FinalizarRegistro.route) },
-                onNavigateToLogin = { navController.popBackStack() }
-            )
-        }
-
-        composable(NavRoutes.FinalizarRegistro.route) {
-            FinalizarRegistroScreen(
-                onRegistrationFinished = { 
-                    navController.navigate(NavRoutes.Login.route) {
-                        popUpTo(NavRoutes.Register.route) { inclusive = true }
-                    } 
-                }
-            )
-        }
-
         composable(NavRoutes.Notificaciones.route) {
             NotificacionesScreen(
                 onNavigateBack = { navController.popBackStack() },
@@ -159,7 +152,7 @@ fun AppNavigation() {
             )
         }
 
-        composable(NavRoutes.Profile.route) { 
+        composable(NavRoutes.Profile.route) {
             ProfileScreen(
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
@@ -172,7 +165,7 @@ fun AppNavigation() {
                         popUpTo(0) { inclusive = true }
                     }
                 }
-            ) 
+            )
         }
 
         composable(NavRoutes.MisAdopciones.route) {
@@ -239,17 +232,17 @@ fun AppNavigation() {
                 onNavigateToCertificado = { reqId -> navController.navigate(NavRoutes.CertificadoAdopcion.createRoute(reqId)) },
                 onNavigateToRechazo = { reqId -> navController.navigate(NavRoutes.CertificadoRechazo.createRoute(reqId)) },
                 adoptionViewModel = adoptionViewModel
-            ) 
+            )
         }
 
-        composable(NavRoutes.Refugios.route) { 
+        composable(NavRoutes.Refugios.route) {
             RefugiosScreen(
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
                 onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
                 onNavigateToRegistroRefugio = { navController.navigate(NavRoutes.RegistroRefugio.route) }
-            ) 
+            )
         }
 
         composable(NavRoutes.RegistroRefugio.route) {
@@ -267,7 +260,15 @@ fun AppNavigation() {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
-                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -281,7 +282,15 @@ fun AppNavigation() {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
-                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -449,31 +458,44 @@ fun AppNavigation() {
                 onNavigateToStepOne = { navController.navigate(NavRoutes.StepOne.route) }
             )
         }
-        composable(NavRoutes.FiltrosAvanzados.route) { PantallaFiltrosAvanzado() }
-        composable(NavRoutes.HistoriasExito.route) { PantallaPetAdopta() }
-        
-        composable(NavRoutes.OlvidoContrasena.route) { 
-            OlvidoContrasenaScreen(onNavigateToCode = { email -> 
-                navController.navigate("${NavRoutes.EnvioCodigo.route}/$email")
-            }) 
+
+        composable(NavRoutes.HistoriasExito.route) {
+            PantallaPetAdopta(
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEstadisticas = { navController.navigate(NavRoutes.Estadisticas.route) },
+                onNavigateToListaSolicitudes = { navController.navigate(NavRoutes.ListaSolicitudes.route) },
+                onNavigateToEncontrarMascotas = { navController.navigate(NavRoutes.EncontrarMascotas.route) },
+                onLogout = {
+                    navController.navigate(NavRoutes.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.OlvidoContrasena.route) {
+            OlvidoContrasenaScreen(
+                onNavigateToCode = { email -> navController.navigate(NavRoutes.EnvioCodigo.route + "/$email") }
+            )
         }
 
         composable(
-            route = "${NavRoutes.EnvioCodigo.route}/{email}",
+            route = NavRoutes.EnvioCodigo.route + "/{email}",
             arguments = listOf(navArgument("email") { type = NavType.StringType })
         ) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             EnvioDeCodigoScreen(
                 email = email,
-                onCodeVerified = { emailVerified ->
-                    navController.navigate("${NavRoutes.RecuperarContrasena.route}/$emailVerified")
-                },
+                onCodeVerified = { emailRec -> navController.navigate(NavRoutes.RecuperarContrasena.route + "/$emailRec") },
                 onBackToLogin = { navController.navigate(NavRoutes.Login.route) }
             )
         }
 
         composable(
-            route = "${NavRoutes.RecuperarContrasena.route}/{email}",
+            route = NavRoutes.RecuperarContrasena.route + "/{email}",
             arguments = listOf(navArgument("email") { type = NavType.StringType })
         ) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
@@ -495,7 +517,7 @@ fun AppNavigation() {
                 popUpTo(NavRoutes.StepOne.route) { inclusive = true }
             }
         }) }
-        
+
         composable(
             route = NavRoutes.AdoptionConfirmation.route,
             arguments = listOf(navArgument("requestId") { type = NavType.StringType })
@@ -508,6 +530,15 @@ fun AppNavigation() {
                         popUpTo(NavRoutes.Home.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(NavRoutes.FiltrosAvanzados.route) {
+            PantallaFiltrosAvanzado(
+                onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
+                onNavigateToFiltros = { /* ya aqui */ },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
             )
         }
     }

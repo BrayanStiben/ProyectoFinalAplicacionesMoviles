@@ -2,7 +2,6 @@ package com.example.seguimiento.features.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -10,7 +9,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -23,13 +21,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.seguimiento.Dominio.modelos.Logro
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.R
 
@@ -57,9 +52,9 @@ fun HomeScreen(
     val userProfilePicture by viewModel.userProfilePicture.collectAsState()
     val mascotasFeed by viewModel.mascotasFeed.collectAsState()
     val mascotasRecomendadas by viewModel.mascotasRecomendadas.collectAsState()
-    val selectedItem by viewModel.selectedNavItem.collectAsState()
     val filtroCategoria by viewModel.filtroCategoria.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
+    val notificaciones by viewModel.notificaciones.collectAsState()
 
     val categorias = listOf("Todos", "Perro", "Gato", "Otro")
 
@@ -91,7 +86,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .background(Color(0xFFFDFBFA))
         ) {
-            // --- HEADER SIN LÍNEAS NI RANGOS ---
+            // --- HEADER LIMPIO ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,48 +106,46 @@ fun HomeScreen(
                         Text("${currentUser?.points ?: 0} pts", color = Color.White.copy(0.8f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
                     
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = onNavigateToLogros) {
-                            Icon(Icons.Default.EmojiEvents, null, tint = Color.White, modifier = Modifier.size(28.dp))
-                        }
+                    IconButton(onClick = onNavigateToLogros) {
+                        Icon(Icons.Default.EmojiEvents, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                    }
 
-                        IconButton(onClick = onNavigateToNotificaciones) {
-                            BadgedBox(badge = {
-                                if (viewModel.notificaciones.value.any { !it.leida }) {
-                                    Badge(containerColor = Color.Red)
-                                }
-                            }) {
-                                Icon(Icons.Default.Notifications, null, tint = Color.White, modifier = Modifier.size(28.dp))
+                    IconButton(onClick = onNavigateToNotificaciones) {
+                        BadgedBox(badge = {
+                            if (notificaciones.any { !it.leida }) {
+                                Badge(containerColor = Color.Red)
                             }
+                        }) {
+                            Icon(Icons.Default.Notifications, null, tint = Color.White, modifier = Modifier.size(28.dp))
                         }
+                    }
 
-                        Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(8.dp))
 
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.2f))
-                                .border(2.dp, Color.White, CircleShape)
-                                .clickable { onNavigateToProfile() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (userProfilePicture?.isNotEmpty() == true) {
-                                AsyncImage(
-                                    model = userProfilePicture,
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
-                                    contentScale = ContentScale.Crop
-                                )
-                            } else {
-                                Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(28.dp))
-                            }
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.2f))
+                            .border(2.dp, Color.White, CircleShape)
+                            .clickable { onNavigateToProfile() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (userProfilePicture?.isNotEmpty() == true) {
+                            AsyncImage(
+                                model = userProfilePicture,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(28.dp))
                         }
                     }
                 }
             }
 
-            // --- CATEGORÍAS MEJORADAS CON TIENDA ---
+            // --- CATEGORÍAS ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,7 +158,7 @@ fun HomeScreen(
                 CategoryItem("Filtros", Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
             }
 
-            // --- FILTRO DE FEED ---
+            // --- RESTO DEL CONTENIDO ---
             Text(
                 "Explorar Publicaciones",
                 fontWeight = FontWeight.Bold,
@@ -192,19 +185,15 @@ fun HomeScreen(
                 }
             }
 
-            // --- FEED DE PUBLICACIONES (CAROUSEL) ---
             if (mascotasFeed.isEmpty()) {
                 Box(Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
                     Text("No hay publicaciones en esta categoría", color = Color.Gray)
                 }
             } else {
                 val pagerState = rememberPagerState(pageCount = { mascotasFeed.size })
-                
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(130.dp),
+                    modifier = Modifier.fillMaxWidth().height(130.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     pageSpacing = 12.dp
                 ) { page ->
@@ -218,7 +207,6 @@ fun HomeScreen(
                 }
             }
 
-            // --- SECCIÓN RECOMENDADOS (DESTACADOS) ---
             Text(
                 "Recomendados para ti",
                 fontWeight = FontWeight.Bold,
@@ -227,10 +215,7 @@ fun HomeScreen(
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(start = 16.dp, bottom = 20.dp)
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 16.dp, bottom = 20.dp)
             ) {
                 mascotasRecomendadas.forEach { mascota ->
                     PetCard(mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl) {
@@ -239,16 +224,8 @@ fun HomeScreen(
                 }
             }
 
-            // --- HISTORIAS FELICES ---
-            Text(
-                "Historias Felices",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-            )
-
+            Text("Historias Felices", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp, bottom = 12.dp))
             HappyStoryCard { onNavigateToHistorias() }
-
             Spacer(modifier = Modifier.height(30.dp))
         }
     }
@@ -258,7 +235,6 @@ fun HomeScreen(
 fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClick: () -> Unit) {
     val isLiked = mascota.likerIds.contains(currentUserId)
     val otherLikes = if (isLiked) mascota.totalLikes - 1 else mascota.totalLikes
-    
     val textLikes = when {
         isLiked && otherLikes > 0 -> "Tú y $otherLikes personas"
         isLiked -> "Tú"
@@ -301,72 +277,25 @@ fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClic
 fun CategoryItem(label: String, color: Color, icon: ImageVector, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .clickable { onClick() }
-            .padding(8.dp)
+        modifier = Modifier.padding(horizontal = 4.dp).clip(RoundedCornerShape(15.dp)).clickable { onClick() }.padding(8.dp)
     ) {
-        Surface(
-            modifier = Modifier.size(60.dp),
-            color = color,
-            shape = RoundedCornerShape(15.dp),
-            shadowElevation = 4.dp
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+        Surface(modifier = Modifier.size(60.dp), color = color, shape = RoundedCornerShape(15.dp), shadowElevation = 4.dp) {
+            Box(contentAlignment = Alignment.Center) { Icon(imageVector = icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(28.dp)) }
         }
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(top = 8.dp),
-            color = Color.Gray
-        )
+        Text(text = label, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp), color = Color.Gray)
     }
 }
 
 @Composable
 fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: () -> Unit) {
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        modifier = Modifier
-            .width(160.dp)
-            .padding(end = 15.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
+    Card(shape = RoundedCornerShape(20.dp), modifier = Modifier.width(160.dp).padding(end = 15.dp), colors = CardDefaults.cardColors(containerColor = Color.White), elevation = CardDefaults.cardElevation(4.dp)) {
         Column {
-            AsyncImage(
-                model = url,
-                contentDescription = null,
-                modifier = Modifier
-                    .height(130.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.petadopticono),
-                error = painterResource(id = R.drawable.petadopticono)
-            )
+            AsyncImage(model = url, contentDescription = null, modifier = Modifier.height(130.dp).fillMaxWidth(), contentScale = ContentScale.Crop, placeholder = painterResource(id = R.drawable.petadopticono), error = painterResource(id = R.drawable.petadopticono))
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("$edad • $ciudad", fontSize = 12.sp, color = Color.Gray)
-                
                 Spacer(modifier = Modifier.height(10.dp) )
-                
-                Button(
-                    onClick = onClick,
-                    modifier = Modifier.fillMaxWidth().height(36.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
-                    contentPadding = PaddingValues(0.dp),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Adoptar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                }
+                Button(onClick = onClick, modifier = Modifier.fillMaxWidth().height(36.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(10.dp)) { Text("Adoptar", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
             }
         }
     }
@@ -374,99 +303,30 @@ fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: 
 
 @Composable
 fun HappyStoryCard(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .height(180.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp)
-    ) {
+    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(180.dp).clickable { onClick() }, shape = RoundedCornerShape(20.dp)) {
         Box {
-            AsyncImage(
-                model = "https://images.pexels.com/photos/4587995/pexels-photo-4587995.jpeg",
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.petadopticono),
-                error = painterResource(id = R.drawable.petadopticono)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Black.copy(0.7f))
-                        )
-                    )
-            )
-
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    "¡Max encontró hogar!",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-
-                Surface(
-                    color = Color(0xFFFF6D00),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        "Ver más",
-                        fontSize = 11.sp,
-                        color = Color.White,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
+            AsyncImage(model = "https://images.pexels.com/photos/4587995/pexels-photo-4587995.jpeg", contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop, placeholder = painterResource(id = R.drawable.petadopticono), error = painterResource(id = R.drawable.petadopticono))
+            Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(0.7f)))))
+            Row(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text("¡Max encontró hogar!", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Surface(color = Color(0xFFFF6D00), shape = RoundedCornerShape(8.dp)) { Text("Ver más", fontSize = 11.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) }
             }
         }
     }
 }
 
 @Composable
-fun BottomNav(
-    selectedItem: Int,
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToFiltros: () -> Unit = {},
-    onNavigateToFavoritos: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
-) {
-    val NaranjaNav = Color(0xFFE67E22)
+fun BottomNav(selectedItem: Int, onNavigateToHome: () -> Unit = {}, onNavigateToFiltros: () -> Unit = {}, onNavigateToFavoritos: () -> Unit = {}, onNavigateToProfile: () -> Unit = {}) {
+    val naranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
-        )
-
+        val items = listOf(Triple("Inicio", Icons.Default.Home, 0), Triple("Buscar", Icons.Default.Search, 1), Triple("Favs", Icons.Default.FavoriteBorder, 2), Triple("Perfil", Icons.Default.Person, 3))
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
                 icon = { Icon(icon, null) },
                 label = { Text(label) },
                 selected = selectedItem == index,
-                onClick = { 
-                    when(index) {
-                        0 -> onNavigateToHome()
-                        1 -> onNavigateToFiltros()
-                        2 -> onNavigateToFavoritos()
-                        3 -> onNavigateToProfile()
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = NaranjaNav,
-                    selectedTextColor = NaranjaNav,
-                    unselectedIconColor = Color.Gray,
-                    indicatorColor = Color(0xFFFFF4C2)
-                )
+                onClick = { when(index) { 0 -> onNavigateToHome(); 1 -> onNavigateToFiltros(); 2 -> onNavigateToFavoritos(); 3 -> onNavigateToProfile() } },
+                colors = NavigationBarItemDefaults.colors(selectedIconColor = naranjaNav, selectedTextColor = naranjaNav, unselectedIconColor = Color.Gray, indicatorColor = Color(0xFFFFF4C2))
             )
         }
     }

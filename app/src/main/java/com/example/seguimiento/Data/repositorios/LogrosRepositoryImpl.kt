@@ -32,14 +32,14 @@ class LogrosRepositoryImpl @Inject constructor(
         Logro("ado_2", "Adoptante", "Tienes una mascota adoptada.", iconResId = R.drawable.img10, categoria = "ADOPCION"),
         Logro("sys_2", "Usuario Verificado", "Tu cuenta ha sido validada.", iconResId = R.drawable.img11, categoria = "SISTEMA"),
         Logro("res_4", "Protector", "Tienes 4 mascotas publicadas.", iconResId = R.drawable.img12, categoria = "RESCATE"),
-        Logro("com_4", "Influencer", "Tus mascotas tienen muchos likes.", iconResId = R.drawable.img13, categoria = "COMUNIDAD"),
-        Logro("per_2", "Popular", "Muchos usuarios visitan tu perfil.", iconResId = R.drawable.img14, categoria = "PERFIL"),
-        Logro("ado_3", "Familia Multiespecie", "Adoptaste más de una mascota.", iconResId = R.drawable.petadopticono, categoria = "ADOPCION"),
-        Logro("sys_3", "Veterano", "Llevas un mes en la App.", iconResId = R.drawable.petadopticono, categoria = "SISTEMA"),
-        Logro("res_5", "Salvador", "Tienes 5 mascotas publicadas.", iconResId = R.drawable.petadopticono, categoria = "RESCATE"),
-        Logro("com_5", "Líder Comunitario", "Tus comentarios son muy valorados.", iconResId = R.drawable.petadopticono, categoria = "COMUNIDAD"),
-        Logro("per_3", "Estrella", "Lograste el rango máximo de perfil.", iconResId = R.drawable.petadopticono, categoria = "PERFIL"),
-        Logro("ado_4", "Adoptante de Leyenda", "Tienes 3 o más adopciones exitosas.", iconResId = R.drawable.petadopticono, categoria = "ADOPCION")
+        Logro("com_4", "Sin familiar", "Registro de adopción cancelado por el administrador.", iconResId = R.drawable.img13, categoria = "COMUNIDAD"),
+        Logro("per_2", "Malos comentarios", "Publicación rechazada por el administrador.", iconResId = R.drawable.img14, categoria = "PERFIL"),
+        Logro("ado_3", "Familia Multiespecie", "Adoptaste más de una mascota.", iconResId = R.drawable.img15, categoria = "ADOPCION"),
+        Logro("sys_3", "Veterano", "Llevas un mes en la App.", iconResId = R.drawable.img16, categoria = "SISTEMA"),
+        Logro("res_5", "Salvador", "Tienes 5 mascotas publicadas.", iconResId = R.drawable.img17, categoria = "RESCATE"),
+        Logro("com_5", "Líder Comunitario", "Tus comentarios son muy valorados.", iconResId = R.drawable.img18, categoria = "COMUNIDAD"),
+        Logro("per_3", "Estrella", "Lograste el rango máximo de perfil.", iconResId = R.drawable.img19, categoria = "PERFIL"),
+        Logro("ado_4", "Adoptante de Leyenda", "Tienes 3 o más adopciones exitosas.", iconResId = R.drawable.img20, categoria = "ADOPCION")
     )
 
     // Sincronizamos logros con los puntos de los usuarios quemados (100 pts por logro + 50 base)

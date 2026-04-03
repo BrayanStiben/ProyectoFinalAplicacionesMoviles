@@ -2,6 +2,7 @@ package com.example.seguimiento.features.EnvioDeCodigo
 
 import com.example.seguimiento.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,16 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -82,7 +79,7 @@ fun EnvioDeCodigoScreen(
 
             Card(
                 shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFDF5E6).copy(alpha = 0.98f)),
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.98f)),
                 elevation = CardDefaults.cardElevation(12.dp),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).offset(y = (-100).dp)
             ) {
@@ -131,7 +128,14 @@ fun EnvioDeCodigoScreen(
                                 isError = viewModel.errorCodigo,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 singleLine = true,
-                                shape = RoundedCornerShape(14.dp)
+                                shape = RoundedCornerShape(14.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    errorContainerColor = Color.White,
+                                    focusedBorderColor = Color(0xFFF37021),
+                                    unfocusedBorderColor = Color.LightGray
+                                )
                             )
                         }
                     }

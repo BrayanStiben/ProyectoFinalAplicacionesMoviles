@@ -1,4 +1,4 @@
-package com.example.seguimiento.Loading
+package com.example.seguimiento.features.Loading
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

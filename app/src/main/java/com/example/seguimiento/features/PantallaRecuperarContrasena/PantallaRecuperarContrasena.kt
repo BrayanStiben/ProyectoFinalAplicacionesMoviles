@@ -119,7 +119,7 @@ fun PantallaRecuperarContrasena(
                             value = password,
                             onValueChange = { viewModel.onPasswordChanged(it) },
                             label = { Text("Contraseña Nueva") },
-                            modifier = Modifier.fillMaxWidth().background(Color(0xFFF7E9D7), RoundedCornerShape(20.dp)),
+                            modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(20.dp)),
                             shape = RoundedCornerShape(20.dp),
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -127,7 +127,13 @@ fun PantallaRecuperarContrasena(
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff, null)
                                 }
-                            }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                focusedBorderColor = Color(0xFFE69160),
+                                unfocusedBorderColor = Color.LightGray
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(15.dp))
@@ -136,10 +142,16 @@ fun PantallaRecuperarContrasena(
                             value = confirmPassword,
                             onValueChange = { viewModel.onConfirmPasswordChanged(it) },
                             label = { Text("Confirmar Contraseña") },
-                            modifier = Modifier.fillMaxWidth().background(Color(0xFFF7E9D7), RoundedCornerShape(20.dp)),
+                            modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(20.dp)),
                             shape = RoundedCornerShape(20.dp),
                             visualTransformation = PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                focusedBorderColor = Color(0xFFE69160),
+                                unfocusedBorderColor = Color.LightGray
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(25.dp))

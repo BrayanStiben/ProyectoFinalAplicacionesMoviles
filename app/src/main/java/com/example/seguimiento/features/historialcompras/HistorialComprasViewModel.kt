@@ -1,4 +1,4 @@
-package com.example.seguimiento.features.HistorialCompras
+package com.example.seguimiento.features.historialcompras
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
