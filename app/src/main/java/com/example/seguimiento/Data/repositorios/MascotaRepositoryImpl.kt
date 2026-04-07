@@ -3,6 +3,7 @@ package com.example.seguimiento.Data.repositorios
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,9 @@ interface MascotaPublicApi {
 }
 
 @Singleton
-class MascotaRepositoryImpl @Inject constructor() : MascotaRepository {
+class MascotaRepositoryImpl @Inject constructor(
+    private val notificacionRepository: NotificacionRepository
+) : MascotaRepository {
 
     private val _mascotas = MutableStateFlow<List<Mascota>>(getInitialPlaceholder())
     override val mascotas: StateFlow<List<Mascota>> = _mascotas.asStateFlow()
@@ -67,7 +70,6 @@ class MascotaRepositoryImpl @Inject constructor() : MascotaRepository {
 
                 val fetchedList = mutableListOf<Mascota>()
                 
-                // Usamos solo Perros y Gatos para evitar conflictos de carga
                 for (i in 0 until 10) {
                     val isDog = i % 2 == 0
                     val type = if (isDog) "Perro" else "Gato"
@@ -139,6 +141,7 @@ class MascotaRepositoryImpl @Inject constructor() : MascotaRepository {
     override fun getById(id: String): Mascota? = _mascotas.value.find { it.id == id }
 
     override fun save(mascota: Mascota) {
+        val isNew = _mascotas.value.none { it.id == mascota.id }
         _mascotas.update { currentList ->
             val index = currentList.indexOfFirst { it.id == mascota.id }
             if (index != -1) {
@@ -146,6 +149,14 @@ class MascotaRepositoryImpl @Inject constructor() : MascotaRepository {
             } else {
                 currentList + mascota
             }
+        }
+        
+        if (isNew) {
+            notificacionRepository.addNotificacion(
+                titulo = "¡Nueva Mascota!",
+                mensaje = "Se ha publicado a ${mascota.nombre} para adopción.",
+                tipo = "SUCCESS"
+            )
         }
     }
 
@@ -175,10 +186,21 @@ class MascotaRepositoryImpl @Inject constructor() : MascotaRepository {
     }
 
     override fun actualizarEstado(id: String, estado: PublicacionEstado, motivo: String) {
+        val mascota = getById(id)
         _mascotas.update { currentList ->
             currentList.map {
                 if (it.id == id) it.copy(estado = estado, motivoRechazo = motivo) else it
             }
+        }
+        
+        mascota?.let {
+            val msj = if(estado == PublicacionEstado.VERIFICADA) "ha sido aprobada." else "ha sido rechazada."
+            notificacionRepository.addNotificacion(
+                titulo = "Estado de publicación",
+                mensaje = "Tu mascota ${it.nombre} $msj",
+                tipo = if(estado == PublicacionEstado.VERIFICADA) "SUCCESS" else "ERROR",
+                userId = it.autorId
+            )
         }
     }
 

@@ -4,6 +4,7 @@ import com.example.seguimiento.Dominio.modelos.CompraTienda
 import com.example.seguimiento.Dominio.modelos.Producto
 import com.example.seguimiento.Dominio.repositorios.TiendaRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,8 @@ interface OpenPetFoodFactsApi {
 
 @Singleton
 class TiendaRepositoryImpl @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificacionRepository: NotificacionRepository
 ) : TiendaRepository {
 
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
@@ -173,9 +175,27 @@ class TiendaRepositoryImpl @Inject constructor(
 
         _productos.update { list ->
             list.map { 
-                if (it.id == producto.id) it.copy(stock = it.stock - 1) else it
+                if (it.id == producto.id) {
+                    val newStock = it.stock - 1
+                    if (newStock == 0) {
+                        notificacionRepository.addNotificacion(
+                            titulo = "¡Producto Agotado!",
+                            mensaje = "El producto ${it.nombre} se ha quedado sin stock.",
+                            tipo = "WARNING"
+                        )
+                    }
+                    it.copy(stock = newStock)
+                } else it
             }
         }
+
+        notificacionRepository.addNotificacion(
+            titulo = "Compra Exitosa",
+            mensaje = "Has canjeado ${producto.nombre} por ${producto.precioPuntos} puntos.",
+            tipo = "SUCCESS",
+            userId = userId
+        )
+
         return Result.success(Unit)
     }
 }

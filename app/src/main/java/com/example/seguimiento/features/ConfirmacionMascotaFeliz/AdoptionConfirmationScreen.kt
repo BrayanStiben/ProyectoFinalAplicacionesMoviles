@@ -30,7 +30,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun AdoptionConfirmationScreen(
     requestId: String = "",
     viewModel: AdoptionViewModel = hiltViewModel(),
-    onNavigateToHome: () -> Unit = {}
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToFiltros: () -> Unit = {},
+    onNavigateToFavoritos: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     LaunchedEffect(requestId) {
         if (requestId.isNotEmpty()) {
@@ -72,7 +75,10 @@ fun AdoptionConfirmationScreen(
         bottomBar = {
             BottomNav(
                 selectedItem = -1,
-                onNavigateToHome = onNavigateToHome
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToFiltros = onNavigateToFiltros,
+                onNavigateToFavoritos = onNavigateToFavoritos,
+                onNavigateToProfile = onNavigateToProfile
             )
         }
     ) { padding ->

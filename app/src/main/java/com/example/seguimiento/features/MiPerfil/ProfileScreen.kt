@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -136,21 +138,25 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                         )
 
-                        // Botón: Mis Adopciones
-                        ProfileActionButton(
-                            text = "Mis Mascotas Adoptadas", 
-                            icon = Icons.Default.Pets,
-                            onClick = onNavigateToMisAdopciones
-                        )
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            // Botón: Mis Adopciones
+                            ProfileActionButton(
+                                text = "Mascotas Adoptadas", 
+                                icon = Icons.Default.Pets,
+                                onClick = onNavigateToMisAdopciones,
+                                backgroundColor = NaranjaApp,
+                                modifier = Modifier.weight(1f)
+                            )
 
-                        Spacer(Modifier.height(12.dp))
-
-                        // Botón: Mis Publicaciones
-                        ProfileActionButton(
-                            text = "Mis Publicaciones", 
-                            icon = Icons.Default.FormatListBulleted,
-                            onClick = onNavigateToMisPublicaciones
-                        )
+                            // Botón: Mis Publicaciones
+                            ProfileActionButton(
+                                text = "Mis Publicaciones", 
+                                icon = Icons.Default.FormatListBulleted,
+                                onClick = onNavigateToMisPublicaciones,
+                                backgroundColor = CafeApp,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
 
                         Spacer(Modifier.height(32.dp))
                         
@@ -178,24 +184,45 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileActionButton(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
+fun ProfileActionButton(
+    text: String, 
+    icon: ImageVector, 
+    onClick: () -> Unit, 
+    backgroundColor: Color,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
+        modifier = modifier
+            .height(110.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor.copy(alpha = 0.9f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f))
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxSize().padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Icon(icon, contentDescription = null, tint = NaranjaApp, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(16.dp))
-            Text(text, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = CafeApp, modifier = Modifier.weight(1f))
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+            }
+            Spacer(Modifier.height(10.dp))
+            Text(
+                text = text, 
+                fontSize = 14.sp, 
+                fontWeight = FontWeight.Black, 
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                lineHeight = 16.sp
+            )
         }
     }
 }

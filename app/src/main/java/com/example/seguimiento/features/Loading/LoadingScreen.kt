@@ -34,14 +34,18 @@ val TextPrimary = Color(0xFFFFFFFF)
 
 @Composable
 fun LoadingScreen(
-    onFinished: () -> Unit,
+    onFinished: (Boolean, Boolean) -> Unit,
     viewModel: LoadingViewModel = hiltViewModel()
 ) {
     val progress by viewModel.progress.collectAsState()
     val isFinished by viewModel.isFinished.collectAsState()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+    val isAdmin by viewModel.isAdmin.collectAsState()
 
     LaunchedEffect(isFinished) {
-        if (isFinished) onFinished()
+        if (isFinished) {
+            onFinished(isLoggedIn, isAdmin)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

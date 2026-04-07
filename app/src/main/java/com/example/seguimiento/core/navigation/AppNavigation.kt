@@ -56,8 +56,13 @@ fun AppNavigation() {
 
     NavHost(navController = navController, startDestination = NavRoutes.Loading.route) {
         composable(NavRoutes.Loading.route) {
-            LoadingScreen(onFinished = {
-                navController.navigate(NavRoutes.Login.route) {
+            LoadingScreen(onFinished = { isLoggedIn, isAdmin ->
+                val destination = if (isLoggedIn) {
+                    if (isAdmin) NavRoutes.Estadisticas.route else NavRoutes.Home.route
+                } else {
+                    NavRoutes.Login.route
+                }
+                navController.navigate(destination) {
                     popUpTo(NavRoutes.Loading.route) { inclusive = true }
                 }
             })
@@ -529,7 +534,10 @@ fun AppNavigation() {
                     navController.navigate(NavRoutes.Home.route) {
                         popUpTo(NavRoutes.Home.route) { inclusive = true }
                     }
-                }
+                },
+                onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
+                onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
             )
         }
 

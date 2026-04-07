@@ -21,7 +21,7 @@ class NotificacionesViewModel @Inject constructor(
     ) { lista, user ->
         lista.filter { notif ->
             notif.userId == "" || notif.userId == user?.id
-        }
+        }.sortedByDescending { it.fecha }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun marcarComoLeida(id: String) {

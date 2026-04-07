@@ -2,6 +2,8 @@ package com.example.seguimiento.Data.repositorios
 
 import com.example.seguimiento.Dominio.modelos.Comentario
 import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
+import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
 @Singleton
-class ComentarioRepositoryImpl @Inject constructor() : ComentarioRepository {
+class ComentarioRepositoryImpl @Inject constructor(
+    private val notificacionRepository: NotificacionRepository,
+    private val mascotaRepository: MascotaRepository
+) : ComentarioRepository {
     private val _comentarios = MutableStateFlow<List<Comentario>>(emptyList())
     override val todosLosComentarios: StateFlow<List<Comentario>> = _comentarios.asStateFlow()
 
@@ -33,6 +38,19 @@ class ComentarioRepositoryImpl @Inject constructor() : ComentarioRepository {
 
     override suspend fun agregarComentario(comentario: Comentario) {
         _comentarios.update { it + comentario }
+        
+        // Notificar al dueño de la mascota
+        val mascota = mascotaRepository.getById(comentario.mascotaId)
+        mascota?.let {
+            if (it.autorId != comentario.autorId) {
+                notificacionRepository.addNotificacion(
+                    titulo = "Nuevo comentario",
+                    mensaje = "${comentario.autorNombre} comentó en tu publicación de ${it.nombre}: \"${comentario.contenido.take(30)}...\"",
+                    tipo = "INFO",
+                    userId = it.autorId
+                )
+            }
+        }
     }
 
     override suspend fun eliminarComentario(comentarioId: String) {
@@ -40,8 +58,18 @@ class ComentarioRepositoryImpl @Inject constructor() : ComentarioRepository {
     }
 
     override suspend fun censurarComentario(comentarioId: String, nuevoContenido: String) {
+        val comentario = _comentarios.value.find { it.id == comentarioId }
         _comentarios.update { lista ->
             lista.map { if (it.id == comentarioId) it.copy(contenido = nuevoContenido) else it }
+        }
+        
+        comentario?.let {
+            notificacionRepository.addNotificacion(
+                titulo = "Comentario Moderado",
+                mensaje = "Tu comentario ha sido editado por un moderador.",
+                tipo = "WARNING",
+                userId = it.autorId
+            )
         }
     }
 }
