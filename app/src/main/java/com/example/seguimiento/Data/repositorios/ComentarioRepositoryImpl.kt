@@ -12,10 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.Flow
 
 @Singleton
 class ComentarioRepositoryImpl @Inject constructor(
@@ -26,16 +23,10 @@ class ComentarioRepositoryImpl @Inject constructor(
     private val _comentarios = MutableStateFlow<List<Comentario>>(emptyList())
     override val todosLosComentarios: StateFlow<List<Comentario>> = _comentarios.asStateFlow()
 
-    private val scope = CoroutineScope(Dispatchers.Default)
-
-    override fun getComentariosPorTarget(targetId: String): StateFlow<List<Comentario>> {
-        return _comentarios
-            .map { lista -> lista.filter { it.targetId == targetId } }
-            .stateIn(
-                scope = scope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    override fun getComentariosPorTarget(targetId: String): Flow<List<Comentario>> {
+        return _comentarios.map { lista -> 
+            lista.filter { it.targetId == targetId } 
+        }
     }
 
     override suspend fun agregarComentario(comentario: Comentario) {
