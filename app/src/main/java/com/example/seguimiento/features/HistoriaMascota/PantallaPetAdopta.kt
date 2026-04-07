@@ -14,6 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.BookmarkAdd
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,7 +96,6 @@ fun PantallaPetAdopta(
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // IMAGEN DE FONDO
             Image(
                 painter = painterResource(id = R.drawable.fondo3),
                 contentDescription = null,
@@ -105,7 +107,6 @@ fun PantallaPetAdopta(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                // HEADER ESTILO INSTAGRAM
                 item {
                     Box(
                         modifier = Modifier
@@ -135,18 +136,21 @@ fun PantallaPetAdopta(
                             }
                         }
                     }
-                    // Espaciador para que la primera tarjeta no esté pegada al encabezado
                     Spacer(modifier = Modifier.height(24.dp))
                 }
 
-                // FEED DE HISTORIAS (ESTILO SOCIAL)
                 items(historiasAprobadas) { historia ->
-                    SocialHistoryCard(historia)
+                    SocialHistoryCard(
+                        historia = historia,
+                        currentUserId = currentUser?.id ?: "",
+                        onLike = { viewModel.toggleLike(historia.id) },
+                        onFollow = { viewModel.toggleFollow(historia.id) },
+                        viewModel = viewModel
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            // OVERLAY FORMULARIO (MODAL STYLE)
             if (showPostForm) {
                 Box(
                     modifier = Modifier
@@ -242,17 +246,43 @@ fun PantallaPetAdopta(
 }
 
 @Composable
-fun SocialHistoryCard(historia: HistoriaFeliz) {
+fun SocialHistoryCard(
+    historia: HistoriaFeliz,
+    currentUserId: String,
+    onLike: () -> Unit,
+    onFollow: () -> Unit,
+    viewModel: HistoriaMascotaViewModel
+) {
+    var showComments by remember { mutableStateOf(false) }
+    val isLiked = historia.likerIds.contains(currentUserId)
+    val isFollowed = historia.followersIds.contains(currentUserId)
+    
+    val totalLikes = historia.likerIds.size
+    val totalFollowers = historia.followersIds.size
+
+    val textLikes = when {
+        isLiked && totalLikes > 1 -> "Tú y ${totalLikes - 1} personas"
+        isLiked -> "Tú"
+        totalLikes > 0 -> "$totalLikes personas"
+        else -> "0 likes"
+    }
+
+    val textFollows = when {
+        isFollowed && totalFollowers > 1 -> "Tú y ${totalFollowers - 1} personas siguen esto"
+        isFollowed -> "Sigues esta historia"
+        totalFollowers > 0 -> "$totalFollowers seguidores"
+        else -> "0 seguidores"
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column {
-            // Header: Autor
             Row(
                 modifier = Modifier.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -272,10 +302,15 @@ fun SocialHistoryCard(historia: HistoriaFeliz) {
                     Text("Acaba de compartir un momento", fontSize = 11.sp, color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(Icons.Default.MoreVert, null, tint = Color.Gray)
+                IconButton(onClick = onFollow) {
+                    Icon(
+                        imageVector = if (isFollowed) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = "Follow",
+                        tint = if (isFollowed) Color(0xFFE67E22) else Color.Gray
+                    )
+                }
             }
 
-            // Imagen Principal
             AsyncImage(
                 model = historia.imagenUrl,
                 contentDescription = null,
@@ -285,33 +320,33 @@ fun SocialHistoryCard(historia: HistoriaFeliz) {
                 contentScale = ContentScale.Crop
             )
 
-            // Acciones Estilo Social
             Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                var liked by remember { mutableStateOf(false) }
-                IconButton(onClick = { liked = !liked }) {
+                IconButton(onClick = onLike) {
                     Icon(
-                        if(liked) Icons.Default.Favorite else Icons.Default.FavoriteBorder, 
-                        null, 
-                        tint = if(liked) Color.Red else Color.Black
+                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        null,
+                        tint = if (isLiked) Color.Red else Color.Black
                     )
                 }
-                IconButton(onClick = { }) {
-                    Icon(Icons.Default.ChatBubbleOutline, null)
+                IconButton(onClick = { showComments = !showComments }) {
+                    Icon(Icons.Outlined.ChatBubbleOutline, null)
                 }
                 IconButton(onClick = { }) {
                     Icon(Icons.AutoMirrored.Filled.Send, null)
                 }
             }
 
-            // Texto de la Historia
-            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
+                Text(textLikes, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(textFollows, fontSize = 11.sp, color = Color.Gray)
+                
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = "La historia de ${historia.mascotaNombre} 🐾",
                     fontWeight = FontWeight.Black,
                     fontSize = 16.sp,
                     color = Color(0xFFE67E22)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = historia.texto,
                     fontSize = 14.sp,
@@ -319,6 +354,88 @@ fun SocialHistoryCard(historia: HistoriaFeliz) {
                     lineHeight = 20.sp
                 )
             }
+
+            if (showComments) {
+                CommentsSection(historiaId = historia.id, viewModel = viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
+    val comentarios by viewModel.getComentarios(historiaId).collectAsState(emptyList())
+    var nuevoComentario by remember { mutableStateOf("") }
+    var replyingToId by remember { mutableStateOf<String?>(null) }
+    var replyingToName by remember { mutableStateOf("") }
+
+    Column(modifier = Modifier.padding(16.dp).background(Color(0xFFF9F9F9), RoundedCornerShape(12.dp)).padding(12.dp)) {
+        Text("Comentarios", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        
+        comentarios.filter { it.parentId == null }.forEach { principal ->
+            CommentItem(principal, onReply = { 
+                replyingToId = principal.id
+                replyingToName = principal.autorNombre
+            })
+            // Respuestas
+            comentarios.filter { it.parentId == principal.id }.forEach { respuesta ->
+                CommentItem(respuesta, isReply = true)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        if (replyingToId != null) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
+                Text("Respondiendo a $replyingToName", fontSize = 11.sp, color = Color(0xFFE67E22), modifier = Modifier.weight(1f))
+                IconButton(onClick = { replyingToId = null }, modifier = Modifier.size(16.dp)) {
+                    Icon(Icons.Default.Close, null, modifier = Modifier.size(12.dp))
+                }
+            }
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = nuevoComentario,
+                onValueChange = { nuevoComentario = it },
+                placeholder = { Text("Escribe un comentario...", fontSize = 12.sp) },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(20.dp),
+                maxLines = 2
+            )
+            IconButton(onClick = { 
+                if (nuevoComentario.isNotBlank()) {
+                    viewModel.agregarComentario(historiaId, nuevoComentario, replyingToId)
+                    nuevoComentario = ""
+                    replyingToId = null
+                }
+            }) {
+                Icon(Icons.AutoMirrored.Filled.Send, null, tint = Color(0xFFE67E22))
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentItem(comentario: com.example.seguimiento.Dominio.modelos.Comentario, isReply: Boolean = false, onReply: (() -> Unit)? = null) {
+    Row(modifier = Modifier.padding(top = 8.dp, start = if (isReply) 32.dp else 0.dp)) {
+        Box(modifier = Modifier.size(24.dp).background(Color.LightGray, CircleShape), contentAlignment = Alignment.Center) {
+            Icon(Icons.Default.Person, null, modifier = Modifier.size(16.dp), tint = Color.White)
+        }
+        Spacer(Modifier.width(8.dp))
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(comentario.autorNombre, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                if (onReply != null) {
+                    Text(
+                        "Responder", 
+                        fontSize = 10.sp, 
+                        color = Color.Blue, 
+                        modifier = Modifier.padding(start = 12.dp).clickable { onReply() }
+                    )
+                }
+            }
+            Text(comentario.contenido, fontSize = 12.sp)
         }
     }
 }

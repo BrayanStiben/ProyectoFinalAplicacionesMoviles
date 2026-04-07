@@ -196,14 +196,18 @@ fun EstadisticasScreen(
                 // Fila 4
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ColorfulAdminButton(
-                        title = "Subir Historia",
+                        title = "Administrar Stories",
                         icon = Icons.Default.AutoAwesome,
                         containerColor = Color(0xFFFFC107),
                         modifier = Modifier.weight(1f)
-                    ) { onNavigateToHistorias() }
+                    ) { onNavigateToGestionHistorias() }
                     
-                    // Botón de relleno para mantener el grid
-                    Box(modifier = Modifier.weight(1f))
+                    ColorfulAdminButton(
+                        title = "Ver Stories Feed",
+                        icon = Icons.Default.Collections,
+                        containerColor = Color(0xFFE91E63),
+                        modifier = Modifier.weight(1f)
+                    ) { onNavigateToHistorias() }
                 }
 
                 Spacer(Modifier.height(40.dp))

@@ -6,6 +6,7 @@ import com.example.seguimiento.Dominio.repositorios.HistoriaFelizRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,17 +36,26 @@ class HistoriaFelizRepositoryImpl @Inject constructor() : HistoriaFelizRepositor
 
     override fun getAll(): List<HistoriaFeliz> = _historias.value
 
+    override fun getById(id: String): HistoriaFeliz? = _historias.value.find { it.id == id }
+
     override fun save(historia: HistoriaFeliz) {
-        _historias.value = _historias.value + historia
+        _historias.update { list ->
+            val index = list.indexOfFirst { it.id == historia.id }
+            if (index != -1) {
+                list.toMutableList().apply { set(index, historia) }
+            } else {
+                list + historia
+            }
+        }
     }
 
     override fun delete(id: String) {
-        _historias.value = _historias.value.filter { it.id != id }
+        _historias.update { it.filter { it.id != id } }
     }
 
     override fun actualizarEstado(id: String, estado: HistoriaEstado) {
-        _historias.value = _historias.value.map {
-            if (it.id == id) it.copy(estado = estado) else it
+        _historias.update { list ->
+            list.map { if (it.id == id) it.copy(estado = estado) else it }
         }
     }
 
@@ -55,5 +65,37 @@ class HistoriaFelizRepositoryImpl @Inject constructor() : HistoriaFelizRepositor
 
     override fun getPendientes(): List<HistoriaFeliz> {
         return _historias.value.filter { it.estado == HistoriaEstado.PENDIENTE }
+    }
+
+    override fun toggleFollow(historiaId: String, userId: String) {
+        _historias.update { list ->
+            list.map { historia ->
+                if (historia.id == historiaId) {
+                    val currentFollowers = historia.followersIds.toMutableList()
+                    if (currentFollowers.contains(userId)) {
+                        currentFollowers.remove(userId)
+                    } else {
+                        currentFollowers.add(userId)
+                    }
+                    historia.copy(followersIds = currentFollowers)
+                } else historia
+            }
+        }
+    }
+
+    override fun toggleLike(historiaId: String, userId: String) {
+        _historias.update { list ->
+            list.map { historia ->
+                if (historia.id == historiaId) {
+                    val currentLikers = historia.likerIds.toMutableList()
+                    if (currentLikers.contains(userId)) {
+                        currentLikers.remove(userId)
+                    } else {
+                        currentLikers.add(userId)
+                    }
+                    historia.copy(likerIds = currentLikers)
+                } else historia
+            }
+        }
     }
 }

@@ -146,7 +146,7 @@ fun HomeScreen(
                 }
             }
 
-            // --- CATEGORÍAS CON SCROLL HORIZONTAL ---
+            // --- CATEGORÍAS ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

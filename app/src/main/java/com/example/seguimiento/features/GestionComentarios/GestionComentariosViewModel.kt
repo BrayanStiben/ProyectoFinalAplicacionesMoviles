@@ -34,7 +34,7 @@ class GestionComentariosViewModel @Inject constructor(
         comentarioRepository.todosLosComentarios
     ) { mascotas, comentarios ->
         mascotas.mapNotNull { mascota ->
-            val comentariosMascota = comentarios.filter { it.mascotaId == mascota.id }
+            val comentariosMascota = comentarios.filter { it.targetId == mascota.id }
             if (comentariosMascota.isNotEmpty()) {
                 MascotaConComentarios(mascota, comentariosMascota)
             } else null
@@ -73,12 +73,12 @@ class GestionComentariosViewModel @Inject constructor(
         }
     }
 
-    fun responderComentario(mascotaId: String, texto: String, parentId: String?) {
+    fun responderComentario(targetId: String, texto: String, parentId: String?) {
         val user = authRepository.currentUser.value
         viewModelScope.launch {
             val respuesta = Comentario(
                 id = UUID.randomUUID().toString(),
-                mascotaId = mascotaId,
+                targetId = targetId,
                 autorId = user?.id ?: "admin",
                 autorNombre = user?.name ?: "Administrador",
                 contenido = texto,

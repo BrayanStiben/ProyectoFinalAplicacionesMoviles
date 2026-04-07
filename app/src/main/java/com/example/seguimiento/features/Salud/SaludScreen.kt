@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,14 +77,12 @@ fun SaludScreen(
             )
         },
         floatingActionButton = {
-            if (tabSelected < 3) { // No mostrar FAB en la pestaña de Entrenamiento
-                FloatingActionButton(
-                    onClick = { showDialog = true },
-                    containerColor = naranjaApp,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Default.Add, null)
-                }
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                containerColor = naranjaApp,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, null)
             }
         }
     ) { padding ->
@@ -128,20 +125,11 @@ fun SaludScreen(
                 selectedTabIndex = tabSelected,
                 containerColor = Color.White,
                 contentColor = naranjaApp,
-                indicator = { tabPositions ->
-                    if (tabSelected < tabPositions.size) {
-                        TabRowDefaults.SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[tabSelected]),
-                            color = naranjaApp
-                        )
-                    }
-                },
                 divider = {}
             ) {
-                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text("Vacunas", fontSize = 11.sp) })
-                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text("Desparasit.", fontSize = 11.sp) })
-                Tab(selected = tabSelected == 2, onClick = { tabSelected = 2 }, text = { Text("Citas", fontSize = 11.sp) })
-                Tab(selected = tabSelected == 3, onClick = { tabSelected = 3 }, text = { Text("Entrenar 🧠", fontSize = 11.sp) })
+                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text("Vacunas", fontSize = 12.sp) })
+                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text("Desparasit.", fontSize = 12.sp) })
+                Tab(selected = tabSelected == 2, onClick = { tabSelected = 2 }, text = { Text("Citas", fontSize = 12.sp) })
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -149,7 +137,6 @@ fun SaludScreen(
                     0 -> ListaSalud(carnet.vacunas) { ItemVacuna(it) }
                     1 -> ListaSalud(carnet.desparasitaciones) { ItemDespar(it) }
                     2 -> ListaSalud(carnet.citas) { ItemCita(it) }
-                    3 -> PantallaEntrenamiento(mascota?.tipo ?: "Perro")
                 }
             }
         }
@@ -399,53 +386,6 @@ fun ItemCita(c: CitaVeterinaria) {
                 Text(c.motivo, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF5D2E17))
                 Text("${c.fecha} • ${c.hora}", fontSize = 13.sp, color = Color.DarkGray, fontWeight = FontWeight.Bold)
                 Text(c.clinica, fontSize = 12.sp, color = Color.Gray)
-            }
-        }
-    }
-}
-
-@Composable
-fun PantallaEntrenamiento(tipoMascota: String) {
-    val naranjaApp = Color(0xFFE67E22)
-    val tips = if (tipoMascota.contains("Gato", true)) {
-        listOf(
-            "Socialización temprana con humanos y otros gatos.",
-            "Uso de rascadores para evitar daños en muebles.",
-            "Importancia de la hidratación (fuentes de agua).",
-            "Juegos de caza para mantener su instinto activo."
-        )
-    } else {
-        listOf(
-            "Enseñanza del comando 'sentado' y 'quieto'.",
-            "Paseos diarios para quemar energía.",
-            "No reforzar ladridos excesivos por atención.",
-            "Uso de refuerzo positivo (premios) en el entrenamiento."
-        )
-    }
-
-    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item {
-            Text("Guía de Entrenamiento 🧠", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF5D2E17))
-            Text("Consejos personalizados para tu $tipoMascota", fontSize = 14.sp, color = Color.Gray)
-            Spacer(Modifier.height(8.dp))
-        }
-        items(tips) { tip ->
-            Card(
-                shape = RoundedCornerShape(16.dp), 
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, naranjaApp.copy(alpha = 0.2f)),
-                elevation = CardDefaults.cardElevation(2.dp)
-            ) {
-                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier.size(36.dp).background(naranjaApp.copy(alpha = 0.1f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Psychology, null, tint = naranjaApp, modifier = Modifier.size(22.dp))
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Text(tip, fontSize = 14.sp, color = Color.Black, fontWeight = FontWeight.Medium)
-                }
             }
         }
     }

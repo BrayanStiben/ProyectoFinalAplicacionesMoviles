@@ -12,7 +12,9 @@ data class HistoriaFeliz(
     val autorNombre: String,
     val mascotaNombre: String,
     val texto: String,
-    val imagenUrl: String, // Podríamos extenderlo a una lista si se desea más de una
+    val imagenUrl: String,
     val estado: HistoriaEstado = HistoriaEstado.PENDIENTE,
-    val fechaPublicacion: Long = System.currentTimeMillis()
+    val fechaPublicacion: Long = System.currentTimeMillis(),
+    val followersIds: List<String> = emptyList(), // Lista de IDs de usuarios que siguen esta historia
+    val likerIds: List<String> = emptyList() // Lista de IDs de usuarios que dieron like
 )

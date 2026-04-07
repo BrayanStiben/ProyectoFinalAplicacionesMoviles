@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.AdoptionRequest
 import com.example.seguimiento.Dominio.modelos.AdoptionRequestStatus
 import com.example.seguimiento.Dominio.modelos.Comentario
+import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
@@ -12,12 +13,14 @@ import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class EstaEsperandoViewModel @Inject constructor(
     private val mascotaRepository: MascotaRepository,
@@ -40,9 +43,9 @@ class EstaEsperandoViewModel @Inject constructor(
         else flowOf(mascotaRepository.getById(id))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    val comentarios = _mascotaId.flatMapLatest { id ->
+    val comentarios: StateFlow<List<Comentario>> = _mascotaId.flatMapLatest { id ->
         if (id == null) flowOf(emptyList())
-        else comentarioRepository.getComentariosPorMascota(id)
+        else comentarioRepository.getComentariosPorTarget(id)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val currentRequest = combine(_mascotaId, adoptionRepository.requests, currentUser) { id, requests, user ->
@@ -128,7 +131,7 @@ class EstaEsperandoViewModel @Inject constructor(
         viewModelScope.launch {
             val nuevoComentario = Comentario(
                 id = UUID.randomUUID().toString(),
-                mascotaId = currentId,
+                targetId = currentId,
                 autorId = user?.id ?: "anonimo",
                 autorNombre = user?.name ?: "Usuario",
                 contenido = texto,

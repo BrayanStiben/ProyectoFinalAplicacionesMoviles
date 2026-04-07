@@ -1,7 +1,6 @@
 package com.example.seguimiento.features.Estadisticas
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,13 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.HistoryEdu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
+import com.example.seguimiento.Dominio.modelos.HistoriaEstado
+import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 import com.example.seguimiento.features.HistoriaMascota.HistoriaMascotaViewModel
+import com.example.seguimiento.features.HistoriaMascota.SocialHistoryCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +34,15 @@ fun GestionHistoriasScreen(
     viewModel: HistoriaMascotaViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
-    val historiasPendientes by viewModel.historiasPendientes.collectAsState()
+    val historias by viewModel.todasLasHistorias.collectAsState()
+    val currentUser by viewModel.authRepository.currentUser.collectAsState()
+    
+    var tabSelected by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestionar Historias", fontWeight = FontWeight.Bold) },
+                title = { Text("Administrar Stories 🛡️", fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -54,70 +55,93 @@ fun GestionHistoriasScreen(
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Image(
-                painter = painterResource(id = R.drawable.fondo3),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            
-            if (historiasPendientes.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.HistoryEdu, null, modifier = Modifier.size(64.dp), tint = Color.Gray)
-                        Spacer(Modifier.height(16.dp))
-                        Text("No hay historias pendientes", color = Color.Gray, fontWeight = FontWeight.Medium)
-                    }
-                }
-            } else {
-                LazyColumn(
+        Column(modifier = Modifier.fillMaxSize().padding(padding).background(Color(0xFFF5F5F5))) {
+            TabRow(
+                selectedTabIndex = tabSelected,
+                containerColor = Color.White,
+                contentColor = Color(0xFFE67E22)
+            ) {
+                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text("Moderación") })
+                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text("Todas") })
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.fondo3),
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(historiasPendientes) { historia ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    AsyncImage(
-                                        model = historia.imagenUrl,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(80.dp)
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.3f
+                )
+
+                val filteredList = if (tabSelected == 0) {
+                    historias.filter { it.estado == HistoriaEstado.PENDIENTE }
+                } else {
+                    historias
+                }
+
+                if (filteredList.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No hay historias en esta sección", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(filteredList) { historia ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(20.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                            ) {
+                                Column {
+                                    // Header de moderación
+                                    Row(
+                                        modifier = Modifier.padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        StatusBadge(historia.estado)
+                                        Spacer(Modifier.weight(1f))
+                                        IconButton(onClick = { viewModel.eliminarHistoria(historia.id) }) {
+                                            Icon(Icons.Default.Delete, null, tint = Color.Red)
+                                        }
+                                    }
+
+                                    // Componente Social (permite dar like, follow y comentar)
+                                    SocialHistoryCard(
+                                        historia = historia,
+                                        currentUserId = currentUser?.id ?: "",
+                                        onLike = { viewModel.toggleLike(historia.id) },
+                                        onFollow = { viewModel.toggleFollow(historia.id) },
+                                        viewModel = viewModel
                                     )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Column {
-                                        Text(historia.mascotaNombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                                        Text("Autor: ${historia.autorNombre}", fontSize = 14.sp, color = Color.Gray)
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(historia.texto, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    IconButton(
-                                        onClick = { viewModel.rechazarHistoria(historia.id) },
-                                        modifier = Modifier.background(Color.Red.copy(alpha = 0.1f), CircleShape)
-                                    ) {
-                                        Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = Color.Red)
-                                    }
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    IconButton(
-                                        onClick = { viewModel.aprobarHistoria(historia.id) },
-                                        modifier = Modifier.background(Color(0xFF00C853).copy(alpha = 0.1f), CircleShape)
-                                    ) {
-                                        Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = Color(0xFF00C853))
+
+                                    // Botones de acción Moderación (solo si está pendiente)
+                                    if (historia.estado == HistoriaEstado.PENDIENTE) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            Button(
+                                                onClick = { viewModel.aprobarHistoria(historia.id) },
+                                                modifier = Modifier.weight(1f),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                                                shape = RoundedCornerShape(12.dp)
+                                            ) {
+                                                Text("APROBAR", fontWeight = FontWeight.Black)
+                                            }
+                                            Button(
+                                                onClick = { viewModel.rechazarHistoria(historia.id) },
+                                                modifier = Modifier.weight(1f),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)),
+                                                shape = RoundedCornerShape(12.dp)
+                                            ) {
+                                                Text("RECHAZAR", fontWeight = FontWeight.Black)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -126,5 +150,17 @@ fun GestionHistoriasScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StatusBadge(estado: HistoriaEstado) {
+    val (color, texto) = when(estado) {
+        HistoriaEstado.PENDIENTE -> Color(0xFFFFA000) to "PENDIENTE"
+        HistoriaEstado.APROBADA -> Color(0xFF4CAF50) to "APROBADA"
+        HistoriaEstado.RECHAZADA -> Color(0xFFF44336) to "RECHAZADA"
+    }
+    Surface(color = color.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp)) {
+        Text(texto, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = color, fontSize = 10.sp, fontWeight = FontWeight.Bold)
     }
 }
