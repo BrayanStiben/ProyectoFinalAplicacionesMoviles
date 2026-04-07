@@ -161,18 +161,23 @@ fun CertificadoRechazoScreen(
                         val petName = req?.petName ?: "[Nombre]"
                         val petType = req?.petType ?: "[Tipo]"
                         val userName = req?.userName ?: "[Nombre del Solicitante]"
-                        // Usamos el contador global del usuario si está penalizado
-                        val currentAttempts = if(uiState.isPenalized) 3 else uiState.userRejectionCount
+                        
+                        // Lógica de conteo de intentos mejorada
+                        val attemptNumber = when {
+                            uiState.isPenalized -> 3
+                            isRejected -> req?.rejectionCount ?: uiState.userRejectionCount
+                            else -> uiState.userRejectionCount + 1
+                        }
 
                         val textoRechazo = """
                             La solicitud de adopción de la mascota $petName, de tipo $petType, registrada a nombre de $userName, ha sido revisada por el equipo administrativo el $fechaExacta.
 
-                            Estado de la cuenta: ${if(uiState.isPenalized) "Penalización por reincidencia (3/3 intentos fallidos)" else "Solicitud no aprobada ($currentAttempts/3 intentos usados)"}. 
+                            Estado de la cuenta: ${if(uiState.isPenalized) "Penalización por reincidencia (3/3 intentos fallidos)" else "Solicitud no aprobada (Intento $attemptNumber/3)"}. 
                             
                             ${if (uiState.isPenalized) 
                                 "Debido a que se han alcanzado los 3 intentos fallidos permitidos, su cuenta ha sido inhabilitada para nuevas solicitudes por el tiempo mostrado en el cronómetro superior." 
                             else 
-                                "Su solicitud no cumple con todos los requisitos en este momento. Puede intentarlo nuevamente con esta u otra mascota cuando se encuentre preparado, siempre que no exceda el límite de intentos."}
+                                "Su solicitud no cumple con todos los requisitos en este momento. Puede intentarlo nuevamente con esta u otra mascota cuando se encuentre preparado, siempre que no exceda el límite de intentos ($attemptNumber de 3 utilizados)."}
                         """.trimIndent()
 
                         Text(
@@ -190,7 +195,7 @@ fun CertificadoRechazoScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp)
+                                .height(150.dp)
                                 .padding(vertical = 8.dp)
                                 .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                                 .background(Color(0xFFFAFAFA)),
@@ -211,7 +216,7 @@ fun CertificadoRechazoScreen(
                                         contentScale = ContentScale.Fit
                                     )
                                 }
-                            } else if (!isRejected && uiState.isAdmin) {
+                            } else if (uiState.isAdmin) {
                                 SignaturePadRechazo { bitmap ->
                                     viewModel.setSignature(bitmap)
                                 }
@@ -222,7 +227,7 @@ fun CertificadoRechazoScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        if (!isRejected && uiState.isAdmin) {
+                        if (uiState.isAdmin && (req?.adminSignature.isNullOrBlank())) {
                             Button(
                                 onClick = { viewModel.finalizeRejection() },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -236,22 +241,26 @@ fun CertificadoRechazoScreen(
                                     Text("CONFIRMAR Y NOTIFICAR RECHAZO", fontWeight = FontWeight.Bold)
                                 }
                             }
-                        } else {
+                        }
+                        
+                        if (isRejected || !uiState.isAdmin) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Surface(
-                                    color = if (uiState.isPenalized) Color(0xFFFFEBEE) else Color(0xFFEEEEEE),
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = if (uiState.isPenalized) "USUARIO PENALIZADO" else "RECHAZO NOTIFICADO",
-                                        color = if (uiState.isPenalized) Color.Red else Color.Black,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(12.dp),
-                                        textAlign = TextAlign.Center
-                                    )
+                                if (isRejected) {
+                                    Surface(
+                                        color = if (uiState.isPenalized) Color(0xFFFFEBEE) else Color(0xFFEEEEEE),
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = if (uiState.isPenalized) "USUARIO PENALIZADO" else "RECHAZO NOTIFICADO",
+                                            color = if (uiState.isPenalized) Color.Red else Color.Black,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(12.dp),
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(16.dp))
                                 }
-                                Spacer(modifier = Modifier.height(16.dp))
                                 Button(
                                     onClick = onFinish,
                                     modifier = Modifier.fillMaxWidth().height(50.dp),

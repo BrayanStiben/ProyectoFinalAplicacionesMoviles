@@ -41,22 +41,23 @@ class CertificadoRechazoViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CertificadoRechazoUiState())
+    private val _uiState = MutableStateFlow(CertificadoRechazoUiState(
+        isAdmin = authRepository.currentUser.value?.role == UserRole.ADMIN
+    ))
     val uiState: StateFlow<CertificadoRechazoUiState> = _uiState.asStateFlow()
 
     fun loadRequestData(requestId: String) {
+        // 1. Carga de datos de la solicitud y usuario
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val request = adoptionRepository.getById(requestId)
             val mascota = request?.let { mascotaRepository.getById(it.mascotaId) }
             val user = request?.let { userRepository.findById(it.userId) }
-            val currentUser = authRepository.currentUser.value
 
             _uiState.update { it.copy(
                 request = request, 
                 mascota = mascota, 
                 isLoading = false,
-                isAdmin = currentUser?.role == UserRole.ADMIN,
                 userRejectionCount = user?.rejectionCount ?: 0
             ) }
             
@@ -64,6 +65,13 @@ class CertificadoRechazoViewModel @Inject constructor(
                 startPenaltyTimer(user.id)
             }
         }
+
+        // 2. Observación reactiva y continua del rol de Admin
+        authRepository.currentUser
+            .onEach { currentUser ->
+                _uiState.update { it.copy(isAdmin = currentUser?.role == UserRole.ADMIN) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun startPenaltyTimer(userId: String) {
@@ -95,10 +103,11 @@ class CertificadoRechazoViewModel @Inject constructor(
     }
 
     fun finalizeRejection() {
-        val request = _uiState.value.request ?: return
-        val signatureBitmap = _uiState.value.adminSignature
+        val uiStateValue = _uiState.value
+        val request = uiStateValue.request ?: return
+        val signatureBitmap = uiStateValue.adminSignature
         
-        if (!_uiState.value.isAdmin) return
+        if (!uiStateValue.isAdmin) return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -110,22 +119,36 @@ class CertificadoRechazoViewModel @Inject constructor(
                 encodedSignature = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
             }
 
+            // 1. Guardar firma si existe
             if (encodedSignature != null) {
                 adoptionRepository.saveAdminSignature(request.id, encodedSignature)
             }
             
-            // Lógica de penalización en el USUARIO
+            // 2. Lógica de penalización en el USUARIO
             userRepository.incrementRejectionCount(request.userId)
             val updatedUser = userRepository.findById(request.userId)
             
-            // Si llega a 3 rechazos, se le penaliza 1 hora (o el tiempo deseado)
+            // 3. Determinar si se aplica penalización
             if (updatedUser != null && updatedUser.rejectionCount >= 3) {
                 userRepository.applyPenalty(request.userId, 3600000) // 1 hora de penalización
-                userRepository.resetRejectionCount(request.userId) // Reiniciamos para el futuro
+                val userWithPenalty = userRepository.findById(request.userId)
+                
+                // Guardamos el 3/3 y el tiempo final en la solicitud
+                adoptionRepository.updatePenaltyInfo(
+                    request.id, 
+                    3, 
+                    userWithPenalty?.penaltyEndTime ?: (System.currentTimeMillis() + 3600000)
+                )
+                userRepository.resetRejectionCount(request.userId)
+            } else {
+                // Guardar el conteo actual (1 o 2) en la solicitud
+                adoptionRepository.updatePenaltyInfo(request.id, updatedUser?.rejectionCount ?: 0, 0L)
             }
             
+            // 4. Actualizar estado de la solicitud
             adoptionRepository.updateRequestStatus(request.id, AdoptionRequestStatus.REJECTED)
             
+            // 5. Actualizar UI
             val updatedReq = adoptionRepository.getById(request.id)
             _uiState.update { it.copy(request = updatedReq, isLoading = false, isSuccess = true) }
         }

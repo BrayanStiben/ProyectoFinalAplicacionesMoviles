@@ -20,11 +20,11 @@ class FiltroViewModel @Inject constructor(
     
     val currentUser = authRepository.currentUser
 
-    // Estados de habilitación (Inician en true)
-    var habilitarNombre by mutableStateOf(true)
-    var habilitarTipo by mutableStateOf(true)
-    var habilitarUbicacion by mutableStateOf(true)
-    var habilitarEdad by mutableStateOf(true)
+    // Estados de habilitación (Inician en false por solicitud del usuario)
+    var habilitarNombre by mutableStateOf(false)
+    var habilitarTipo by mutableStateOf(false)
+    var habilitarUbicacion by mutableStateOf(false)
+    var habilitarEdad by mutableStateOf(false)
 
     // Valores de los filtros
     var nombreFiltro by mutableStateOf("")
@@ -68,10 +68,10 @@ class FiltroViewModel @Inject constructor(
     }
 
     fun limpiarFiltros() {
-        habilitarNombre = true
-        habilitarTipo = true
-        habilitarUbicacion = true
-        habilitarEdad = true
+        habilitarNombre = false
+        habilitarTipo = false
+        habilitarUbicacion = false
+        habilitarEdad = false
         nombreFiltro = ""
         tipoSeleccionado = "Perro"
         ubicacionFiltro = ""
