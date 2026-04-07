@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.seguimiento.R
+import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,10 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -145,6 +145,8 @@ fun PantallaPetAdopta(
                         currentUserId = currentUser?.id ?: "",
                         onLike = { viewModel.toggleLike(historia.id) },
                         onFollow = { viewModel.toggleFollow(historia.id) },
+                        onDelete = { viewModel.eliminarHistoria(historia.id) },
+                        isAdmin = currentUser?.role == UserRole.ADMIN,
                         viewModel = viewModel
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -251,6 +253,8 @@ fun SocialHistoryCard(
     currentUserId: String,
     onLike: () -> Unit,
     onFollow: () -> Unit,
+    onDelete: () -> Unit,
+    isAdmin: Boolean,
     viewModel: HistoriaMascotaViewModel
 ) {
     var showComments by remember { mutableStateOf(false) }
@@ -280,7 +284,7 @@ fun SocialHistoryCard(
             .padding(horizontal = 12.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
             Row(
@@ -302,12 +306,19 @@ fun SocialHistoryCard(
                     Text("Acaba de compartir un momento", fontSize = 11.sp, color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = onFollow) {
-                    Icon(
-                        imageVector = if (isFollowed) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                        contentDescription = "Follow",
-                        tint = if (isFollowed) Color(0xFFE67E22) else Color.Gray
-                    )
+                
+                if (isAdmin || historia.autorId == currentUserId) {
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                    }
+                } else {
+                    IconButton(onClick = onFollow) {
+                        Icon(
+                            imageVector = if (isFollowed) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                            contentDescription = "Follow",
+                            tint = if (isFollowed) Color(0xFFE67E22) else Color.Gray
+                        )
+                    }
                 }
             }
 
@@ -331,9 +342,7 @@ fun SocialHistoryCard(
                 IconButton(onClick = { showComments = !showComments }) {
                     Icon(Icons.Outlined.ChatBubbleOutline, null)
                 }
-                IconButton(onClick = { }) {
-                    Icon(Icons.AutoMirrored.Filled.Send, null)
-                }
+                // ELIMINADO EL BOTÓN REENVIAR POR EL DE ELIMINAR (Que ya está arriba en el header de la card)
             }
 
             Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
@@ -368,18 +377,33 @@ fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
     var nuevoComentario by remember { mutableStateOf("") }
     var replyingToId by remember { mutableStateOf<String?>(null) }
     var replyingToName by remember { mutableStateOf("") }
+    
+    val showRepliesMap = remember { mutableStateMapOf<String, Boolean>() }
 
     Column(modifier = Modifier.padding(16.dp).background(Color(0xFFF9F9F9), RoundedCornerShape(12.dp)).padding(12.dp)) {
         Text("Comentarios", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
         
         comentarios.filter { it.parentId == null }.forEach { principal ->
-            CommentItem(principal, onReply = { 
-                replyingToId = principal.id
-                replyingToName = principal.autorNombre
-            })
-            // Respuestas
-            comentarios.filter { it.parentId == principal.id }.forEach { respuesta ->
-                CommentItem(respuesta, isReply = true)
+            val respuestas = comentarios.filter { it.parentId == principal.id }
+            val areRepliesVisible = showRepliesMap[principal.id] ?: false
+
+            CommentItem(
+                comentario = principal, 
+                onReply = { 
+                    replyingToId = principal.id
+                    replyingToName = principal.autorNombre
+                },
+                hasReplies = respuestas.isNotEmpty(),
+                repliesVisible = areRepliesVisible,
+                onToggleReplies = { showRepliesMap[principal.id] = !areRepliesVisible }
+            )
+            
+            AnimatedVisibility(visible = areRepliesVisible) {
+                Column {
+                    respuestas.forEach { respuesta ->
+                        CommentItem(respuesta, isReply = true)
+                    }
+                }
             }
         }
 
@@ -417,25 +441,44 @@ fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
 }
 
 @Composable
-fun CommentItem(comentario: com.example.seguimiento.Dominio.modelos.Comentario, isReply: Boolean = false, onReply: (() -> Unit)? = null) {
-    Row(modifier = Modifier.padding(top = 8.dp, start = if (isReply) 32.dp else 0.dp)) {
-        Box(modifier = Modifier.size(24.dp).background(Color.LightGray, CircleShape), contentAlignment = Alignment.Center) {
-            Icon(Icons.Default.Person, null, modifier = Modifier.size(16.dp), tint = Color.White)
-        }
-        Spacer(Modifier.width(8.dp))
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(comentario.autorNombre, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                if (onReply != null) {
-                    Text(
-                        "Responder", 
-                        fontSize = 10.sp, 
-                        color = Color.Blue, 
-                        modifier = Modifier.padding(start = 12.dp).clickable { onReply() }
-                    )
-                }
+fun CommentItem(
+    comentario: com.example.seguimiento.Dominio.modelos.Comentario, 
+    isReply: Boolean = false, 
+    onReply: (() -> Unit)? = null,
+    hasReplies: Boolean = false,
+    repliesVisible: Boolean = false,
+    onToggleReplies: (() -> Unit)? = null
+) {
+    Column(modifier = Modifier.padding(top = 8.dp, start = if (isReply) 32.dp else 0.dp)) {
+        Row {
+            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, CircleShape), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Person, null, modifier = Modifier.size(16.dp), tint = Color.White)
             }
-            Text(comentario.contenido, fontSize = 12.sp)
+            Spacer(Modifier.width(8.dp))
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(comentario.autorNombre, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    if (onReply != null) {
+                        Text(
+                            "Responder", 
+                            fontSize = 10.sp, 
+                            color = Color(0xFFE67E22), 
+                            modifier = Modifier.padding(start = 12.dp).clickable { onReply() }
+                        )
+                    }
+                }
+                Text(comentario.contenido, fontSize = 12.sp)
+            }
+        }
+        
+        if (hasReplies && onToggleReplies != null) {
+            Text(
+                text = if (repliesVisible) "Ocultar respuestas" else "Ver respuestas...",
+                fontSize = 11.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 32.dp, top = 4.dp).clickable { onToggleReplies() }
+            )
         }
     }
 }
