@@ -76,6 +76,12 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindSaludRepository(
+        saludRepositoryImpl: SaludRepositoryImpl
+    ): SaludRepository
+
+    @Binds
+    @Singleton
     abstract fun bindAIService(
         aiServiceImpl: AIServiceImpl
     ): AIService

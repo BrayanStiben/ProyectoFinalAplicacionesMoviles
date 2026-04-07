@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.Refugio
 import com.example.seguimiento.Dominio.modelos.RefugioEstado
+import com.example.seguimiento.Dominio.modelos.RefugioTipo
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.RefugioRepository
@@ -36,6 +37,18 @@ class RefugioViewModel @Inject constructor(
         fotoUrl: String,
         onSuccess: () -> Unit
     ) {
+        registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUrl, RefugioTipo.REFUGIO, onSuccess)
+    }
+
+    fun registrarRefugioConTipo(
+        nombre: String,
+        direccion: String,
+        telefono: String,
+        descripcion: String,
+        fotoUrl: String,
+        tipo: RefugioTipo,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
             val userId = authRepository.currentUser.value?.id ?: "anonimo"
             val nuevo = Refugio(
@@ -46,13 +59,15 @@ class RefugioViewModel @Inject constructor(
                 descripcion = descripcion,
                 imagenUrl = fotoUrl,
                 estado = RefugioEstado.PENDIENTE,
-                autorId = userId
+                autorId = userId,
+                tipo = tipo
             )
             refugioRepository.save(nuevo)
             
+            val etiqueta = if (tipo == RefugioTipo.VETERINARIA) "veterinaria" else "refugio"
             notificacionRepository.addNotificacion(
-                titulo = "Refugio en revisión 🏠",
-                mensaje = "Tu solicitud para registrar el refugio '$nombre' ha sido enviada.",
+                titulo = "Registro en revisión ✨",
+                mensaje = "Tu solicitud para registrar la $etiqueta '$nombre' ha sido enviada.",
                 userId = userId
             )
             onSuccess()
@@ -65,9 +80,10 @@ class RefugioViewModel @Inject constructor(
             refugioRepository.actualizarEstado(id, RefugioEstado.APROBADO)
             
             refugio?.let {
+                val etiqueta = if (it.tipo == RefugioTipo.VETERINARIA) "Veterinaria" else "Refugio"
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Refugio Aprobado! 🎉",
-                    mensaje = "Tu refugio '${it.nombre}' ya es visible para toda la comunidad.",
+                    titulo = "¡Registro Aprobado! 🎉",
+                    mensaje = "Tu $etiqueta '${it.nombre}' ya es visible para toda la comunidad.",
                     userId = it.autorId
                 )
             }
@@ -80,9 +96,10 @@ class RefugioViewModel @Inject constructor(
             refugioRepository.actualizarEstado(id, RefugioEstado.RECHAZADO)
             
             refugio?.let {
+                val etiqueta = if (it.tipo == RefugioTipo.VETERINARIA) "veterinaria" else "refugio"
                 notificacionRepository.addNotificacion(
-                    titulo = "Solicitud de Refugio Rechazada ❌",
-                    mensaje = "Lo sentimos, el registro de '${it.nombre}' no ha sido aprobado.",
+                    titulo = "Solicitud Rechazada ❌",
+                    mensaje = "Lo sentimos, el registro de tu $etiqueta '${it.nombre}' no ha sido aprobado.",
                     userId = it.autorId
                 )
             }

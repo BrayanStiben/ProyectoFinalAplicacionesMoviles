@@ -4,15 +4,15 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.seguimiento.R
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,22 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import kotlin.math.absoluteValue
 import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.core.navigation.AdminBottomBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaPetAdopta(
     viewModel: HistoriaMascotaViewModel = hiltViewModel(),
@@ -55,10 +51,7 @@ fun PantallaPetAdopta(
     val historiasAprobadas by viewModel.historiasAprobadas.collectAsState()
     val currentUser by viewModel.authRepository.currentUser.collectAsState()
 
-    val estadoPager = rememberPagerState(pageCount = { historiasAprobadas.size.coerceAtLeast(1) })
-    val scrollState = rememberScrollState()
-
-    var showDialog by remember { mutableStateOf<HistoriaFeliz?>(null) }
+    var showPostForm by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -85,6 +78,18 @@ fun PantallaPetAdopta(
                     }
                 }
             }
+        },
+        floatingActionButton = {
+            if (!showPostForm) {
+                ExtendedFloatingActionButton(
+                    onClick = { showPostForm = true },
+                    containerColor = Color(0xFFE67E22),
+                    contentColor = Color.White,
+                    icon = { Icon(Icons.Default.Add, null) },
+                    text = { Text("Compartir Historia") },
+                    shape = RoundedCornerShape(16.dp)
+                )
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -96,282 +101,225 @@ fun PantallaPetAdopta(
                 contentScale = ContentScale.Crop
             )
 
-            // Overlay sutil
-            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.3f)))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                // BOTÓN VOLVER
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-                    IconButton(
-                        onClick = { onNavigateBack() },
-                        modifier = Modifier.background(Color.White.copy(alpha = 0.7f), CircleShape)
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color(0xFF5D2E17))
-                    }
-                }
-
-                // LOGO GIGANTE
-                Image(
-                    painter = painterResource(id = R.drawable.petadopticono),
-                    contentDescription = "Logo PetAdopta",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(280.dp)
-                        .padding(top = 0.dp)
-                )
-
-                // TEXTO CASI TOCANDO EL LOGO
-                Text(
-                    text = "Comparte tu Historia Feliz",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF5D2E17),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.offset(y = (-55).dp)
-                )
-
-                // FORMULARIO
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .offset(y = (-40).dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        OutlinedTextField(
-                            value = mascotaNombre,
-                            onValueChange = { viewModel.alCambiarNombreMascota(it) },
-                            placeholder = { Text("Nombre de tu mascota", color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE67E22),
-                                unfocusedBorderColor = Color.LightGray
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        OutlinedTextField(
-                            value = textoHistoria,
-                            onValueChange = { viewModel.alCambiarTexto(it) },
-                            placeholder = { Text("¿Cómo conociste a tu mejor amigo?", color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth().height(100.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE67E22),
-                                unfocusedBorderColor = Color.LightGray
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        if (imagenSeleccionada != null) {
-                            Box(modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp))) {
-                                AsyncImage(
-                                    model = imagenSeleccionada,
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                                IconButton(
-                                    onClick = { viewModel.alSeleccionarImagen(null) },
-                                    modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                                ) {
-                                    Icon(Icons.Default.Close, null, tint = Color.White)
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
-
-                        Button(
-                            onClick = { launcher.launch("image/*") },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                            border = BorderStroke(2.dp, Color(0xFFE67E22)),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = Color(0xFFE67E22))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(if (imagenSeleccionada == null) "SUBIR FOTO 📸" else "CAMBIAR FOTO", color = Color(0xFFE67E22), fontWeight = FontWeight.Bold)
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(
-                            onClick = { 
-                                viewModel.compartir {
-                                    onNavigateBack()
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth().height(55.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
-                            shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                        ) {
-                            Text("PUBLICAR AHORA 🐾", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
-                        }
-                    }
-                }
-
-                // SECCIÓN MOMENTOS INOLVIDABLES (CARRUSEL)
-                Text(
-                    "Momentos Inolvidables",
-                    fontWeight = FontWeight.Black,
-                    fontSize = 24.sp,
-                    color = Color(0xFF5D2E17),
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-                        .offset(y = (-30).dp)
-                )
-
-                if (historiasAprobadas.isEmpty()) {
-                    Text("¡Las historias de éxito aparecerán aquí!", color = Color.Gray, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, modifier = Modifier.offset(y = (-30).dp))
-                } else {
-                    HorizontalPager(
-                        state = estadoPager,
+                // HEADER ESTILO INSTAGRAM
+                item {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(360.dp)
-                            .offset(y = (-30).dp),
-                        contentPadding = PaddingValues(horizontal = 40.dp),
-                        pageSpacing = 12.dp
-                    ) { pagina ->
-                        val historia = historiasAprobadas[pagina]
-                        val pageOffset = ((estadoPager.currentPage - pagina) + estadoPager.currentPageOffsetFraction).absoluteValue
-                        
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .graphicsLayer {
-                                    val scale = lerp(0.85f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
-                                    scaleX = scale
-                                    scaleY = scale
-                                    alpha = lerp(0.5f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
-                                }
-                                .clickable { showDialog = historia },
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-                        ) {
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                AsyncImage(
-                                    model = historia.imagenUrl,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp)
-                                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
-                                    contentScale = ContentScale.Crop
+                            .background(
+                                brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+                            )
+                            .padding(top = 40.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = onNavigateBack) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
+                            }
+                            Column {
+                                Text(
+                                    "PetAdopta Stories ✨",
+                                    color = Color.White,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Black
                                 )
-                                
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = historia.mascotaNombre,
-                                        color = Color(0xFFE67E22),
-                                        fontWeight = FontWeight.Black,
-                                        fontSize = 20.sp
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = historia.texto,
-                                        color = Color.DarkGray,
-                                        fontSize = 14.sp,
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Person, null, modifier = Modifier.size(14.dp), tint = Color.Gray)
-                                        Spacer(Modifier.width(4.dp))
-                                        Text(historia.autorNombre, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
-                                    }
-                                }
+                                Text(
+                                    "Historias que cambian vidas",
+                                    color = Color.White.copy(0.9f),
+                                    fontSize = 14.sp
+                                )
                             }
                         }
                     }
+                    // Espaciador para que la primera tarjeta no esté pegada al encabezado
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
 
-                    Row(
-                        Modifier
-                            .padding(top = 0.dp)
-                            .offset(y = (-20).dp),
-                        horizontalArrangement = Arrangement.Center
+                // FEED DE HISTORIAS (ESTILO SOCIAL)
+                items(historiasAprobadas) { historia ->
+                    SocialHistoryCard(historia)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            // OVERLAY FORMULARIO (MODAL STYLE)
+            if (showPostForm) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f))
+                        .clickable { showPostForm = false },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .clickable(enabled = false) {},
+                        shape = RoundedCornerShape(28.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        repeat(historiasAprobadas.size) { i ->
-                            val selected = estadoPager.currentPage == i
-                            val width by animateDpAsState(targetValue = if (selected) 24.dp else 8.dp, label = "")
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(8.dp)
-                                    .width(width)
-                                    .clip(CircleShape)
-                                    .background(if (selected) Color(0xFFE67E22) else Color.LightGray)
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Nueva Historia 🐾", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF5D2E17))
+                                IconButton(onClick = { showPostForm = false }) {
+                                    Icon(Icons.Default.Close, null)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            OutlinedTextField(
+                                value = mascotaNombre,
+                                onValueChange = { viewModel.alCambiarNombreMascota(it) },
+                                label = { Text("Nombre de la mascota") },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp)
                             )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            OutlinedTextField(
+                                value = textoHistoria,
+                                onValueChange = { viewModel.alCambiarTexto(it) },
+                                label = { Text("Cuéntanos tu historia...") },
+                                modifier = Modifier.fillMaxWidth().height(120.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            if (imagenSeleccionada != null) {
+                                Box(modifier = Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(12.dp))) {
+                                    AsyncImage(
+                                        model = imagenSeleccionada,
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            } else {
+                                Button(
+                                    onClick = { launcher.launch("image/*") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF5F5F5)),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(Icons.Default.AddPhotoAlternate, null, tint = Color(0xFFE67E22))
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("Elegir Foto", color = Color(0xFFE67E22))
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Button(
+                                onClick = { 
+                                    viewModel.compartir {
+                                        showPostForm = false
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
+                                shape = RoundedCornerShape(16.dp),
+                                enabled = mascotaNombre.isNotBlank() && textoHistoria.isNotBlank()
+                            ) {
+                                Text("COMPARTIR AHORA", fontWeight = FontWeight.Black)
+                            }
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
+}
 
-    // DIALOGO DETALLE
-    showDialog?.let { historia ->
-        AlertDialog(
-            onDismissRequest = { showDialog = null },
-            confirmButton = {
-                Button(
-                    onClick = { showDialog = null },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22))
+@Composable
+fun SocialHistoryCard(historia: HistoriaFeliz) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            // Header: Autor
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFE67E22).copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("Cerrar", color = Color.White)
+                    Icon(Icons.Default.AccountCircle, null, tint = Color(0xFFE67E22), modifier = Modifier.size(32.dp))
                 }
-            },
-            title = { 
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(historia.autorNombre, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Acaba de compartir un momento", fontSize = 11.sp, color = Color.Gray)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(Icons.Default.MoreVert, null, tint = Color.Gray)
+            }
+
+            // Imagen Principal
+            AsyncImage(
+                model = historia.imagenUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                contentScale = ContentScale.Crop
+            )
+
+            // Acciones Estilo Social
+            Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                var liked by remember { mutableStateOf(false) }
+                IconButton(onClick = { liked = !liked }) {
+                    Icon(
+                        if(liked) Icons.Default.Favorite else Icons.Default.FavoriteBorder, 
+                        null, 
+                        tint = if(liked) Color.Red else Color.Black
+                    )
+                }
+                IconButton(onClick = { }) {
+                    Icon(Icons.Default.ChatBubbleOutline, null)
+                }
+                IconButton(onClick = { }) {
+                    Icon(Icons.AutoMirrored.Filled.Send, null)
+                }
+            }
+
+            // Texto de la Historia
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 Text(
-                    text = "La historia de ${historia.mascotaNombre}", 
-                    fontWeight = FontWeight.Black, 
-                    color = Color(0xFF5D2E17)
-                ) 
-            },
-            text = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    AsyncImage(
-                        model = historia.imagenUrl,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                            .clip(RoundedCornerShape(20.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = historia.texto,
-                        fontSize = 16.sp,
-                        color = Color.DarkGray,
-                        lineHeight = 22.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Publicado por: ${historia.autorNombre}", fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
-                }
-            },
-            shape = RoundedCornerShape(30.dp),
-            containerColor = Color.White
-        )
+                    text = "La historia de ${historia.mascotaNombre} 🐾",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 16.sp,
+                    color = Color(0xFFE67E22)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = historia.texto,
+                    fontSize = 14.sp,
+                    color = Color.DarkGray,
+                    lineHeight = 20.sp
+                )
+            }
+        }
     }
 }
 

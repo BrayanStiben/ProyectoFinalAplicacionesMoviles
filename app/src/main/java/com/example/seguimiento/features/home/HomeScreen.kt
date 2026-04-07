@@ -46,7 +46,8 @@ fun HomeScreen(
     onNavigateToMapa: () -> Unit = {},
     onNavigateToRegistroMascota: () -> Unit = {},
     onNavigateToLogros: () -> Unit = {},
-    onNavigateToTienda: () -> Unit = {}
+    onNavigateToTienda: () -> Unit = {},
+    onNavigateToMisAdopciones: () -> Unit = {}
 ) {
     val userName by viewModel.userName.collectAsState()
     val userProfilePicture by viewModel.userProfilePicture.collectAsState()
@@ -145,17 +146,19 @@ fun HomeScreen(
                 }
             }
 
-            // --- CATEGORÍAS ---
+            // --- CATEGORÍAS CON SCROLL HORIZONTAL ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 25.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .horizontalScroll(rememberScrollState())
+                    .padding(top = 25.dp, bottom = 20.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 CategoryItem("Refugios", Color(0xFF00ACC1), Icons.Default.Apartment) { onNavigateToRefugios() }
                 CategoryItem("Tienda", Color(0xFFFF9800), Icons.Default.Storefront) { onNavigateToTienda() }
                 CategoryItem("Nutrición", Color(0xFFFB8C00), Icons.AutoMirrored.Filled.MenuBook) { onNavigateToNutricion() }
                 CategoryItem("Filtros", Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
+                CategoryItem("Citas", Color(0xFF2196F3), Icons.Default.CalendarMonth) { onNavigateToMisAdopciones() }
             }
 
             // --- RESTO DEL CONTENIDO ---

@@ -48,6 +48,7 @@ import com.example.seguimiento.features.Logros.LogrosScreen
 import com.example.seguimiento.features.MisAdopciones.MisAdopcionesScreen
 import com.example.seguimiento.features.MisPublicaciones.MisPublicacionesScreen
 import com.example.seguimiento.features.Refugios.RefugiosScreen
+import com.example.seguimiento.features.Salud.SaludScreen
 
 @Composable
 fun AppNavigation() {
@@ -114,7 +115,8 @@ fun AppNavigation() {
                 onNavigateToMapa = { navController.navigate(NavRoutes.MapaFeed.route) },
                 onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) },
                 onNavigateToLogros = { navController.navigate(NavRoutes.Logros.route) },
-                onNavigateToTienda = { navController.navigate(NavRoutes.Tienda.route) }
+                onNavigateToTienda = { navController.navigate(NavRoutes.Tienda.route) },
+                onNavigateToMisAdopciones = { navController.navigate(NavRoutes.MisAdopciones.route) }
             )
         }
 
@@ -182,7 +184,19 @@ fun AppNavigation() {
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
                 onNavigateToDetail = { id, nombre, edad, ubicacion, url ->
                     navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
-                }
+                },
+                onNavigateToSalud = { id -> navController.navigate(NavRoutes.SaludMascota.createRoute(id)) }
+            )
+        }
+
+        composable(
+            route = NavRoutes.SaludMascota.route,
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            SaludScreen(
+                mascotaId = id,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

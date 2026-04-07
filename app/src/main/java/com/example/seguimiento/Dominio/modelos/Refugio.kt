@@ -4,6 +4,10 @@ enum class RefugioEstado {
     PENDIENTE, APROBADO, RECHAZADO
 }
 
+enum class RefugioTipo {
+    REFUGIO, VETERINARIA
+}
+
 data class Refugio(
     val id: String,
     val nombre: String,
@@ -14,5 +18,6 @@ data class Refugio(
     val latitud: Double = 0.0,
     val longitud: Double = 0.0,
     val estado: RefugioEstado = RefugioEstado.PENDIENTE,
-    val autorId: String = ""
+    val autorId: String = "",
+    val tipo: RefugioTipo = RefugioTipo.REFUGIO
 )

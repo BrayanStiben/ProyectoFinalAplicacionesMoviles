@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.seguimiento.Dominio.modelos.RefugioTipo
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
 
@@ -42,6 +43,7 @@ fun RegistroRefugioScreen(
     var telefono by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var fotoUri by remember { mutableStateOf<Uri?>(null) }
+    var tipoSeleccionado by remember { mutableStateOf(RefugioTipo.REFUGIO) }
     var estaCargando by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -53,7 +55,7 @@ fun RegistroRefugioScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Registrar Refugio", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Registro de Aliado", color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
@@ -91,7 +93,7 @@ fun RegistroRefugioScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("¡Únete a nuestra red!", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
-                    Text("Tu refugio ayudará a cientos de mascotas", color = Color.White.copy(0.9f), fontSize = 14.sp)
+                    Text("Refugios y Veterinarias al servicio animal", color = Color.White.copy(0.9f), fontSize = 14.sp)
                 }
             }
 
@@ -106,6 +108,22 @@ fun RegistroRefugioScreen(
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     
+                    Text("¿Qué tipo de aliado eres?", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(
+                            selected = tipoSeleccionado == RefugioTipo.REFUGIO,
+                            onClick = { tipoSeleccionado = RefugioTipo.REFUGIO },
+                            label = { Text("REFUGIO 🏠") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        FilterChip(
+                            selected = tipoSeleccionado == RefugioTipo.VETERINARIA,
+                            onClick = { tipoSeleccionado = RefugioTipo.VETERINARIA },
+                            label = { Text("VETERINARIA 🏥") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -121,14 +139,14 @@ fun RegistroRefugioScreen(
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.AddPhotoAlternate, null, tint = naranjaApp, modifier = Modifier.size(40.dp))
-                                Text("Foto de la fachada", color = naranjaApp, fontWeight = FontWeight.Bold)
+                                Text("Foto del lugar", color = naranjaApp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
 
                     OutlinedTextField(
                         value = nombre, onValueChange = { nombre = it },
-                        label = { Text("Nombre del Refugio") },
+                        label = { Text("Nombre del establecimiento") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -151,7 +169,7 @@ fun RegistroRefugioScreen(
 
                     OutlinedTextField(
                         value = descripcion, onValueChange = { descripcion = it },
-                        label = { Text("Descripción / Misión") },
+                        label = { Text("Cuéntanos sobre tu servicio") },
                         modifier = Modifier.fillMaxWidth().height(120.dp),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -162,14 +180,14 @@ fun RegistroRefugioScreen(
                         Button(
                             onClick = {
                                 estaCargando = true
-                                viewModel.registrarRefugio(nombre, direccion, telefono, descripcion, fotoUri?.toString() ?: "") {
+                                viewModel.registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUri?.toString() ?: "", tipoSeleccionado) {
                                     estaCargando = false
                                     onNavigateBack()
                                 }
                             },
                             modifier = Modifier.fillMaxWidth().height(55.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(12.dp),
                             enabled = nombre.isNotBlank() && direccion.isNotBlank() && telefono.isNotBlank()
                         ) {
                             Text("SOLICITAR REGISTRO", fontWeight = FontWeight.Black, fontSize = 16.sp)

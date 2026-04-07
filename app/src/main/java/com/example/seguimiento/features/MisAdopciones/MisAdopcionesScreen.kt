@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -34,7 +35,8 @@ fun MisAdopcionesScreen(
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
-    onNavigateToDetail: (String, String, String, String, String) -> Unit = { _, _, _, _, _ -> }
+    onNavigateToDetail: (String, String, String, String, String) -> Unit = { _, _, _, _, _ -> },
+    onNavigateToSalud: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val naranjaApp = Color(0xFFE67E22)
@@ -92,11 +94,19 @@ fun MisAdopcionesScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(uiState.adopciones) { item ->
-                        TarjetaAdopcionExitosa(item) {
-                            item.mascota?.let { m ->
-                                onNavigateToDetail(m.id, m.nombre, m.edad, m.ubicacion, m.imagenUrl)
+                        TarjetaAdopcionExitosa(
+                            item = item,
+                            onClick = {
+                                item.mascota?.let { m ->
+                                    onNavigateToDetail(m.id, m.nombre, m.edad, m.ubicacion, m.imagenUrl)
+                                }
+                            },
+                            onSaludClick = {
+                                item.mascota?.let { m ->
+                                    onNavigateToSalud(m.id)
+                                }
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -105,68 +115,82 @@ fun MisAdopcionesScreen(
 }
 
 @Composable
-fun TarjetaAdopcionExitosa(item: AdopcionConMascota, onClick: () -> Unit) {
+fun TarjetaAdopcionExitosa(item: AdopcionConMascota, onClick: () -> Unit, onSaludClick: () -> Unit) {
     val cafeApp = Color(0xFF5D2E17)
     val naranjaApp = Color(0xFFE67E22)
     val verdeExito = Color(0xFF4CAF50)
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(90.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.LightGray)
+        Column {
+            Row(
+                modifier = Modifier.clickable { onClick() }.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (item.mascota?.imagenUrl?.isNotEmpty() == true) {
-                    AsyncImage(
-                        model = item.mascota.imagenUrl,
-                        contentDescription = item.request.petName,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.Pets, 
-                        null, 
-                        tint = naranjaApp.copy(alpha = 0.5f), 
-                        modifier = Modifier.align(Alignment.Center).size(40.dp)
-                    )
-                }
-            }
-            
-            Spacer(Modifier.width(16.dp))
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Text(item.request.petName, fontWeight = FontWeight.Black, fontSize = 20.sp, color = cafeApp)
-                Text(item.request.petType, fontSize = 14.sp, color = Color.Gray)
-                Spacer(Modifier.height(4.dp))
-                Surface(
-                    color = verdeExito.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp)
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.LightGray)
                 ) {
-                    Text(
-                        "¡Adopción completada!", 
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        color = verdeExito, 
-                        fontWeight = FontWeight.Bold, 
-                        fontSize = 11.sp
-                    )
+                    if (item.mascota?.imagenUrl?.isNotEmpty() == true) {
+                        AsyncImage(
+                            model = item.mascota.imagenUrl,
+                            contentDescription = item.request.petName,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Pets, 
+                            null, 
+                            tint = naranjaApp.copy(alpha = 0.5f), 
+                            modifier = Modifier.align(Alignment.Center).size(40.dp)
+                        )
+                    }
                 }
+                
+                Spacer(Modifier.width(16.dp))
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(item.request.petName, fontWeight = FontWeight.Black, fontSize = 18.sp, color = cafeApp)
+                    Text(item.request.petType, fontSize = 13.sp, color = Color.Gray)
+                    Surface(
+                        color = verdeExito.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) {
+                        Text(
+                            "¡Adoptado!", 
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            color = verdeExito, 
+                            fontWeight = FontWeight.Bold, 
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+                
+                Icon(Icons.Default.ChevronRight, null, tint = Color.LightGray)
             }
-            
-            Icon(
-                Icons.Default.ChevronRight,
-                contentDescription = null, 
-                tint = Color.LightGray
-            )
+
+            // BOTÓN CARNET DE SALUD
+            Button(
+                onClick = onSaludClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF5F5F5)),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                Icon(Icons.Default.MedicalServices, null, tint = Color(0xFF2196F3), modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("VER CARNET DE SALUD", color = Color(0xFF2196F3), fontWeight = FontWeight.Black, fontSize = 12.sp)
+            }
         }
     }
 }

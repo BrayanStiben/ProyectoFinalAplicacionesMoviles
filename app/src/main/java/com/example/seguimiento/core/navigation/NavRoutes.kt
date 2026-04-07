@@ -31,6 +31,9 @@ sealed class NavRoutes(val route: String) {
     object MapaFeed : NavRoutes("mapa_feed")
     object Favoritos : NavRoutes("favoritos")
     object Logros : NavRoutes("logros")
+    object SaludMascota : NavRoutes("salud_mascota/{id}") {
+        fun createRoute(id: String) = "salud_mascota/$id"
+    }
 
     // Formulario de Adopción
     object StepOne : NavRoutes("step_one")
