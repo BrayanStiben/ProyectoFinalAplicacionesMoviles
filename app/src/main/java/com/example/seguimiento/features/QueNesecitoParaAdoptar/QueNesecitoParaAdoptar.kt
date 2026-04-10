@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
+import androidx.compose.ui.res.stringResource
 
 // Paleta de colores oficial
 val NaranjaAppRequisitos = Color(0xFFE67E22)
@@ -47,6 +48,7 @@ val BannerCurvoShape = GenericShape { size, _ ->
     )
     close()
 }
+
 
 @Composable
 fun QueNesecitoParaAdoptar(
@@ -103,24 +105,24 @@ fun QueNesecitoParaAdoptar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TarjetaRequisito(
-                        titulo = "Tus datos",
-                        subtitulo = "Documentación y requisitos legales",
+                        titulo = stringResource(R.string.req_card_data_title),
+                        subtitulo = stringResource(R.string.req_card_data_subtitle),
                         icono = Icons.Default.AssignmentInd
                     ) { viewModel.abrirPopUp(SeccionAdopcion.TUS_DATOS) }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TarjetaRequisito(
-                        titulo = "Calcular comida de animal",
-                        subtitulo = "Planes nutricionales a medida",
+                        titulo = stringResource(R.string.req_card_food_title),
+                        subtitulo = stringResource(R.string.req_card_food_subtitle),
                         icono = Icons.Default.Calculate
                     ) { viewModel.abrirPopUp(SeccionAdopcion.CALCULAR_COMIDA) }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TarjetaRequisito(
-                        titulo = "¿Hogar feliz?",
-                        subtitulo = "Condiciones ideales de vivienda",
+                        titulo = stringResource(R.string.req_card_home_title),
+                        subtitulo = stringResource(R.string.req_card_home_subtitle),
                         icono = Icons.Default.HomeWork
                     ) { viewModel.abrirPopUp(SeccionAdopcion.HOGAR_FELIZ) }
 
@@ -132,7 +134,7 @@ fun QueNesecitoParaAdoptar(
                         colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("IR AL FORMULARIO", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.req_btn_form), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     
                     Spacer(modifier = Modifier.height(20.dp))
@@ -159,7 +161,7 @@ fun QueNesecitoParaAdoptar(
                                 colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("CALCULADORA", fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.req_btn_calculator), fontSize = 9.sp, fontWeight = FontWeight.Bold)
                             }
                             Button(
                                 onClick = {
@@ -170,7 +172,7 @@ fun QueNesecitoParaAdoptar(
                                 colors = ButtonDefaults.buttonColors(containerColor = CafeAppRequisitos),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("COMPRAR", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.req_btn_buy), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     } else {
@@ -179,20 +181,20 @@ fun QueNesecitoParaAdoptar(
                             colors = ButtonDefaults.buttonColors(containerColor = NaranjaAppRequisitos),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("ENTENDIDO", fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.req_btn_understood), fontWeight = FontWeight.Bold)
                         }
                     }
                 },
                 title = {
                     Text(
-                        text = if (seccion == SeccionAdopcion.CALCULAR_COMIDA) "ALIMENTACIÓN" else seccion.name.replace("_", " "),
+                        text = stringResource(viewModel.titulosPopUp[seccion] ?: R.string.req_popup_title_data),
                         fontWeight = FontWeight.Black,
                         color = CafeAppRequisitos
                     )
                 },
                 text = {
                     Text(
-                        text = viewModel.contenidosPopUp[seccion] ?: "",
+                        text = stringResource(viewModel.contenidosPopUp[seccion] ?: R.string.req_popup_content_data),
                         fontSize = 15.sp,
                         lineHeight = 22.sp,
                         color = Color.DarkGray
@@ -221,7 +223,7 @@ fun BannerNaranjaHeader() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "¿Qué necesito para\nadoptar una mascota?",
+            text = stringResource(R.string.req_title),
             color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,

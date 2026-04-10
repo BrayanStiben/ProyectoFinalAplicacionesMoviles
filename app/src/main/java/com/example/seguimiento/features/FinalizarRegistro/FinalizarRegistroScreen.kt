@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,8 +79,8 @@ fun FinalizarRegistroScreen(
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             
-            Text("¡Casi listo!", fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color.White, textAlign = TextAlign.Center)
-            Text("Finaliza tu perfil para empezar", fontSize = 16.sp, color = Color.White.copy(alpha = 0.8f), textAlign = TextAlign.Center)
+            Text(stringResource(id = R.string.finish_reg_title), fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color.White, textAlign = TextAlign.Center)
+            Text(stringResource(id = R.string.finish_reg_subtitle), fontSize = 16.sp, color = Color.White.copy(alpha = 0.8f), textAlign = TextAlign.Center)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -103,7 +104,7 @@ fun FinalizarRegistroScreen(
                 } else {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.AddAPhoto, null, tint = Color.White, modifier = Modifier.size(40.dp))
-                        Text("Subir foto", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(id = R.string.finish_reg_upload_photo), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -122,14 +123,14 @@ fun FinalizarRegistroScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
-                    ItemEstadoCard("Estado del perfil", "Completado", Icons.Default.VerifiedUser)
-                    ItemEstadoCard("Foto de perfil", if(fotoSeleccionada.isNotEmpty()) "Foto seleccionada" else "Pendiente", Icons.Default.PhotoCamera)
+                    ItemEstadoCard(stringResource(id = R.string.finish_reg_status_label), stringResource(id = R.string.finish_reg_status_completed), Icons.Default.VerifiedUser)
+                    ItemEstadoCard(stringResource(id = R.string.finish_reg_photo_label), if(fotoSeleccionada.isNotEmpty()) stringResource(id = R.string.finish_reg_photo_selected) else stringResource(id = R.string.finish_reg_photo_pending), Icons.Default.PhotoCamera)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    SelectorModerno("Departamento", deptoSel, deptos, Icons.Default.Map) { vm.onDepartamentoChanged(it) }
+                    SelectorModerno(stringResource(id = R.string.finish_reg_dept_label), deptoSel, deptos, Icons.Default.Map) { vm.onDepartamentoChanged(it) }
                     Spacer(modifier = Modifier.height(12.dp))
-                    SelectorModerno("Municipio / Ciudad", muniSel, municipios, Icons.Default.LocationOn, deptoSel.isNotEmpty()) { vm.onMunicipioChanged(it) }
+                    SelectorModerno(stringResource(id = R.string.finish_reg_muni_label), muniSel, municipios, Icons.Default.LocationOn, deptoSel.isNotEmpty()) { vm.onMunicipioChanged(it) }
 
                     Spacer(modifier = Modifier.height(20.dp))
                     CardTerminosModerno(aceptado = aceptado) { showDialog = true }
@@ -142,7 +143,7 @@ fun FinalizarRegistroScreen(
                         shape = RoundedCornerShape(18.dp),
                         enabled = muniSel.isNotEmpty() && aceptado && !estaCargando
                     ) {
-                        Text("FINALIZAR REGISTRO", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                        Text(stringResource(id = R.string.finish_reg_btn_finish), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
                     }
                 }
             }
@@ -212,7 +213,7 @@ fun CardTerminosModerno(aceptado: Boolean, onClick: () -> Unit) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Description, null, tint = if (aceptado) VerdeExito else NaranjaPrincipal)
             Spacer(modifier = Modifier.width(12.dp))
-            Text("Normas y regulaciones", modifier = Modifier.weight(1f), color = if (aceptado) VerdeExito else Color.DarkGray, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(stringResource(id = R.string.finish_reg_rules_label), modifier = Modifier.weight(1f), color = if (aceptado) VerdeExito else Color.DarkGray, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Icon(if (aceptado) Icons.Default.CheckCircle else Icons.AutoMirrored.Filled.ArrowForwardIos, null, tint = if (aceptado) VerdeExito else Color.LightGray, modifier = Modifier.size(16.dp))
         }
     }
@@ -234,11 +235,11 @@ fun VentanaTerminosDetallada(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 20.dp), shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(containerColor = FondoCrema)) {
             Column(modifier = Modifier.padding(24.dp)) {
-                Text("Contrato Legal PetAdopta", fontWeight = FontWeight.Black, fontSize = 22.sp, color = CafeApp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(stringResource(id = R.string.finish_reg_terms_title), fontWeight = FontWeight.Black, fontSize = 22.sp, color = CafeApp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = NaranjaPrincipal.copy(alpha = 0.2f))
                 Box(modifier = Modifier.heightIn(max = 350.dp)) {
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Text(text = "TÉRMINOS Y CONDICIONES GLOBALES\n\n1. Intermediación: PetAdopta conecta rescatistas con adoptantes.\n2. Venta prohibida: No se permite comercializar seres vivos.\n3. Capacidad Legal: Solo mayores de 18 años.\n\nPOLÍTICA DE PRIVACIDAD\n\nTus datos de ubicación y contacto se usan solo para facilitar la adopción.", fontSize = 14.sp, color = Color.DarkGray, lineHeight = 22.sp)
+                        Text(text = stringResource(id = R.string.finish_reg_terms_content), fontSize = 14.sp, color = Color.DarkGray, lineHeight = 22.sp)
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
@@ -248,12 +249,12 @@ fun VentanaTerminosDetallada(onDismiss: () -> Unit, onConfirm: () -> Unit) {
                             checked = checkInterno, onCheckedChange = { checkInterno = it },
                             colors = CheckboxDefaults.colors(checkedColor = Color.White, checkmarkColor = VerdeExito, uncheckedColor = Color.White)
                         )
-                        Text("Acepto los términos", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = if(checkInterno) Color.White else CafeApp)
+                        Text(stringResource(id = R.string.finish_reg_terms_accept), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = if(checkInterno) Color.White else CafeApp)
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(onClick = onConfirm, enabled = checkInterno, modifier = Modifier.fillMaxWidth().height(54.dp), colors = ButtonDefaults.buttonColors(containerColor = NaranjaPrincipal), shape = RoundedCornerShape(15.dp)) {
-                    Text("ACEPTAR Y CONTINUAR", fontWeight = FontWeight.Bold)
+                    Text(stringResource(id = R.string.finish_reg_terms_btn_continue), fontWeight = FontWeight.Bold)
                 }
             }
         }

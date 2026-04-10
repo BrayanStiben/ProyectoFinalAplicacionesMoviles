@@ -31,10 +31,11 @@ class SaludViewModel @Inject constructor(
         id?.let { mascotaRepository.getById(it) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    // Observa el Flow del repositorio y lo convierte en StateFlow para la UI
     val carnet = _mascotaId.flatMapLatest { id ->
         if (id == null) flowOf(CarnetSalud(""))
         else saludRepository.getCarnetPorMascota(id)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), CarnetSalud(""))
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, CarnetSalud(""))
 
     val adoptionRequest = _mascotaId.flatMapLatest { id ->
         if (id == null) flowOf(null)
@@ -46,14 +47,6 @@ class SaludViewModel @Inject constructor(
     val aliadosAprobados: StateFlow<List<Refugio>> = refugioRepository.refugios
         .map { list -> list.filter { it.estado == RefugioEstado.APROBADO } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    // Valores aleatorios estables para la sesión
-    val randomPetId = rememberRandomValue(100000, 999999)
-    val randomPin = rememberRandomValue(1000, 9999)
-
-    private fun rememberRandomValue(min: Int, max: Int): Int {
-        return (min..max).random()
-    }
 
     fun setMascotaId(id: String) {
         _mascotaId.value = id

@@ -21,8 +21,8 @@ class AdoptionRepositoryImpl @Inject constructor(
     override suspend fun submitRequest(request: AdoptionRequest) {
         _requests.update { it + request }
         notificacionRepository.addNotificacion(
-            titulo = "Solicitud Enviada",
-            mensaje = "Tu solicitud para adoptar a una mascota ha sido enviada con éxito.",
+            tituloResId = com.example.seguimiento.R.string.notif_adoption_sent_title,
+            mensajeResId = com.example.seguimiento.R.string.notif_adoption_sent_msg,
             tipo = "INFO",
             userId = request.userId
         )
@@ -35,12 +35,29 @@ class AdoptionRepositoryImpl @Inject constructor(
         }
         
         request?.let {
-            val (titulo, msj, tipo) = when(status) {
-                AdoptionRequestStatus.APPROVED -> Triple("¡Adopción Aprobada!", "Felicidades, tu solicitud de adopción ha sido aprobada.", "SUCCESS")
-                AdoptionRequestStatus.REJECTED -> Triple("Solicitud Rechazada", "Lo sentimos, tu solicitud de adopción no ha sido aprobada en esta ocasión.", "ERROR")
-                else -> Triple("Actualización de Solicitud", "El estado de tu solicitud ha cambiado.", "INFO")
+            val (titRes, msjRes, tipo) = when(status) {
+                AdoptionRequestStatus.APPROVED -> Triple(
+                    com.example.seguimiento.R.string.notif_adoption_approved_title, 
+                    com.example.seguimiento.R.string.notif_adoption_approved_msg, 
+                    "SUCCESS"
+                )
+                AdoptionRequestStatus.REJECTED -> Triple(
+                    com.example.seguimiento.R.string.notif_adoption_rejected_title, 
+                    com.example.seguimiento.R.string.notif_adoption_rejected_msg, 
+                    "ERROR"
+                )
+                else -> Triple(
+                    com.example.seguimiento.R.string.notif_adoption_update_title, 
+                    com.example.seguimiento.R.string.notif_adoption_update_msg, 
+                    "INFO"
+                )
             }
-            notificacionRepository.addNotificacion(titulo, msj, tipo, it.userId)
+            notificacionRepository.addNotificacion(
+                tituloResId = titRes,
+                mensajeResId = msjRes,
+                tipo = tipo,
+                userId = it.userId
+            )
         }
     }
 
@@ -61,10 +78,10 @@ class AdoptionRepositoryImpl @Inject constructor(
         }
         request?.let {
             notificacionRepository.addNotificacion(
-                "¡Adopción Aprobada!",
-                "Felicidades, tu solicitud ha sido firmada y aprobada.",
-                "SUCCESS",
-                it.userId
+                tituloResId = com.example.seguimiento.R.string.notif_adoption_approved_title,
+                mensajeResId = com.example.seguimiento.R.string.notif_adoption_signed_msg,
+                tipo = "SUCCESS",
+                userId = it.userId
             )
         }
     }

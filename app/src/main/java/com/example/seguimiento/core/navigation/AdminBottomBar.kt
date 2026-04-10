@@ -13,9 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.seguimiento.R
 
 val ColorVivoNaranjaAdmin = Color(0xFFFF6D00)
 val ColorBarraBaseAdmin = Color(0xFFFDF7F2)
@@ -43,10 +45,10 @@ fun AdminBottomBar(
             modifier = Modifier.height(65.dp)
         ) {
             val navItems = listOf(
-                AdminNavItem("Panel Control", Icons.Default.AdminPanelSettings, "estadisticas"),
-                AdminNavItem("Solicitudes", Icons.AutoMirrored.Filled.ListAlt, "lista_solicitudes"),
-                AdminNavItem("Mascotas", Icons.Default.Pets, "encontrar_mascotas"),
-                AdminNavItem("Salir", Icons.AutoMirrored.Filled.ExitToApp, "logout")
+                AdminNavItem(stringResource(R.string.nav_admin_panel), Icons.Default.AdminPanelSettings, "estadisticas"),
+                AdminNavItem(stringResource(R.string.nav_admin_requests), Icons.AutoMirrored.Filled.ListAlt, "lista_solicitudes"),
+                AdminNavItem(stringResource(R.string.nav_admin_pets), Icons.Default.Pets, "encontrar_mascotas"),
+                AdminNavItem(stringResource(R.string.nav_admin_logout), Icons.AutoMirrored.Filled.ExitToApp, "logout")
             )
             navItems.forEach { item ->
                 val isSelected = currentRoute == item.route

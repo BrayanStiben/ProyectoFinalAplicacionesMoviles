@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 import com.example.seguimiento.core.navigation.AdminBottomBar
@@ -83,13 +84,13 @@ fun ReportesScreen(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Análisis Estadístico 📊",
+                            stringResource(R.string.admin_reports_title),
                             color = Color.White,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Dashboard de métricas visuales",
+                            stringResource(R.string.admin_reports_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 14.sp
                         )
@@ -111,7 +112,7 @@ fun ReportesScreen(
                     ) {
                         Icon(Icons.Default.Analytics, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("GENERAR ANÁLISIS COMPLETO", fontWeight = FontWeight.Black)
+                        Text(stringResource(R.string.admin_reports_btn_generate), fontWeight = FontWeight.Black)
                     }
                 }
 
@@ -123,22 +124,22 @@ fun ReportesScreen(
                     }
                 } else if (uiState.mascotasPorEspecie.isNotEmpty()) {
                     // --- SECCIÓN MASCOTAS ---
-                    item { SectionHeader("Mascotas y Adopciones") }
-                    item { ChartCard("Disponibilidad por Especie", Icons.Default.Pets, Color(0xFF2196F3)) { BarChartDiagram(uiState.mascotasPorEspecie) } }
-                    item { ChartCard("Éxito de Adopciones", Icons.Default.PieChart, Color(0xFF4CAF50)) { ProgressDistributionDiagram(uiState.adoptadasVsDisponibles) } }
-                    item { ChartCard("Estado de Solicitudes", Icons.AutoMirrored.Filled.FactCheck, Color(0xFFFFC107)) { StatusStepDiagram(uiState.solicitudesPorEstado) } }
+                    item { SectionHeader(stringResource(R.string.admin_reports_sec_pets)) }
+                    item { ChartCard(stringResource(R.string.admin_reports_chart_species), Icons.Default.Pets, Color(0xFF2196F3)) { BarChartDiagram(uiState.mascotasPorEspecie) } }
+                    item { ChartCard(stringResource(R.string.admin_reports_chart_success), Icons.Default.PieChart, Color(0xFF4CAF50)) { ProgressDistributionDiagram(uiState.adoptadasVsDisponibles) } }
+                    item { ChartCard(stringResource(R.string.admin_reports_chart_requests), Icons.AutoMirrored.Filled.FactCheck, Color(0xFFFFC107)) { StatusStepDiagram(uiState.solicitudesPorEstado) } }
 
                     // --- SECCIÓN TIENDA (NUEVO) ---
-                    item { SectionHeader("Inventario y Tienda") }
-                    item { ChartCard("Stock por Categoría", Icons.Default.Inventory, Color(0xFFFF9800)) { BarChartDiagram(uiState.stockPorCategoria, color1 = Color(0xFFFF9800), color2 = Color(0xFFFFCC80)) } }
+                    item { SectionHeader(stringResource(R.string.admin_reports_sec_store)) }
+                    item { ChartCard(stringResource(R.string.admin_reports_chart_cat_stock), Icons.Default.Inventory, Color(0xFFFF9800)) { BarChartDiagram(uiState.stockPorCategoria, color1 = Color(0xFFFF9800), color2 = Color(0xFFFFCC80)) } }
                     
                     item {
-                        ChartCard("Cantidad de cada Producto", Icons.Default.ShoppingBag, Color(0xFF009688)) {
+                        ChartCard(stringResource(R.string.admin_reports_chart_prod_stock), Icons.Default.ShoppingBag, Color(0xFF009688)) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 uiState.stockPorProducto.take(10).forEach { (nombre, stock) ->
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                         Text(nombre, fontSize = 12.sp, color = Color.Gray, modifier = Modifier.weight(1f))
-                                        Text("$stock uds", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if(stock < 3) Color.Red else Color.Black)
+                                        Text(stringResource(R.string.admin_reports_stock_unit, stock), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if(stock < 3) Color.Red else Color.Black)
                                     }
                                 }
                             }
@@ -146,9 +147,9 @@ fun ReportesScreen(
                     }
 
                     // --- RANKING ---
-                    item { SectionHeader("Popularidad") }
+                    item { SectionHeader(stringResource(R.string.admin_reports_sec_popularity)) }
                     item {
-                        Text("Top 5 Mascotas con más Votos ❤️", fontWeight = FontWeight.Black, fontSize = 16.sp, color = cafeApp)
+                        Text(stringResource(R.string.admin_reports_ranking_title), fontWeight = FontWeight.Black, fontSize = 16.sp, color = cafeApp)
                     }
                     items(uiState.mascotasMasPopulares) { (nombre, likes) ->
                         RankingCard(nombre, likes)
@@ -237,8 +238,8 @@ fun ProgressDistributionDiagram(data: Map<String, Int>) {
             Text("${(progreso * 100).toInt()}%", fontWeight = FontWeight.Black, fontSize = 16.sp)
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            DiagramLegend(Color(0xFF4CAF50), "Adoptadas: ${adoptadas.toInt()}")
-            DiagramLegend(Color(0xFFE8F5E9), "Disponibles: ${data["Disponibles"] ?: 0}")
+            DiagramLegend(Color(0xFF4CAF50), stringResource(R.string.admin_reports_legend_adopted, adoptadas.toInt()))
+            DiagramLegend(Color(0xFFE8F5E9), stringResource(R.string.admin_reports_legend_available, data["Disponibles"] ?: 0))
         }
     }
 }
@@ -266,7 +267,7 @@ fun RankingCard(nombre: String, likes: Int) {
             }
             Spacer(Modifier.width(16.dp))
             Text(nombre, fontWeight = FontWeight.Bold, color = Color(0xFF5D2E17), modifier = Modifier.weight(1f))
-            Text("$likes votos", fontWeight = FontWeight.Black, color = Color(0xFFE67E22), fontSize = 16.sp)
+            Text(stringResource(R.string.admin_reports_ranking_votes, likes), fontWeight = FontWeight.Black, color = Color(0xFFE67E22), fontSize = 16.sp)
         }
     }
 }
@@ -286,8 +287,8 @@ fun EmptyStateMessage() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(Icons.Default.QueryStats, null, tint = Color.LightGray, modifier = Modifier.size(80.dp))
             Spacer(Modifier.height(16.dp))
-            Text("No hay datos procesados", color = Color.Gray, fontWeight = FontWeight.Bold)
-            Text("Toca el botón superior para calcular estadísticas", color = Color.Gray, fontSize = 12.sp)
+            Text(stringResource(R.string.admin_reports_empty_title), color = Color.Gray, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.admin_reports_empty_desc), color = Color.Gray, fontSize = 12.sp)
         }
     }
 }

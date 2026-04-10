@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,14 +34,14 @@ fun SeccionAcercaDe() {
     ) {
         Image(
             painter = painterResource(id = R.drawable.petadopticono),
-            contentDescription = "PetAdopta Logo",
+            contentDescription = stringResource(id = R.string.about_logo_description),
             modifier = Modifier.size(120.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "PetAdopta Nutri",
+            stringResource(id = R.string.about_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Black,
             color = cafeApp
@@ -49,7 +50,7 @@ fun SeccionAcercaDe() {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            "Nuestra misión es educar a los dueños de mascotas sobre la importancia de una nutrición balanceada para prolongar la vida y felicidad de sus compañeros.",
+            stringResource(id = R.string.about_mission),
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
             color = Color.DarkGray,
@@ -64,12 +65,12 @@ fun SeccionAcercaDe() {
             colors = CardDefaults.cardColors(containerColor = naranjaApp.copy(alpha = 0.05f))
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Text("¿Por qué es importante?", fontWeight = FontWeight.Bold, color = cafeApp, fontSize = 18.sp)
+                Text(stringResource(id = R.string.about_importance_title), fontWeight = FontWeight.Bold, color = cafeApp, fontSize = 18.sp)
                 Spacer(modifier = Modifier.height(12.dp))
-                BulletPoint("Previene enfermedades crónicas.")
-                BulletPoint("Mejora la calidad del pelaje y piel.")
-                BulletPoint("Aumenta los niveles de energía.")
-                BulletPoint("Fortalece el sistema inmune.")
+                BulletPoint(stringResource(id = R.string.about_benefit_1))
+                BulletPoint(stringResource(id = R.string.about_benefit_2))
+                BulletPoint(stringResource(id = R.string.about_benefit_3))
+                BulletPoint(stringResource(id = R.string.about_benefit_4))
             }
         }
     }

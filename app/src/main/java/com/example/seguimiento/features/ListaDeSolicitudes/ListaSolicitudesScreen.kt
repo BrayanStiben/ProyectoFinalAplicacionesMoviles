@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
@@ -74,13 +75,13 @@ fun ListaSolicitudesScreen(
             ) {
                 Column {
                     Text(
-                        "Solicitudes Pendientes 📋",
+                        stringResource(R.string.admin_list_requests_title),
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "Verifica las nuevas publicaciones de mascotas",
+                        stringResource(R.string.admin_list_requests_subtitle),
                         color = Color.White.copy(0.9f),
                         fontSize = 15.sp
                     )
@@ -106,7 +107,7 @@ fun ListaSolicitudesScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.CheckCircle, null, tint = Color.LightGray, modifier = Modifier.size(64.dp))
                         Spacer(Modifier.height(8.dp))
-                        Text("No hay solicitudes pendientes", color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.admin_adoption_no_pending), color = Color.Gray, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -115,10 +116,10 @@ fun ListaSolicitudesScreen(
         if (showRejectDialog != null) {
             AlertDialog(
                 onDismissRequest = { showRejectDialog = null },
-                title = { Text("Rechazar Publicación") },
+                title = { Text(stringResource(R.string.admin_list_requests_dialog_reject_title)) },
                 text = {
                     Column {
-                        Text("Escribe el motivo del rechazo:")
+                        Text(stringResource(R.string.admin_list_requests_dialog_reject_instruction))
                         Spacer(Modifier.height(8.dp))
                         OutlinedTextField(
                             value = rejectReason,
@@ -136,10 +137,10 @@ fun ListaSolicitudesScreen(
                             rejectReason = ""
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
-                    ) { Text("Confirmar Rechazo") }
+                    ) { Text(stringResource(R.string.admin_list_requests_btn_confirm_reject)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showRejectDialog = null }) { Text("Cancelar") }
+                    TextButton(onClick = { showRejectDialog = null }) { Text(stringResource(R.string.btn_cancel)) }
                 }
             )
         }
@@ -204,7 +205,7 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                 ) {
                     Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Verificar", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.admin_list_requests_btn_verify), fontWeight = FontWeight.Bold)
                 }
                 Button(
                     onClick = onReject,
@@ -214,7 +215,7 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                 ) {
                     Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Rechazar", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.admin_adoption_btn_reject), fontWeight = FontWeight.Bold)
                 }
             }
         }

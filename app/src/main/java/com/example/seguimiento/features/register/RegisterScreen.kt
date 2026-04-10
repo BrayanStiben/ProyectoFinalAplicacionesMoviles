@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,8 @@ fun RegisterScreen(
     val scrollState = rememberScrollState()
     val resultadoRegistro by viewModel.resultadoRegistro.collectAsState()
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     // Observar el resultado del registro
     LaunchedEffect(resultadoRegistro) {
         when (val resultado = resultadoRegistro) {
@@ -49,9 +52,22 @@ fun RegisterScreen(
                     onNavigateToFinalize()
                 }
             }
+            is ResultadoPeticion.ExitoResId -> {
+                val msg = context.getString(resultado.resId, *resultado.args.toTypedArray())
+                scope.launch {
+                    snackbarHostState.showSnackbar(msg)
+                    onNavigateToFinalize()
+                }
+            }
             is ResultadoPeticion.Error -> {
                 scope.launch {
                     snackbarHostState.showSnackbar(resultado.mensaje)
+                }
+            }
+            is ResultadoPeticion.ErrorResId -> {
+                val msg = context.getString(resultado.resId, *resultado.args.toTypedArray())
+                scope.launch {
+                    snackbarHostState.showSnackbar(msg)
                 }
             }
             null -> {}
@@ -98,7 +114,7 @@ fun RegisterScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Únete a la Familia",
+                        text = stringResource(id = com.example.seguimiento.R.string.register_title),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Black,
                         color = CafeApp,
@@ -107,10 +123,10 @@ fun RegisterScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    CampoTextoStyle("Nombre completo", viewModel.nombre, Icons.Default.Person)
-                    CampoTextoStyle("Correo electrónico", viewModel.correo, Icons.Default.Email)
-                    CampoTextoStyle("Contraseña", viewModel.contrasena, Icons.Default.Lock, true)
-                    CampoTextoStyle("Confirmar contraseña", viewModel.confirmarContrasena, Icons.Default.LockReset, true)
+                    CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_name_label), viewModel.nombre, Icons.Default.Person)
+                    CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_email_label), viewModel.correo, Icons.Default.Email)
+                    CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_password_label), viewModel.contrasena, Icons.Default.Lock, true)
+                    CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_confirm_password_label), viewModel.confirmarContrasena, Icons.Default.LockReset, true)
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -122,7 +138,7 @@ fun RegisterScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("REGISTRARME", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(stringResource(id = com.example.seguimiento.R.string.register_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
             }
@@ -132,7 +148,7 @@ fun RegisterScreen(
                 modifier = Modifier.offset(y = (-100).dp)
             ) {
                 Text(
-                    text = "¿Ya tienes cuenta? Inicia sesión", 
+                    text = stringResource(id = com.example.seguimiento.R.string.register_already_have_account), 
                     color = Color.White, 
                     fontWeight = FontWeight.Black,
                     style = LocalTextStyle.current.copy(
@@ -170,7 +186,7 @@ fun CampoTextoStyle(
             label = { Text(etiqueta) },
             leadingIcon = { Icon(icono, null, tint = NaranjaApp) },
             visualTransformation = if (esContrasena) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
-            isError = campo.error != null,
+            isError = campo.errorResId != null,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -182,9 +198,9 @@ fun CampoTextoStyle(
             )
         )
 
-        campo.error?.let { errorText ->
+        campo.errorResId?.let { errorResId ->
             Text(
-                text = errorText,
+                text = stringResource(id = errorResId),
                 color = Color.Red,
                 fontSize = 11.sp,
                 modifier = Modifier.padding(start = 12.dp, top = 2.dp)

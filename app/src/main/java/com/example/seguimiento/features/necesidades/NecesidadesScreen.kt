@@ -11,7 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.seguimiento.R
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,13 +44,13 @@ fun SeccionNecesidades(
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    "Calculadora de Calorías 🐾",
+                    stringResource(R.string.needs_calc_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     color = cafeApp
                 )
                 Text(
-                    "Estima cuánto debe comer tu mascota diariamente.",
+                    stringResource(R.string.needs_calc_subtitle),
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -58,7 +60,7 @@ fun SeccionNecesidades(
                 OutlinedTextField(
                     value = peso,
                     onValueChange = { viewModel.onPesoChanged(it) },
-                    label = { Text("Peso de la mascota (kg)") },
+                    label = { Text(stringResource(R.string.needs_label_weight)) },
                     leadingIcon = { Icon(Icons.Default.Scale, null, tint = naranjaApp) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -67,16 +69,21 @@ fun SeccionNecesidades(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Nivel de Actividad Física", fontWeight = FontWeight.Bold, color = cafeApp)
+                Text(stringResource(R.string.needs_label_activity), fontWeight = FontWeight.Bold, color = cafeApp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    listOf("Baja", "Moderada", "Alta").forEach { nivel ->
+                    val actividades = listOf(
+                        stringResource(R.string.needs_activity_low) to "Baja",
+                        stringResource(R.string.needs_activity_moderate) to "Moderada",
+                        stringResource(R.string.needs_activity_high) to "Alta"
+                    )
+                    actividades.forEach { (label, valor) ->
                         FilterChip(
-                            selected = actividad == nivel,
-                            onClick = { viewModel.onActividadChanged(nivel) },
-                            label = { Text(nivel) },
+                            selected = actividad == valor,
+                            onClick = { viewModel.onActividadChanged(valor) },
+                            label = { Text(label) },
                             modifier = Modifier.weight(1f),
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = naranjaApp,
@@ -101,9 +108,9 @@ fun SeccionNecesidades(
                     Icon(Icons.Default.Info, null, tint = naranjaApp, modifier = Modifier.size(40.dp))
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("Resultado Estimado", fontWeight = FontWeight.Bold, color = cafeApp)
+                        Text(stringResource(R.string.needs_result_title), fontWeight = FontWeight.Bold, color = cafeApp)
                         Text(
-                            "$calorias kcal / día",
+                            stringResource(R.string.needs_result_value, calorias),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Black,
                             color = naranjaApp

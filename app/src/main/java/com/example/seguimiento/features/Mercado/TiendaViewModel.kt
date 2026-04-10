@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.example.seguimiento.R
+
 data class TiendaUiState(
     val productos: List<Producto> = emptyList(),
     val categoriaSeleccionada: String = "Todos",
@@ -36,10 +38,10 @@ class TiendaViewModel @Inject constructor(
         _categoriaSeleccionada,
         authRepository.currentUser
     ) { productos, categoria, user ->
-        val filtrados = if (categoria == "Todos") productos else productos.filter { it.categoria == categoria }
+        val filtrados = if (categoria == "All" || categoria == "Todos") productos else productos.filter { it.categoria == categoria }
         TiendaUiState(
             productos = filtrados,
-            categoriaSeleccionada = categoria,
+            categoriaSeleccionada = if (categoria == "All") "Todos" else categoria,
             puntosUsuario = user?.points ?: 0
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TiendaUiState(isLoading = true))
@@ -54,8 +56,9 @@ class TiendaViewModel @Inject constructor(
             
             if (user.points < producto.precioPuntos) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Puntos insuficientes ❌",
-                    mensaje = "Necesitas ${producto.precioPuntos} puntos para canjear ${producto.nombre}.",
+                    tituloResId = R.string.store_notif_insufficient_points_title,
+                    mensajeResId = R.string.store_notif_insufficient_points_msg,
+                    mensajeArgs = listOf(producto.precioPuntos.toString(), producto.nombre),
                     userId = user.id
                 )
                 return@launch
@@ -73,8 +76,9 @@ class TiendaViewModel @Inject constructor(
                 userRepository.addPoints(user.id, -producto.precioPuntos)
                 
                 notificacionRepository.addNotificacion(
-                    titulo = "Compra Exitosa 🎁",
-                    mensaje = "Has canjeado tus puntos por: ${producto.nombre}. ¡Disfrútalo!",
+                    tituloResId = R.string.store_notif_redeem_success_title,
+                    mensajeResId = R.string.store_notif_redeem_success_msg,
+                    mensajeArgs = listOf(producto.nombre),
                     userId = user.id
                 )
             }

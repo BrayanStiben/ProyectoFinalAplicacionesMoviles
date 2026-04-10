@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.example.seguimiento.Dominio.modelos.AdoptionRequest
 import com.example.seguimiento.Dominio.modelos.AdoptionRequestStatus
 import com.example.seguimiento.R
@@ -40,7 +41,7 @@ fun GestionAdopcionesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestión de Solicitudes", fontWeight = FontWeight.Black) },
+                title = { Text(stringResource(R.string.admin_adoption_mgmt_title), fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -66,7 +67,7 @@ fun GestionAdopcionesScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.Inventory, null, modifier = Modifier.size(64.dp), tint = Color.Gray)
                         Spacer(Modifier.height(16.dp))
-                        Text("No hay solicitudes pendientes", color = Color.Gray, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.admin_adoption_no_pending), color = Color.Gray, fontWeight = FontWeight.Medium)
                     }
                 }
             } else {
@@ -79,7 +80,7 @@ fun GestionAdopcionesScreen(
                 ) {
                     item {
                         Text(
-                            "SOLICITUDES PENDIENTES (${pendingRequests.size})", 
+                            stringResource(R.string.admin_adoption_pending_count, pendingRequests.size), 
                             fontWeight = FontWeight.ExtraBold, 
                             fontSize = 20.sp, 
                             color = Color(0xFF5D2E17),
@@ -128,7 +129,7 @@ fun CardSolicitud(request: AdoptionRequest, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(request.userName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Desea adoptar a ${request.petName}", fontSize = 14.sp, color = Color.Gray)
+                Text(stringResource(R.string.admin_adoption_wants_to_adopt, request.petName), fontSize = 14.sp, color = Color.Gray)
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
@@ -136,7 +137,7 @@ fun CardSolicitud(request: AdoptionRequest, onClick: () -> Unit) {
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "INTENTOS: ${request.rejectionCount}/3",
+                        text = stringResource(R.string.admin_adoption_attempts_label, request.rejectionCount),
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
@@ -195,17 +196,17 @@ fun DetalleSolicitudDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { 
-            Text("Revisión de Solicitud", fontWeight = FontWeight.Black)
+            Text(stringResource(R.string.admin_adoption_dialog_review_title), fontWeight = FontWeight.Black)
         },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                InfoItemLocal("Adoptante", request.userName)
-                InfoItemLocal("Mascota", "${request.petName} (${request.petType})")
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_adopter), request.userName)
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_pet), "${request.petName} (${request.petType})")
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                InfoItemLocal("Motivación", request.motivation)
-                InfoItemLocal("Vivienda", request.homeType)
-                InfoItemLocal("Horas solo", "${request.hoursAlone} horas")
-                InfoItemLocal("Referencia", "${request.referenceName} (${request.referencePhone})")
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_motivation), request.motivation)
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_housing), request.homeType)
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_hours_alone), stringResource(R.string.admin_adoption_hours_value, request.hoursAlone))
+                InfoItemLocal(stringResource(R.string.admin_adoption_label_reference), "${request.referenceName} (${request.referencePhone})")
                 
                 if (timeLeft > 0) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -221,7 +222,7 @@ fun DetalleSolicitudDialog(
                             Icon(Icons.Default.Timer, null, tint = Color.Red)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "Bloqueado por $timeLeft seg (Penalización)",
+                                stringResource(R.string.admin_adoption_penalty_timer, timeLeft),
                                 color = Color.Red,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
@@ -237,12 +238,12 @@ fun DetalleSolicitudDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                 enabled = timeLeft <= 0
             ) {
-                Text("APROBAR")
+                Text(stringResource(R.string.admin_adoption_btn_approve))
             }
         },
         dismissButton = {
             TextButton(onClick = onReject) {
-                Text("RECHAZAR", color = Color.Red)
+                Text(stringResource(R.string.admin_adoption_btn_reject), color = Color.Red)
             }
         },
         shape = RoundedCornerShape(28.dp),

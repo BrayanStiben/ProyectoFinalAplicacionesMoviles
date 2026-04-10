@@ -21,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import java.util.UUID
 import javax.inject.Inject
+import com.example.seguimiento.R
 
 // --- API DE MASCOTAS ---
 interface DogApiService {
@@ -208,18 +209,20 @@ class MascotaViewModel @Inject constructor(
 
             mascotaRepository.save(mascotaParaGuardar)
 
-            // NOTIFICACIÓN DE CREACIÓN/EDICIÓN
+            // NOTIFICACIÓN DE CREACIÓN/EDICIÓN - USANDO RECURSOS
             if (idEdicion == null) {
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Mascota registrada! 🐾",
-                    mensaje = "Has registrado a ${datos.nombre} con éxito. Un administrador revisará la publicación pronto.",
+                    tituloResId = R.string.notif_pet_registered_title,
+                    mensajeResId = R.string.notif_pet_registered_msg,
+                    mensajeArgs = listOf(datos.nombre),
                     tipo = "INFO",
                     userId = userId
                 )
             } else {
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Mascota actualizada! ✨",
-                    mensaje = "Los cambios en la información de ${datos.nombre} se han guardado.",
+                    tituloResId = R.string.notif_pet_updated_title,
+                    mensajeResId = R.string.notif_pet_updated_msg,
+                    mensajeArgs = listOf(datos.nombre),
                     tipo = "INFO",
                     userId = userId
                 )

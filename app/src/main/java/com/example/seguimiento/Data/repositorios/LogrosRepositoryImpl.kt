@@ -20,26 +20,26 @@ class LogrosRepositoryImpl @Inject constructor(
 ) : LogrosRepository {
 
     override val todosLosLogros = listOf(
-        Logro("sys_1", "¡Bienvenido!", "Iniciaste sesión por primera vez.", iconResId = R.drawable.img1, categoria = "SISTEMA"),
-        Logro("res_1", "Primer Rescate", "Publicaste tu primera mascota.", iconResId = R.drawable.img2, categoria = "RESCATE"),
-        Logro("res_2", "Rescatista Activo", "Tienes 2 mascotas publicadas.", iconResId = R.drawable.img3, categoria = "RESCATE"),
-        Logro("res_3", "Héroe Local", "Tienes 3 mascotas publicadas.", iconResId = R.drawable.img4, categoria = "RESCATE"),
-        Logro("com_1", "Primer Like", "Diste tu primer voto.", iconResId = R.drawable.img5, categoria = "COMUNIDAD"),
-        Logro("com_2", "Votante Frecuente", "Diste 5 votos.", iconResId = R.drawable.img6, categoria = "COMUNIDAD"),
-        Logro("com_3", "Corazón de Oro", "Diste 10 votos.", iconResId = R.drawable.img7, categoria = "COMUNIDAD"),
-        Logro("per_1", "Perfil Completo", "Completaste tus datos.", iconResId = R.drawable.img8, categoria = "PERFIL"),
-        Logro("ado_1", "Interés en Adopción", "Completaste un formulario.", iconResId = R.drawable.img9, categoria = "ADOPCION"),
-        Logro("ado_2", "Adoptante", "Tienes una mascota adoptada.", iconResId = R.drawable.img10, categoria = "ADOPCION"),
-        Logro("sys_2", "Usuario Verificado", "Tu cuenta ha sido validada.", iconResId = R.drawable.img11, categoria = "SISTEMA"),
-        Logro("res_4", "Protector", "Tienes 4 mascotas publicadas.", iconResId = R.drawable.img12, categoria = "RESCATE"),
-        Logro("com_4", "Sin familiar", "Registro de adopción cancelado por el administrador.", iconResId = R.drawable.img13, categoria = "COMUNIDAD"),
-        Logro("per_2", "Malos comentarios", "Publicación rechazada por el administrador.", iconResId = R.drawable.img14, categoria = "PERFIL"),
-        Logro("ado_3", "Familia Multiespecie", "Adoptaste más de una mascota.", iconResId = R.drawable.img15, categoria = "ADOPCION"),
-        Logro("sys_3", "Veterano", "Llevas un mes en la App.", iconResId = R.drawable.img16, categoria = "SISTEMA"),
-        Logro("res_5", "Salvador", "Tienes 5 mascotas publicadas.", iconResId = R.drawable.img17, categoria = "RESCATE"),
-        Logro("com_5", "Líder Comunitario", "Tus comentarios son muy valorados.", iconResId = R.drawable.img18, categoria = "COMUNIDAD"),
-        Logro("per_3", "Estrella", "Lograste el rango máximo de perfil.", iconResId = R.drawable.img19, categoria = "PERFIL"),
-        Logro("ado_4", "Adoptante de Leyenda", "Tienes 3 o más adopciones exitosas.", iconResId = R.drawable.img20, categoria = "ADOPCION")
+        Logro("sys_1", R.string.logro_sys_1_title, R.string.logro_sys_1_desc, iconResId = R.drawable.img1, categoria = "SISTEMA"),
+        Logro("res_1", R.string.logro_res_1_title, R.string.logro_res_1_desc, iconResId = R.drawable.img2, categoria = "RESCATE"),
+        Logro("res_2", R.string.logro_res_2_title, R.string.logro_res_2_desc, iconResId = R.drawable.img3, categoria = "RESCATE"),
+        Logro("res_3", R.string.logro_res_3_title, R.string.logro_res_3_desc, iconResId = R.drawable.img4, categoria = "RESCATE"),
+        Logro("com_1", R.string.logro_com_1_title, R.string.logro_com_1_desc, iconResId = R.drawable.img5, categoria = "COMUNIDAD"),
+        Logro("com_2", R.string.logro_com_2_title, R.string.logro_com_2_desc, iconResId = R.drawable.img6, categoria = "COMUNIDAD"),
+        Logro("com_3", R.string.logro_com_3_title, R.string.logro_com_3_desc, iconResId = R.drawable.img7, categoria = "COMUNIDAD"),
+        Logro("per_1", R.string.logro_per_1_title, R.string.logro_per_1_desc, iconResId = R.drawable.img8, categoria = "PERFIL"),
+        Logro("ado_1", R.string.logro_ado_1_title, R.string.logro_ado_1_desc, iconResId = R.drawable.img9, categoria = "ADOPCION"),
+        Logro("ado_2", R.string.logro_ado_2_title, R.string.logro_ado_2_desc, iconResId = R.drawable.img10, categoria = "ADOPCION"),
+        Logro("sys_2", R.string.logro_sys_2_title, R.string.logro_sys_2_desc, iconResId = R.drawable.img11, categoria = "SISTEMA"),
+        Logro("res_4", R.string.logro_res_4_title, R.string.logro_res_4_desc, iconResId = R.drawable.img12, categoria = "RESCATE"),
+        Logro("com_4", R.string.logro_com_4_title, R.string.logro_com_4_desc, iconResId = R.drawable.img13, categoria = "COMUNIDAD"),
+        Logro("per_2", R.string.logro_per_2_title, R.string.logro_per_2_desc, iconResId = R.drawable.img14, categoria = "PERFIL"),
+        Logro("ado_3", R.string.logro_ado_3_title, R.string.logro_ado_3_desc, iconResId = R.drawable.img15, categoria = "ADOPCION"),
+        Logro("sys_3", R.string.logro_sys_3_title, R.string.logro_sys_3_desc, iconResId = R.drawable.img16, categoria = "SISTEMA"),
+        Logro("res_5", R.string.logro_res_5_title, R.string.logro_res_5_desc, iconResId = R.drawable.img17, categoria = "RESCATE"),
+        Logro("com_5", R.string.logro_com_5_title, R.string.logro_com_5_desc, iconResId = R.drawable.img18, categoria = "COMUNIDAD"),
+        Logro("per_3", R.string.logro_per_3_title, R.string.logro_per_3_desc, iconResId = R.drawable.img19, categoria = "PERFIL"),
+        Logro("ado_4", R.string.logro_ado_4_title, R.string.logro_ado_4_desc, iconResId = R.drawable.img20, categoria = "ADOPCION")
     )
 
     // Sincronizamos logros con los puntos de los usuarios quemados (100 pts por logro + 50 base)

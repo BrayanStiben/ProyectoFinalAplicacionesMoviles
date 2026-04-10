@@ -1,3 +1,920 @@
 <resources>
     <string name="app_name">PetAdopt</string>
+
+    <!-- Login Screen -->
+    <string name="login_user_placeholder">usuario</string>
+    <string name="login_password_placeholder">contraseña</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="login_no_account">¿No tienes cuenta? </string>
+    <string name="login_register_link">Regístrate</string>
+    <string name="login_error_prefix">❌ %1$s</string>
+    <string name="login_form_invalid">⚠️ Completa los campos correctamente</string>
+    <string name="login_welcome_back_title">¡Hola de nuevo, %1$s! 🐾</string>
+    <string name="login_welcome_back_message">Qué alegría verte. Explora las nuevas mascotas que buscan un hogar hoy.</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Únete a la Familia</string>
+    <string name="register_name_label">Nombre completo</string>
+    <string name="register_email_label">Correo electrónico</string>
+    <string name="register_password_label">Contraseña</string>
+    <string name="register_confirm_password_label">Confirmar contraseña</string>
+    <string name="register_button">REGISTRARME</string>
+    <string name="register_already_have_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="register_success">Registro inicial exitoso 🎉</string>
+
+    <!-- Errors and Validation -->
+    <string name="error_user_required">El usuario es obligatorio</string>
+    <string name="error_name_required">El nombre es obligatorio</string>
+    <string name="error_email_invalid">Email inválido</string>
+    <string name="error_password_required">La contraseña es obligatoria</string>
+    <string name="error_password_too_short">Mínimo 3 caracteres</string>
+    <string name="error_password_too_short_register">La contraseña debe tener mínimo 6 caracteres</string>
+    <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <string name="error_invalid_credentials">Credenciales incorrectas</string>
+    <string name="error_form_incomplete">Por favor complete correctamente el formulario</string>
+    <string name="error_register_failed">Error al registrar: %1$s</string>
+
+    <!-- Certificado Rechazo -->
+    <string name="cert_rechazo_title">Constancia de Revisión</string>
+    <string name="cert_rechazo_header">CONSTANCIA DE NO APROBACIÓN</string>
+    <string name="cert_rechazo_locked">BLOQUEO ACTIVO</string>
+    <string name="cert_rechazo_penalty_status">Penalización por reincidencia (3/3 intentos fallidos)</string>
+    <string name="cert_rechazo_not_approved_status">Solicitud no aprobada (Intento %1$d/3)</string>
+    <string name="cert_rechazo_body">La solicitud de adopción de la mascota %1$s, de tipo %2$s, registrada a nombre de %3$s, ha sido revisada por el equipo administrativo el %4$s.\n\nEstado de la cuenta: %5$s.\n\n%6$s</string>
+    <string name="cert_rechazo_penalty_msg">Debido a que se han alcanzado los 3 intentos fallidos permitidos, su cuenta ha sido inhabilitada para nuevas solicitudes por el tiempo mostrado en el cronómetro superior.</string>
+    <string name="cert_rechazo_retry_msg">Su solicitud no cumple con todos los requisitos en este momento. Puede intentarlo nuevamente con esta u otra mascota cuando se encuentre preparado, siempre que no exceda el límite de intentos (%1$d de 3 utilizados).</string>
+    <string name="cert_rechazo_signature_label">FIRMA DEL ADMINISTRADOR:</string>
+    <string name="cert_rechazo_system_validated">Firma validada por el sistema</string>
+    <string name="cert_rechazo_btn_confirm">CONFIRMAR Y NOTIFICAR RECHAZO</string>
+    <string name="cert_rechazo_user_penalized">USUARIO PENALIZADO</string>
+    <string name="cert_rechazo_notified">RECHAZO NOTIFICADO</string>
+    <string name="cert_rechazo_signature_hint">Firma del administrador (Admin)</string>
+    <string name="cert_rechazo_petadopta">PETADOPTA</string>
+
+    <!-- Certificado Adopción -->
+    <string name="cert_adopcion_title">Certificado de Adopción</string>
+    <string name="cert_adopcion_header">CERTIFICADO FORMAL DE ADOPCIÓN</string>
+    <string name="cert_adopcion_body">Por medio del presente documento, PetAdopta certifica que, luego de haberse llevado a cabo el proceso de evaluación, verificación de información y aprobación correspondiente, se ha formalizado exitosamente la adopción de la mascota descrita a continuación, cumpliendo con los lineamientos, políticas y requisitos establecidos por nuestra organización para garantizar el bienestar, protección y cuidado responsable del animal entregado en adopción.\n\nLa mascota identificada con el nombre de %1$s, de tipo %2$s, raza %3$s, edad aproximada %4$s, y registrada bajo el código o identificador %5$s, ha sido entregada en adopción al(la) ciudadano(a) %6$s%7$s%8$s, quien ha manifestado de manera voluntaria, consciente y responsable su compromiso de brindarle un hogar digno, seguro y adecuado.\n\nMediante la firma y acceptance de este proceso, el(la) adoptante declara haber recibido a la mascota en condiciones aptas, así como haber sido informado(a) sobre sus necesidades básicas, cuidados generales, alimentación, controles veterinarios, esquema de vacunación (si aplica), desparasitación (si aplica), recomendaciones de adaptación al nuevo hogar y demás observaciones relevantes para asegurar su correcto bienestar físico y emocional.\n\nEste certificado deja constancia de que la adopción fue realizada en fecha %9$s, quedando registrada oficialmente en la plataforma y en los archivos administrativos de PetAdopta, como evidencia del proceso de entrega responsable de la mascota anteriormente descrita.</string>
+    <string name="cert_adopcion_residente">, residente en %1$s</string>
+    <string name="cert_adopcion_email"> y correo electrónico %1$s</string>
+    <string name="cert_adopcion_signature_label">FIRMA DE LA ADMINISTRACIÓN:</string>
+    <string name="cert_adopcion_pending_signature">Firma pendiente de validación</string>
+    <string name="cert_adopcion_btn_confirm">FIRMAR Y VALIDAR ADOPCIÓN</string>
+    <string name="cert_adopcion_validated">DOCUMENTO VALIDADO ✓</string>
+    <string name="cert_adopcion_wait_msg">Su certificado estará disponible aquí una vez que el administrador complete la validación final.</string>
+    <string name="cert_adopcion_signature_hint">Firme aquí (Solo Admin)</string>
+
+    <!-- Mi Perfil -->
+    <string name="profile_title">Mi Perfil</string>
+    <string name="profile_edit_success">Perfil actualizado con éxito</string>
+    <string name="profile_label_user">Usuario</string>
+    <string name="profile_label_email">Email</string>
+    <string name="profile_label_address">Dirección de residencia</string>
+    <string name="profile_label_city">Ciudad</string>
+    <string name="profile_btn_save">GUARDAR CAMBIOS</string>
+    <string name="profile_btn_logout">CERRAR SESIÓN</string>
+    <string name="profile_stats_requests">Solicitudes</string>
+    <string name="profile_stats_adoptions">Adopciones</string>
+    <string name="profile_stats_rejections">Rechazos</string>
+    <string name="profile_stats_active">Activas</string>
+    <string name="profile_stats_finalized">Finalizadas</string>
+    <string name="profile_stats_pending">Pendientes</string>
+    <string name="profile_total_points">Puntos totales: %1$d 🏆</string>
+    <string name="profile_account_details">Detalle de cuenta</string>
+    <string name="profile_btn_adopted_pets">Mascotas Adoptadas</string>
+    <string name="profile_btn_my_posts">Mis Publicaciones</string>
+    <string name="profile_level_1">Novato</string>
+    <string name="profile_level_2">Colaborador</string>
+    <string name="profile_level_3">Protector</string>
+    <string name="profile_level_4">Héroe</string>
+    <string name="profile_level_5">Leyenda</string>
+
+    <!-- Recuperación de Contraseña -->
+    <string name="forgot_password_title">Recuperar Contraseña</string>
+    <string name="forgot_password_instruction">Ingresa tu correo y te mostraremos un código de seguridad.</string>
+    <string name="forgot_password_btn_get_code">Obtener Código</string>
+    <string name="forgot_password_dialog_title">Código de Verificación</string>
+    <string name="forgot_password_dialog_text">Tu código para restablecer la contraseña es:</string>
+    <string name="forgot_password_btn_understood">Entendido</string>
+    <string name="forgot_password_error_invalid_email">Error: Correo inválido</string>
+    <string name="reset_password_title">Nueva Contraseña</string>
+    <string name="reset_password_instruction">Ingresa tu nueva contraseña para la cuenta %1$s</string>
+    <string name="reset_password_label_new">Contraseña Nueva</string>
+    <string name="reset_password_label_confirm">Confirmar Contraseña</string>
+    <string name="reset_password_btn_save">Guardar Cambios</string>
+    <string name="reset_password_success_title">¡Éxito!</string>
+    <string name="reset_password_success_text">Tu contraseña ha sido actualizada correctamente.</string>
+    <string name="reset_password_btn_go_to_login">Ir al Login</string>
+    <string name="reset_password_error_mismatch">Las contraseñas no coinciden o están vacías</string>
+
+    <!-- Envio de Codigo -->
+    <string name="code_verification_dialog_title">Código Correcto</string>
+    <string name="code_verification_dialog_text">Identidad verificada con éxito. Ahora puedes cambiar tu contraseña.</string>
+    <string name="code_verification_btn_continue">Continuar</string>
+    <string name="code_verification_screen_title">Verificación de Código</string>
+    <string name="code_verification_screen_instruction">Ingresa el código que te mostramos anteriormente para la cuenta %1$s</string>
+    <string name="code_verification_error">Código incorrecto, intenta de nuevo</string>
+    <string name="code_verification_back_to_login">Volver al inicio de sesión</string>
+    <string name="code_verification_btn_verify_label">Verificar Código</string>
+
+    <!-- Finalizar Registro -->
+    <string name="finish_reg_title">¡Casi listo!</string>
+    <string name="finish_reg_subtitle">Finaliza tu perfil para empezar</string>
+    <string name="finish_reg_upload_photo">Subir foto</string>
+    <string name="finish_reg_status_label">Estado del perfil</string>
+    <string name="finish_reg_status_completed">Completado</string>
+    <string name="finish_reg_photo_label">Foto de perfil</string>
+    <string name="finish_reg_photo_selected">Foto seleccionada</string>
+    <string name="finish_reg_photo_pending">Pendiente</string>
+    <string name="finish_reg_dept_label">Departamento</string>
+    <string name="finish_reg_muni_label">Municipio / Ciudad</string>
+    <string name="finish_reg_rules_label">Normas y regulaciones</string>
+    <string name="finish_reg_btn_finish">FINALIZAR REGISTRO</string>
+    <string name="finish_reg_terms_title">Contrato Legal PetAdopta</string>
+    <string name="finish_reg_terms_content">TÉRMINOS Y CONDICIONES GLOBALES\n\n1. Intermediación: PetAdopta conecta rescatistas con adoptantes.\n2. Venta prohibida: No se permite comercializar seres vivos.\n3. Capacidad Legal: Solo mayores de 18 años.\n\nPOLÍTICA DE PRIVACIDAD\n\nTus datos de ubicación y contacto se usan solo para facilitar la adopción.</string>
+    <string name="finish_reg_terms_accept">Acepto los términos</string>
+    <string name="finish_reg_terms_btn_continue">ACEPTAR Y CONTINUAR</string>
+
+    <!-- Gestión de Mascotas (Admin) -->
+    <string name="pet_mgmt_no_pets">No hay mascotas para gestionar</string>
+    <string name="pet_mgmt_delete_title">¿Eliminar mascota?</string>
+    <string name="pet_mgmt_delete_confirm">Esta acción no se puede deshacer. Se borrará a %1$s del sistema.</string>
+    <string name="pet_mgmt_btn_delete">ELIMINAR</string>
+    <string name="pet_mgmt_btn_cancel">CANCELAR</string>
+    <string name="pet_mgmt_edit_desc">Editar</string>
+    <string name="pet_mgmt_delete_desc">Borrar</string>
+
+    <!-- Salud Screen (Carnet) -->
+    <string name="health_title">CARNET DE SALUD 🏥</string>
+    <string name="health_flip_hint">Toca el carnet para girarlo 🔄</string>
+    <string name="health_tab_vaccines">Vacunas</string>
+    <string name="health_tab_deworming">Desparasit.</string>
+    <string name="health_tab_appointments">Citas</string>
+    <string name="health_carnet_header">CARNÉ DE IDENTIFICACIÓN PARA MASCOTA</string>
+    <string name="health_carnet_subtitle">PERFIL DISPONIBLE PARA CONSULTA EN LÍNEA</string>
+    <string name="health_label_name">Nombre</string>
+    <string name="health_label_breed">Raza</string>
+    <string name="health_label_birth">Fecha de nacimiento</string>
+    <string name="health_label_sex">Sexo</string>
+    <string name="health_sex_male">MACHO</string>
+    <string name="health_sex_female">HEMBRA</string>
+    <string name="health_carnet_footer">ESTE DOCUMENTO ACREDITA A SU PORTADOR COMO PROPIETARIO DE LA MASCOTA</string>
+    <string name="health_label_responsible">Responsable</string>
+    <string name="health_label_phone">No. Telefónico: %1$s</string>
+    <string name="health_label_pet_id">PET-ID: %1$s</string>
+    <string name="health_label_pin">PIN: %1$s</string>
+    <string name="health_footer_categories">CONDICIONES DE SALUD - VACUNAS - DESPARASITANTES</string>
+    <string name="health_empty_records">Sin registros médicos</string>
+    <string name="health_applied_date">Aplicada: %1$s</string>
+    <string name="health_next_dose">Próxima dosis: %1$s</string>
+    <string name="health_date_label">Fecha: %1$s</string>
+    <string name="health_dialog_new_vaccine">Nueva Vacuna</string>
+    <string name="health_dialog_new_deworming">Nueva Desparasitación</string>
+    <string name="health_dialog_new_appointment">Nueva Cita</string>
+    <string name="health_label_vaccine_name">Nombre Vacuna</string>
+    <string name="health_label_today">Fecha hoy</string>
+    <string name="health_label_next_dose">Próxima dosis</string>
+    <string name="health_label_product">Producto</string>
+    <string name="health_label_date">Fecha</string>
+    <string name="health_label_hour">Hora</string>
+    <string name="health_label_establishment">Establecimiento</string>
+    <string name="health_label_reason">Motivo</string>
+    <string name="health_notif_vaccine_title">Vacuna Registrada 💉</string>
+    <string name="health_notif_vaccine_msg">Se ha registrado la vacuna %1$s. Próxima dosis: %2$s.</string>
+    <string name="health_notif_appointment_title">Cita Agendada 📅</string>
+    <string name="health_notif_appointment_msg">Tienes una cita el %1$s a las %2$s en %3$s.</string>
+    <string name="health_vet_short">Vet</string>
+    <string name="health_shelter_short">Ref</string>
+
+    <!-- Botones Genéricos -->
+    <string name="btn_exit">SALIR</string>
+    <string name="btn_close">Cerrar</string>
+    <string name="btn_delete">Limpiar</string>
+    <string name="btn_back">REGRESAR</string>
+    <string name="btn_cancel">CANCELAR</string>
+    <string name="btn_confirm">CONFIRM</string>
+    <string name="btn_continue">CONTINUAR</string>
+    <string name="btn_save_simple">GUARDAR</string>
+    <string name="placeholder_name">[Nombre]</string>
+    <string name="placeholder_type">[Tipo]</string>
+    <string name="placeholder_breed">[Raza]</string>
+    <string name="placeholder_age">[Edad]</string>
+    <string name="placeholder_id">[ID]</string>
+    <string name="placeholder_adopter">[Nombre del Adoptante]</string>
+
+    <!-- Formulario de Adopción -->
+    <string name="form_title">Formulario</string>
+    <string name="form_btn_continue">CONTINUAR</string>
+    <string name="form_yes">Sí</string>
+    <string name="form_no">No</string>
+    <string name="form_btn_upload">Subir</string>
+    <string name="form_btn_change">Cambiar</string>
+
+    <!-- Step 1 -->
+    <string name="form_step1_preference">Preferencia</string>
+    <string name="form_step1_pet_type_label">Tipo de animal (Perro/Gato/Otro)</string>
+    <string name="form_step1_motivation">Motivación</string>
+    <string name="form_step1_motivation_label">¿Por qué quieres adoptar ahora?</string>
+    <string name="form_step1_expectations">Expectativas</string>
+    <string name="form_step1_personality_q">¿Qué personalidad buscas?</string>
+    <string name="form_step1_exp_active">Activo</string>
+    <string name="form_step1_exp_calm">Tranquilo</string>
+    <string name="form_step1_exp_guardian">Guardián</string>
+    <string name="form_step1_exp_companion">Compañía</string>
+    <string name="form_step1_time">Tiempo Disponible</string>
+    <string name="form_step1_hours_alone_label">Horas que pasará sola al día: %1$dh</string>
+
+    <!-- Step 2 -->
+    <string name="form_step2_title">Cuestionario de Adopción</string>
+    <string name="form_step2_pet_data">Datos de la Mascota</string>
+    <string name="form_step2_pet_name_label">Nombre de la mascota</string>
+    <string name="form_step2_pet_age_label">Edad aproximada</string>
+    <string name="form_step2_home_family">Hogar y Familia</string>
+    <string name="form_step2_home_type_label">Tipo de vivienda</string>
+    <string name="form_step2_experience">Experiencia</string>
+    <string name="form_step2_yard_q">¿Tiene patio cercado?</string>
+
+    <!-- Step 3 -->
+    <string name="form_step3_header">Compromiso y Logística</string>
+    <string name="form_step3_budget">Presupuesto</string>
+    <string name="form_step3_budget_q">¿Es consciente de los gastos de alimentación y veterinario?</string>
+    <string name="form_step3_contingency">Plan de contingencia</string>
+    <string name="form_step3_contingency_label">¿Quién cuidará de la mascota si viaja o se enferma?</string>
+    <string name="form_step3_agreements">Acuerdos</string>
+    <string name="form_step3_agreements_q">Acuerdo de castración/vacunación: ¿Acepta las normas?</string>
+    <string name="form_step3_moving">Mudanzas</string>
+    <string name="form_step3_moving_label">¿Qué pasaría con la mascota si se muda?</string>
+
+    <!-- Step 4 -->
+    <string name="form_step4_title">Finalizar Solicitud</string>
+    <string name="form_step4_header">Formalización Final</string>
+    <string name="form_step4_documentation">Documentación</string>
+    <string name="form_step4_id_photo">Foto DNI / Cédula</string>
+    <string name="form_step4_home_photo">Fotos del hogar/patio</string>
+    <string name="form_step4_references">Referencias</string>
+    <string name="form_step4_ref_name">Nombre de Referencia</string>
+    <string name="form_step4_ref_phone">Teléfono</string>
+    <string name="form_step4_terms_title">Términos y Condiciones</string>
+    <string name="form_step4_terms_accept">Acepto los términos de adopción responsable.</string>
+    <string name="form_step4_signature_done">FIRMA DIGITAL REGISTRADA ✓</string>
+    <string name="form_step4_signature_pending">FIRMA DIGITAL</string>
+    <string name="form_btn_send">ENVIAR SOLICITUD</string>
+    <string name="form_step4_sig_dialog_title">Dibuje su firma aquí</string>
+    <string name="form_step4_sig_dialog_hint">Firme aquí</string>
+
+    <!-- Acerca De -->
+    <string name="about_logo_description">PetAdopta Logo</string>
+    <string name="about_title">PetAdopta Nutri</string>
+    <string name="about_mission">Nuestra misión es educar a los dueños de mascotas sobre la importancia de una nutrición balanceada para prolongar la vida y felicidad de sus compañeros.</string>
+    <string name="about_importance_title">¿Por qué es importante?</string>
+    <string name="about_benefit_1">Previene enfermedades crónicas.</string>
+    <string name="about_benefit_2">Mejora la calidad del pelaje y piel.</string>
+    <string name="about_benefit_3">Aumenta los niveles de energía.</string>
+    <string name="about_benefit_4">Fortalece el sistema inmune.</string>
+
+    <!-- Status and Others -->
+    <string name="status_rejected">RECHAZADA</string>
+    <string name="status_adopted">ADOPTADO</string>
+    <string name="status_approved">APROBADA</string>
+    <string name="status_pending">PENDIENTE</string>
+    <string name="status_verified">VERIFICADA</string>
+    <string name="loading_preparing">Estamos preparando todo para ti.</string>
+    <string name="loading_searching">Buscando nuevos amigos…</string>
+    <!-- Admin: Gestión Historias -->
+    <string name="admin_stories_title">Gestionar Historias</string>
+    <string name="admin_stories_empty">No hay historias pendientes</string>
+    <string name="admin_stories_author">Autor: %1$s</string>
+    <string name="admin_stories_btn_reject">Rechazar</string>
+    <string name="admin_stories_btn_approve">Aprobar</string>
+
+    <string name="stories_notif_shared_title">¡Historia compartida! ✨</string>
+    <string name="stories_notif_shared_msg">Tu historia con %1$s ha sido enviada y está en revisión.</string>
+    <string name="stories_notif_approved_title">¡Historia Aprobada! 🌟</string>
+    <string name="stories_notif_approved_msg">Tu historia sobre %1$s ya es pública.</string>
+    <string name="stories_notif_rejected_title">Historia no aprobada 📝</string>
+    <string name="stories_notif_rejected_msg">Tu historia sobre %1$s no cumple con las normas actuales.</string>
+
+    <!-- Notificaciones de Comentarios -->
+    <string name="notif_comment_new_title">Nuevo comentario</string>
+    <string name="notif_comment_new_msg">%1$s comentó en tu publicación de %2$s</string>
+    <string name="notif_comment_story_title">Nuevo comentario en tu historia</string>
+    <string name="notif_comment_story_msg">%1$s comentó en tu historia de %2$s</string>
+    <string name="notif_comment_reply_title">Nueva respuesta</string>
+    <string name="notif_comment_reply_msg">%1$s respondió a tu comentario</string>
+    <string name="notif_comment_moderated_title">Comentario Moderado</string>
+    <string name="notif_comment_moderated_msg">Tu comentario ha sido editado por un moderador.</string>
+
+    <!-- Notificaciones de Adopción -->
+    <string name="notif_adoption_sent_title">Solicitud Enviada</string>
+    <string name="notif_adoption_sent_msg">Tu solicitud para adoptar a una mascota ha sido enviada con éxito.</string>
+    <string name="notif_adoption_approved_title">¡Adopción Aprobada!</string>
+    <string name="notif_adoption_approved_msg">Felicidades, tu solicitud de adopción ha sido aprobada.</string>
+    <string name="notif_adoption_rejected_title">Solicitud Rechazada</string>
+    <string name="notif_adoption_rejected_msg">Lo sentimos, tu solicitud de adopción no ha sido aprobada en esta ocasión.</string>
+    <string name="notif_adoption_update_title">Actualización de Solicitud</string>
+    <string name="notif_adoption_update_msg">El estado de tu solicitud ha cambiado.</string>
+    <string name="notif_adoption_signed_msg">Felicidades, tu solicitud ha sido firmada y aprobada.</string>
+    <string name="notif_adoption_cancelled_title">Solicitud cancelada ⚠️</string>
+    <string name="notif_adoption_cancelled_msg">Has cancelado tu solicitud de adopción para %1$s.</string>
+
+    <!-- Notificaciones de Mascotas -->
+    <string name="notif_pet_registered_title">¡Mascota registrada! 🐾</string>
+    <string name="notif_pet_registered_msg">Has registrado a %1$s con éxito. Un administrador revisará la publicación pronto.</string>
+    <string name="notif_pet_updated_title">¡Mascota actualizada! ✨</string>
+    <string name="notif_pet_updated_msg">Los cambios en la información de %1$s se han guardado.</string>
+    <string name="notif_empty_list">No tienes notificaciones pendientes.</string>
+
+    <string name="notif_like_msg_detailed">A %1$s le gusta tu publicación de %2$s.</string>
+
+    <!-- Notificaciones de Refugios -->
+    <string name="notif_refugio_review_title">Registro en revisión ✨</string>
+    <string name="notif_refugio_review_msg">Tu solicitud para registrar la %1$s \'%2$s\' ha sido enviada.</string>
+    <string name="notif_refugio_approved_title">¡Registro Aprobado! 🎉</string>
+    <string name="notif_refugio_approved_msg">Tu %1$s \'%2$s\' ya es visible para toda la comunidad.</string>
+    <string name="notif_refugio_rejected_title">Solicitud Rechazada ❌</string>
+    <string name="notif_refugio_rejected_msg">Lo sentimos, el registro de tu %1$s \'%2$s\' no ha sido aprobado.</string>
+
+    <string name="nav_notifications_title">Notificaciones</string>
+
+    <string name="ai_inappropriate_content_warning">El contenido parece inapropiado. Sugerencia: Por favor, utiliza un lenguaje más respetuoso y positivo.</string>
+    <string name="ai_summary_template">Resumen IA: Publicación sobre un %1$s. Puntos clave: %2$s… Relevancia estimada: %3$s. Acción recomendada: %4$s.</string>
+    <string name="ai_relevance_medium">Media</string>
+    <string name="ai_action_verify">Verificar ubicación</string>
+
+    <string name="app_version">PetAdopta App v1.2</string>
+    <string name="app_copyright">© Copyright PetAdopta apy Inc.</string>
+
+    <!-- Home Screen -->
+    <string name="home_fab_add_pet">Registrar Mascota</string>
+    <string name="home_welcome_title">Hola, %1$s 🐾</string>
+    <string name="home_welcome_subtitle">¡Encuentra tu mascota ideal!</string>
+    <string name="home_points_label">%1$d pts</string>
+    <string name="home_cat_shelters">Refugios</string>
+    <string name="home_cat_store">Tienda</string>
+    <string name="home_cat_nutrition">Nutrición</string>
+    <string name="home_cat_filters">Filtros</string>
+    <string name="home_cat_appointments">Citas</string>
+    <string name="home_section_explore">Explorar Publicaciones</string>
+    <string name="home_category_all">Todos</string>
+    <string name="home_category_dog">Perro</string>
+    <string name="home_category_cat">Gato</string>
+    <string name="home_category_other">Otro</string>
+    <string name="home_empty_feed">No hay publicaciones en esta categoría</string>
+    <string name="home_likes_you_and_others">Tú y %1$d personas</string>
+    <string name="home_likes_only_you">Tú</string>
+    <string name="home_likes_others">%1$d personas</string>
+    <string name="home_likes_none">Sin likes aún</string>
+    <string name="home_section_recommended">Recomendados para ti</string>
+    <string name="home_btn_adopt">Adoptar</string>
+    <string name="home_section_stories">Historias Felices</string>
+    <string name="home_story_example_title">¡Max encontró hogar!</string>
+    <string name="home_btn_see_more">Ver más</string>
+    <string name="home_default_user_name">Usuario</string>
+    <string name="home_notif_like_title">¡A alguien le gusta tu mascota! ❤️</string>
+    <string name="home_notif_like_msg">A un usuario le interesa %1$s. ¡Sigue así!</string>
+
+    <!-- Navigation -->
+    <!-- Filtros Avanzados -->
+    <string name="filters_title">Búsqueda Avanzada</string>
+    <string name="filters_label_name">Filtrar por Nombre</string>
+    <string name="filters_placeholder_name">Ej: Max, Bella...</string>
+    <string name="filters_label_type">Filtrar por Tipo de Animal</string>
+    <string name="filters_label_location">Ubicación (Municipio o Depto)</string>
+    <string name="filters_placeholder_location">Ej: Armenia, Quindío...</string>
+    <string name="filters_label_age">Filtrar por Edad/Años</string>
+    <string name="filters_placeholder_age">Ej: 2 años, Cachorro...</string>
+    <string name="filters_btn_apply">APLICAR FILTROS</string>
+    <string name="filters_btn_clear">Limpiar Filtros</string>
+    <string name="filters_results_header">Resultados de búsqueda:</string>
+    <string name="filters_empty_results">No se encontraron mascotas con esos criterios.</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_search">Buscar</string>
+    <string name="nav_favorites">Favs</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Map Screen -->
+    <string name="map_title">Mascotas en el Mapa</string>
+    <string name="map_marker_snippet">%1$s - %2$s</string>
+
+    <!-- Admin: Gestión de Usuarios -->
+    <string name="admin_user_mgmt_title">Gestión de Usuarios 👥</string>
+    <string name="admin_user_mgmt_subtitle">Administra accesos y roles de la comunidad</string>
+    <string name="admin_user_tab_active">ACTIVOS (%1$d)</string>
+    <string name="admin_user_tab_banned">BANEADOS (%1$d)</string>
+    <string name="admin_user_empty_list">No se encontraron usuarios</string>
+    <string name="admin_user_dialog_ban_title">Restringir Usuario</string>
+    <string name="admin_user_dialog_ban_question">Indica el motivo para banear a %1$s:</string>
+    <string name="admin_user_dialog_ban_placeholder">Ej: Spam, lenguaje ofensivo...</string>
+    <string name="admin_user_btn_ban">BANEAR</string>
+    <string name="admin_user_location_undefined">Sin ubicación</string>
+    <string name="admin_user_btn_unban">Activar</string>
+    <string name="admin_user_ban_reason_label">Motivo: %1$s</string>
+    <string name="admin_user_btn_ban_short">Banear</string>
+
+    <!-- Admin: Gestión de Adopciones -->
+    <string name="admin_adoption_mgmt_title">Gestión de Solicitudes</string>
+    <string name="admin_adoption_no_pending">No hay solicitudes pendientes</string>
+    <string name="admin_adoption_pending_count">SOLICITUDES PENDIENTES (%1$d)</string>
+    <string name="admin_adoption_wants_to_adopt">Desea adoptar a %1$s</string>
+    <string name="admin_adoption_attempts_label">INTENTOS: %1$d/3</string>
+    <string name="admin_adoption_dialog_review_title">Revisión de Solicitud</string>
+    <string name="admin_adoption_label_adopter">Adoptante</string>
+    <string name="admin_adoption_label_pet">Mascota</string>
+    <string name="admin_adoption_label_motivation">Motivación</string>
+    <string name="admin_adoption_label_housing">Vivienda</string>
+    <string name="admin_adoption_label_hours_alone">Horas solo</string>
+    <string name="admin_adoption_hours_value">%1$d horas</string>
+    <string name="admin_adoption_label_reference">Referencia</string>
+    <string name="admin_adoption_penalty_timer">Bloqueado por %1$d seg (Penalización)</string>
+    <string name="admin_adoption_btn_approve">APROBAR</string>
+    <string name="admin_adoption_btn_reject">RECHAZAR</string>
+
+    <!-- Admin: Lista de Solicitudes (Moderación de Publicaciones) -->
+    <string name="admin_list_requests_title">Solicitudes Pendientes 📋</string>
+    <string name="admin_list_requests_subtitle">Verifica las nuevas publicaciones de mascotas</string>
+    <string name="admin_list_requests_dialog_reject_title">Rechazar Publicación</string>
+    <string name="admin_list_requests_dialog_reject_instruction">Escribe el motivo del rechazo:</string>
+    <string name="admin_list_requests_btn_confirm_reject">Confirmar Rechazo</string>
+    <string name="admin_list_requests_btn_verify">Verificar</string>
+
+    <!-- Tienda (User) -->
+    <string name="store_market_title">Mercado PetAdopt 🦴</string>
+    <string name="store_market_subtitle">Canjea tus puntos por premios</string>
+    <string name="store_cat_all">Todos</string>
+    <string name="store_cat_food">Comida</string>
+    <string name="store_cat_toys">Juguetes</string>
+    <string name="store_cat_acc">Accesorios</string>
+    <string name="store_cat_health">Salud</string>
+    <string name="store_cat_other">Otros</string>
+    <string name="store_out_of_stock">Sin Stock</string>
+    <string name="store_stock_value">Stock: %1$d uds</string>
+    <string name="store_btn_sold_out">AGOTADO</string>
+    <string name="store_btn_redeem">CANJEAR</string>
+    <string name="store_notif_out_of_stock_title">¡Producto Agotado!</string>
+    <string name="store_notif_out_of_stock_msg">El producto %1$s se ha quedado sin stock.</string>
+    <string name="store_notif_success_title">Compra Exitosa</string>
+    <string name="store_notif_success_msg">Has canjeado %1$s por %2$d puntos.</string>
+    <string name="store_notif_insufficient_points_title">Puntos insuficientes ❌</string>
+    <string name="store_notif_insufficient_points_msg">Necesitas %1$d puntos para canjear %2$s.</string>
+    <string name="store_notif_redeem_success_title">Compra Exitosa 🎁</string>
+    <string name="store_notif_redeem_success_msg">Has canjeado tus puntos por: %1$s. ¡Disfrútalo!</string>
+    <string name="store_notif_redeem_success_msg_2">Has canjeado tus puntos por: %1$s. ¡Disfrútalo!</string>
+    <string name="store_default_food_name">Alimento Premium</string>
+    <string name="store_default_food_desc">Nutrición balanceada formulada para el bienestar de tu mascota.</string>
+
+    <!-- Admin: Tienda -->
+    <string name="admin_store_fab_add">Subir Producto</string>
+    <string name="admin_store_title">Inventario de Tienda 📦</string>
+    <string name="admin_store_subtitle">Gestiona productos y stock del mercado</string>
+    <string name="admin_store_empty">No hay productos en la tienda</string>
+    <string name="admin_store_stock_label">Stock disponible: %1$d</string>
+    <string name="admin_store_dialog_new_title">Nuevo Producto</string>
+    <string name="admin_store_dialog_edit_title">Editar Producto</string>
+    <string name="admin_store_label_name">Nombre</string>
+    <string name="admin_store_label_desc">Descripción</string>
+    <string name="admin_store_label_points">Puntos (Max 2000)</string>
+    <string name="admin_store_label_url">URL de imagen real</string>
+    <string name="admin_store_label_stock">Stock</string>
+    <string name="admin_store_btn_category">Categoría: %1$s</string>
+    <string name="admin_store_btn_add">AÑADIR</string>
+    <string name="admin_store_btn_save">GUARDAR</string>
+
+    <!-- Nutrición y Guías -->
+    <string name="nutrition_title">Guía de Nutrición 🍖</string>
+    <string name="nutrition_subtitle">Consejos para una vida saludable</string>
+    <string name="nutrition_cat_nutri">Nutrición</string>
+    <string name="nutrition_cat_needs">Necesidades</string>
+    <string name="nutrition_cat_how_it_works">Así funciona</string>
+    <string name="nutrition_cat_about">Acerca de</string>
+    <string name="nutrition_dialog_title">Ver más detalles</string>
+    <string name="nutrition_dialog_text">¿Deseas abrir el enlace externo para leer más sobre este tema?</string>
+
+    <!-- Nutrición y Guías Content -->
+    <string name="nutri_barf_title">Dieta Barf</string>
+    <string name="nutri_barf_sub">Guía para alimentación natural</string>
+    <string name="nutri_prohibido_title">Alimentos Prohibidos</string>
+    <string name="nutri_prohibido_sub">Lo que nunca debes darle</string>
+    <string name="nutri_hidra_title">Hidratación Importante</string>
+    <string name="nutri_hidra_sub">Consejos para verano</string>
+
+    <string name="needs_cachorros_title">Cachorros</string>
+    <string name="needs_cachorros_sub">Nutrición en crecimiento</string>
+    <string name="needs_adultos_title">Adultos Mayores</string>
+    <string name="needs_adultos_sub">Cuidados senior</string>
+    <string name="needs_peso_title">Control de Peso</string>
+    <string name="needs_peso_sub">Manejo de obesidad</string>
+
+    <string name="how_digestion_title">Digestión Animal</string>
+    <string name="how_digestion_sub">Proceso biológico</string>
+    <string name="how_metabolismo_title">Metabolismo</string>
+    <string name="how_metabolismo_sub">Energía y vitalidad</string>
+
+    <string name="about_nutri_title">PetAdopta Nutri</string>
+    <string name="about_nutri_sub">Sobre nuestra misión</string>
+
+    <!-- Historias (PetAdopta Stories) -->
+    <string name="stories_title">PetAdopta Stories ✨</string>
+    <string name="stories_subtitle">Historias que cambian vidas</string>
+    <string name="stories_btn_share">Compartir Historia</string>
+    <string name="stories_dialog_new_title">Nueva Historia 🐾</string>
+    <string name="stories_label_pet_name">Nombre de la mascota</string>
+    <string name="stories_label_story_text">Cuéntanos tu historia...</string>
+    <string name="stories_btn_choose_photo">Elegir Foto</string>
+    <string name="stories_btn_share_now">COMPARTIR AHORA</string>
+    <string name="stories_card_shared_moment">Acaba de compartir un momento</string>
+    <string name="stories_likes_you_and_others">Tú y %1$d personas</string>
+    <string name="stories_likes_you">Tú</string>
+    <string name="stories_likes_others">%1$d personas</string>
+    <string name="stories_likes_none">0 likes</string>
+    <string name="stories_follows_you_and_others">Tú y %1$d personas siguen esto</string>
+    <string name="stories_follows_you">Sigues esta historia</string>
+    <string name="stories_follows_others">%1$d seguidores</string>
+    <string name="stories_follows_none">0 seguidores</string>
+    <string name="stories_card_pet_story_title">La historia de %1$s 🐾</string>
+    <string name="stories_comments_title">Comentarios</string>
+    <string name="stories_btn_reply">Responder</string>
+    <string name="stories_btn_hide_replies">Ocultar respuestas</string>
+    <string name="stories_btn_show_replies">Ver respuestas...</string>
+    <string name="stories_label_replying_to">Respondiendo a %1$s</string>
+    <string name="stories_placeholder_comment">Escribe un comentario...</string>
+
+    <!-- Necesidades (Calculadora) -->
+    <string name="needs_calc_title">Calculadora de Calorías 🐾</string>
+    <string name="needs_calc_subtitle">Estima cuánto debe comer tu mascota diariamente.</string>
+    <string name="needs_label_weight">Peso de la mascota (kg)</string>
+    <string name="needs_label_activity">Nivel de Actividad Física</string>
+    <string name="needs_activity_low">Baja</string>
+    <string name="needs_activity_moderate">Moderada</string>
+    <string name="needs_activity_high">Alta</string>
+    <string name="needs_result_title">Resultado Estimado</string>
+    <string name="needs_result_value">%1$d kcal / día</string>
+    <!-- Ingresar Mascota -->
+    <string name="reg_pet_title_add">Ingresar Mascota</string>
+    <string name="reg_pet_title_edit">Editar Mascota</string>
+    <string name="reg_pet_warning_ai">Aviso IA: %1$s</string>
+    <string name="reg_pet_photo_current">Foto actual mantenida</string>
+    <string name="reg_pet_photo_add">Añadir fotos/video</string>
+    <string name="reg_pet_label_name">Nombre de la mascota</string>
+    <string name="reg_pet_placeholder_name">Nombre</string>
+    <string name="reg_pet_label_desc">Descripción</string>
+    <string name="reg_pet_placeholder_desc">Escribe algo sobre la mascota...</string>
+    <string name="reg_pet_label_type">Tipo de Mascota</string>
+    <string name="reg_pet_placeholder_type">Tipo</string>
+    <string name="reg_pet_label_breed">Raza</string>
+    <string name="reg_pet_placeholder_breed">Raza</string>
+    <string name="reg_pet_placeholder_breed_edit">Escribe la raza...</string>
+    <string name="reg_pet_label_age">Edad</string>
+    <string name="reg_pet_label_sex">Sexo</string>
+    <string name="reg_pet_sex_female">Hembra</string>
+    <string name="reg_pet_sex_male">Macho</string>
+    <string name="reg_pet_label_dept">Departamento</string>
+    <string name="reg_pet_placeholder_dept">Departamento</string>
+    <string name="reg_pet_label_city">Municipio / Ciudad</string>
+    <string name="reg_pet_placeholder_city">Ciudad</string>
+    <string name="reg_pet_btn_save">Guardar y Publicar</string>
+    <string name="reg_pet_btn_update">Actualizar Cambios</string>
+
+    <!-- Registro Refugio / Aliado -->
+    <string name="reg_ally_title">Registro de Aliado</string>
+    <string name="reg_ally_join_title">¡Únete a nuestra red!</string>
+    <string name="reg_ally_join_subtitle">Refugios y Veterinarias al servicio animal</string>
+    <string name="reg_ally_type_q">¿Qué tipo de aliado eres?</string>
+    <string name="reg_ally_type_shelter">REFUGIO 🏠</string>
+    <string name="reg_ally_type_vet">VETERINARIA 🏥</string>
+    <string name="reg_ally_photo_label">Foto del lugar</string>
+    <string name="reg_ally_label_name">Nombre del establecimiento</string>
+    <string name="reg_ally_label_address">Dirección completa</string>
+    <string name="reg_ally_label_phone">Teléfono de contacto</string>
+    <string name="reg_ally_label_desc">Cuéntanos sobre tu servicio</string>
+    <string name="reg_ally_btn_register">SOLICITAR REGISTRO</string>
+    <string name="refugio_tipo_refugio">REFUGIO 🏠</string>
+    <string name="refugio_tipo_veterinaria">VETERINARIA 🏥</string>
+    <!-- Admin: Reportes -->
+    <string name="admin_reports_title">Análisis Estadístico 📊</string>
+    <string name="admin_reports_subtitle">Dashboard de métricas visuales</string>
+    <string name="admin_reports_btn_generate">GENERAR ANÁLISIS COMPLETO</string>
+    <string name="admin_reports_sec_pets">Mascotas y Adopciones</string>
+    <string name="admin_reports_chart_species">Disponibilidad por Especie</string>
+    <string name="admin_reports_chart_success">Éxito de Adopciones</string>
+    <string name="admin_reports_chart_requests">Estado de Solicitudes</string>
+    <string name="admin_reports_sec_store">Inventario y Tienda</string>
+    <string name="admin_reports_chart_cat_stock">Stock por Categoría</string>
+    <string name="admin_reports_chart_prod_stock">Cantidad de cada Producto</string>
+    <string name="admin_reports_stock_unit">%1$d uds</string>
+    <string name="admin_reports_sec_popularity">Popularidad</string>
+    <string name="admin_reports_ranking_title">Top 5 Mascotas con más Votos ❤️</string>
+    <string name="admin_reports_ranking_votes">%1$d votos</string>
+    <string name="admin_reports_empty_title">No hay datos procesados</string>
+    <string name="admin_reports_empty_desc">Toca el botón superior para calcular estadísticas</string>
+    <string name="admin_reports_legend_adopted">Adoptadas: %1$d</string>
+    <string name="admin_reports_legend_available">Disponibles: %1$d</string>
+
+    <!-- Favoritos -->
+    <string name="favs_title">Tus favoritos, %1$s ❤️</string>
+    <string name="favs_subtitle">¡Encuentra el amor de tu vida!</string>
+    <string name="favs_empty_title">No tienes favoritos aún</string>
+    <string name="favs_btn_adopt_me">¡Adoptame!</string>
+    <string name="favs_btn_adopted">Adoptado ✓</string>
+
+    <!-- Logros -->
+    <string name="logros_title">Mis Logros 🎖️</string>
+    <string name="logros_subtitle">Colecciona medallas y gana puntos</string>
+    <string name="logros_instruction">Desbloquea medallas realizando acciones en la App y gana puntos extra.</string>
+    <string name="logros_completed_tag">¡COMPLETADO! +100 PUNTOS</string>
+
+    <!-- Logros Data -->
+    <string name="logro_sys_1_title">¡Bienvenido!</string>
+    <string name="logro_sys_1_desc">Iniciaste sesión por primera vez.</string>
+    <string name="logro_res_1_title">Primer Rescate</string>
+    <string name="logro_res_1_desc">Publicaste tu primera mascota.</string>
+    <string name="logro_res_2_title">Rescatista Activo</string>
+    <string name="logro_res_2_desc">Tienes 2 mascotas publicadas.</string>
+    <string name="logro_res_3_title">Héroe Local</string>
+    <string name="logro_res_3_desc">Tienes 3 mascotas publicadas.</string>
+    <string name="logro_com_1_title">Primer Like</string>
+    <string name="logro_com_1_desc">Diste tu primer voto.</string>
+    <string name="logro_com_2_title">Votante Frecuente</string>
+    <string name="logro_com_2_desc">Diste 5 votos.</string>
+    <string name="logro_com_3_title">Corazón de Oro</string>
+    <string name="logro_com_3_desc">Diste 10 votos.</string>
+    <string name="logro_per_1_title">Perfil Completado</string>
+    <string name="logro_per_1_desc">Completaste tus datos.</string>
+    <string name="logro_ado_1_title">Interés en Adopción</string>
+    <string name="logro_ado_1_desc">Completaste un formulario.</string>
+    <string name="logro_ado_2_title">Adoptante</string>
+    <string name="logro_ado_2_desc">Tienes una mascota adoptada.</string>
+    <string name="logro_sys_2_title">Usuario Verificado</string>
+    <string name="logro_sys_2_desc">Tu cuenta ha sido validada.</string>
+    <string name="logro_res_4_title">Protector</string>
+    <string name="logro_res_4_desc">Tienes 4 mascotas publicadas.</string>
+    <string name="logro_com_4_title">Sin familiar</string>
+    <string name="logro_com_4_desc">Registro de adopción cancelado por el administrador.</string>
+    <string name="logro_per_2_title">Malos comentarios</string>
+    <string name="logro_per_2_desc">Publicación rechazada por el administrador.</string>
+    <string name="logro_ado_3_title">Familia Multiespecie</string>
+    <string name="logro_ado_3_desc">Adoptaste más de una mascota.</string>
+    <string name="logro_sys_3_title">Veterano</string>
+    <string name="logro_sys_3_desc">Llevas un mes en la App.</string>
+    <string name="logro_res_5_title">Salvador</string>
+    <string name="logro_res_5_desc">Tienes 5 mascotas publicadas.</string>
+    <string name="logro_com_5_title">Líder Comunitario</string>
+    <string name="logro_com_5_desc">Tus comentarios son muy valorados.</string>
+    <string name="logro_per_3_title">Estrella</string>
+    <string name="logro_per_3_desc">Lograste el rango máximo de perfil.</string>
+    <string name="logro_ado_4_title">Adoptante de Leyenda</string>
+    <string name="logro_ado_4_desc">Tienes 3 o más adopciones exitosas.</string>
+
+    <!-- Que Necesito Para Adoptar -->
+    <string name="req_title">¿Qué necesito para\nadoptar una mascota?</string>
+    <string name="req_card_data_title">Tus datos</string>
+    <string name="req_card_data_subtitle">Documentación y requisitos legales</string>
+    <string name="req_card_food_title">Calcular comida de animal</string>
+    <string name="req_card_food_subtitle">Planes nutricionales a medida</string>
+    <string name="req_card_home_title">¿Hogar feliz?</string>
+    <string name="req_card_home_subtitle">Condiciones ideales de vivienda</string>
+    <string name="req_btn_form">IR AL FORMULARIO</string>
+    <string name="req_btn_calculator">CALCULADORA</string>
+    <string name="req_btn_buy">COMPRAR</string>
+    <string name="req_btn_understood">ENTENDIDO</string>
+    <string name="req_popup_title_food">ALIMENTACIÓN</string>
+    <string name="req_popup_title_data">TUS DATOS</string>
+    <string name="req_popup_title_home">HOGAR FELIZ</string>
+    <string name="req_popup_content_data">DETALLES DE TUS DATOS:\n1. Documento de identidad (Cédula/DNI).\n2. Comprobante de dirección actual.\n3. Referencias personales (2 personas).\n4. Edad mínima de 21 años.</string>
+    <string name="req_popup_content_food">CALCULAR COMIDA DE ANIMAL:\nEs fundamental conocer la cantidad exacta de alimento que tu mascota necesita para mantenerse saludable y con energía.\n\nUsa nuestra calculadora recomendada para obtener un plan nutricional a medida o adquiere el mejor alimento para tu nuevo amigo.</string>
+    <string name="req_popup_content_home">REQUISITOS DEL HOGAR:\n1. Espacio seguro y cercado.\n2. Área techada para descanso.\n3. Aceptación de todos los habitantes.\n4. Tiempo diario para ejercicio y juegos.</string>
+
+    <string name="mock_story_1_text">Fue el mejor día de mi vida cuando lo encontré.</string>
+    <string name="mock_story_2_text">Luna trajo alegría a nuestra casa.</string>
+
+    <string name="mock_pet_desc_template">¡Hola! Soy un %1$s rescatado buscando un hogar lleno de amor. Soy muy juguetón y amigable. ¡Ven a conocerme!</string>
+    <string name="mock_pet_desc_placeholder">Busco un hogar lleno de amor. Soy un %1$s muy cariñoso y juguetón. ¡Dame una oportunidad para ser tu mejor amigo!</string>
+    <string name="mock_pet_breed_dog">Rescatado (Canino)</string>
+    <string name="mock_pet_breed_cat">Rescatado (Felino)</string>
+    <string name="mock_pet_age_years">%1$d años</string>
+    <string name="mock_pet_type_dog">Perro</string>
+    <string name="mock_pet_type_cat">Gato</string>
+    <string name="mock_pet_breed_init_dog">Pastor Alemán Mix</string>
+    <string name="mock_pet_breed_init_cat">Común Europeo</string>
+
+    <!-- Admin Navigation -->
+    <!-- Mock Data Names and Labels -->
+    <string name="mock_user_colaborador">Carlos Colaborador</string>
+    <string name="mock_user_protector">Patricia Protectora</string>
+    <string name="mock_user_heroe">Humberto Héroe</string>
+    <string name="mock_user_leyenda">Luis Leyenda</string>
+    <string name="mock_user_admin">Administrador</string>
+    <string name="mock_location_bogota">Bogotá</string>
+    <string name="mock_location_medellin">Medellín</string>
+    <string name="mock_location_cali">Cali</string>
+    <string name="mock_location_barranquilla">Barranquilla</string>
+    <string name="mock_location_armenia">Armenia</string>
+    <string name="mock_dept_cundinamarca">Cundinamarca</string>
+    <string name="mock_dept_antioquia">Antioquia</string>
+    <string name="mock_dept_valle">Valle del Cauca</string>
+    <string name="mock_dept_atlantico">Atlántico</string>
+    <string name="mock_dept_quindio">Quindío</string>
+    <string name="mock_address_central">Oficina Central</string>
+    <string name="mock_address_1">Calle 10</string>
+    <string name="mock_address_2">Carrera 20</string>
+    <string name="mock_address_3">Avenida 30</string>
+    <string name="mock_address_4">Calle 40</string>
+
+    <!-- Mock Shelter Data -->
+    <string name="mock_shelter_ada_name">ADA Quindío</string>
+    <string name="mock_shelter_ada_desc">Asociación Defensora de Animales del Quindío. Más de 20 años rescatando.</string>
+    <string name="mock_shelter_ada_addr">Carrera 19 #30-40, Armenia</string>
+    <string name="mock_shelter_cafe_name">Clínica Veterinaria del Café</string>
+    <string name="mock_shelter_cafe_desc">Atención especializada 24/7 en el corazón de Armenia.</string>
+    <string name="mock_shelter_cafe_addr">Calle 15 #14-25, Armenia</string>
+    <string name="mock_shelter_tebaida_name">Refugio La Tebaida</string>
+    <string name="mock_shelter_tebaida_desc">Hogar de paso para caninos y felinos rescatados en el sur del Quindío.</string>
+    <string name="mock_shelter_tebaida_addr">Vía Panamericana km 2, La Tebaida</string>
+    <string name="mock_shelter_armenia_name">Veterinaria Mascotas Armenia</string>
+    <string name="mock_shelter_armenia_desc">Consulta general, cirugía y peluquería profesional.</string>
+    <string name="mock_shelter_armenia_addr">Avenida Bolívar #10-15, Armenia</string>
+    <string name="mock_shelter_roque_name">Refugio San Roque</string>
+    <string name="mock_shelter_roque_desc">Santuario dedicado al cuidado de mascotas ancianas abandonadas.</string>
+    <string name="mock_shelter_roque_addr">Vereda La Julia, Circasia</string>
+    <string name="mock_shelter_uniquindio_name">Hospital Veterinari Uniquindío</string>
+    <string name="mock_shelter_uniquindio_desc">Hospital docente de la Universidad del Quindío con servicios integrales.</string>
+    <string name="mock_shelter_uniquindio_addr">Calle 12 Norte, Armenia</string>
+    <string name="mock_shelter_arca_name">Veterinaria El Arca</string>
+    <string name="mock_shelter_arca_desc">Atención médica para mascotas en el municipio de Calarcá.</string>
+    <string name="mock_shelter_arca_addr">Carrera 24 #18-30, Calarcá</string>
+    <string name="mock_shelter_eco_name">Fundación Eco-Huellas</string>
+    <string name="mock_shelter_eco_desc">Protección animal y educación ambiental en Salento.</string>
+    <string name="mock_shelter_eco_addr">Vía al Valle, Salento</string>
+    <string name="mock_shelter_caninos_name">Clínica Vet Caninos y Felinos</string>
+    <string name="mock_shelter_caninos_desc">Medicina interna y laboratorio clínico especializado.</string>
+    <string name="mock_shelter_caninos_addr">Carrera 14 #2-50, Armenia</string>
+    <string name="mock_shelter_huellas_name">Huellas del Quindío</string>
+    <string name="mock_shelter_huellitas_desc">Refugio campestre con amplias zonas verdes para recreación.</string>
+    <string name="mock_shelter_huellitas_addr">Vía Montenegro km 1</string>
+
+    <string name="mock_shelter_voz_name">Fundación Voz Animal</string>
+    <string name="mock_shelter_voz_desc">Rescate masivo y esterilización en toda la sabana de Bogotá.</string>
+    <string name="mock_shelter_voz_addr">Chía, Cundinamarca</string>
+    <string name="mock_shelter_dover_name">Clínica Veterinaria Dover</string>
+    <string name="mock_shelter_dover_desc">Pioneros en medicina veterinaria de alta complejidad en Colombia.</string>
+    <string name="mock_shelter_dover_addr">Calle 127 #15-36, Bogotá</string>
+    <string name="mock_shelter_milagrinos_name">Refugio Milagrinos</string>
+    <string name="mock_shelter_milagrinos_desc">Especializados en el rescate y rehabilitación de gatos abandonados.</string>
+    <string name="mock_shelter_milagrinos_addr">Usaquén, Bogotá</string>
+    <string name="mock_shelter_agrocampo_name">Agrocampo Vet Center</string>
+    <string name="mock_shelter_agrocampo_desc">El centro veterinario más grande de la ciudad con farmacia 24h.</string>
+    <string name="mock_shelter_agrocampo_addr">Avenida Caracas #73-10, Bogotá</string>
+    <string name="mock_shelter_razas_name">Fundación Razas Únicas</string>
+    <string name="mock_shelter_razas_desc">Promoviendo la adopción de perros mestizos (\'razas únicas\').</string>
+    <string name="mock_shelter_razas_addr">Suba, Bogotá</string>
+    <string name="mock_shelter_orca_name">Fundación Orca</string>
+    <string name="mock_shelter_orca_desc">Defensores incansables de la vida animal en Antioquia.</string>
+    <string name="mock_shelter_orca_addr">El Poblado, Medellín</string>
+    <string name="mock_shelter_jeronimo_name">Centro Vet San Jerónimo</string>
+    <string name="mock_shelter_jeronimo_desc">Expertos en comportamiento animal y medicina felina.</string>
+    <string name="mock_shelter_jeronimo_addr">Laureles, Medellín</string>
+    <string name="mock_shelter_perla_name">Refugio La Perla</string>
+    <string name="mock_shelter_perla_desc">Centro de bienestar animal oficial de la Alcaldía de Medellín.</string>
+    <string name="mock_shelter_perla_addr">Corregimiento Altavista, Medellín</string>
+    <string name="mock_shelter_establo_name">Clínica Vet El Establo</string>
+    <string name="mock_shelter_establo_desc">Servicios médicos integrales para mascotas y animales de granja.</string>
+    <string name="mock_shelter_establo_addr">Envigado, Antioquia</string>
+    <string name="mock_shelter_animalnat_name">Fundación Animalnat</string>
+    <string name="mock_shelter_animalnat_desc">Rescate y educación sobre fauna urbana y doméstica.</string>
+    <string name="mock_shelter_animalnat_addr">Bello, Antioquia</string>
+    <string name="mock_shelter_salvando_name">Salvando Huellas Cali</string>
+    <string name="mock_shelter_salvando_desc">Asociación protectora dedicada a rescatar animales del maltrato.</string>
+    <string name="mock_shelter_salvando_addr">Pance, Cali</string>
+    <string name="mock_shelter_luis_name">Clínica Vet San Luis</string>
+    <string name="mock_shelter_luis_desc">Medicina de vanguardia para mascotas en el Valle del Cauca.</string>
+    <string name="mock_shelter_luis_addr">Avenida 6N, Cali</string>
+    <string name="mock_shelter_villa_name">Refugio Villa Canina</string>
+    <string name="mock_shelter_villa_desc">Santuario campestre con programas de rehabilitación física.</string>
+    <string name="mock_shelter_villa_addr">Vía Jamundí, Cali</string>
+    <string name="mock_shelter_petcenter_name">Veterinaria Pet Center Cali</string>
+    <string name="mock_shelter_petcenter_desc">Clínica, estética y hotel canino de cinco estrellas.</string>
+    <string name="mock_shelter_petcenter_addr">Barrio Granada, Cali</string>
+    <string name="mock_shelter_pereira_name">Veterinaria Pereira Express</string>
+    <string name="mock_shelter_pereira_desc">Atención médica rápida y confiable en la capital de Risaralda.</string>
+    <string name="mock_shelter_pereira_addr">Avenida Circunvalar, Pereira</string>
+    <string name="mock_shelter_nombre_name">Fundación Perros sin Nombre</string>
+    <string name="mock_shelter_nombre_desc">Rescate en las calles de la ciudad bonita y Santander.</string>
+    <string name="mock_shelter_nombre_addr">Bucaramanga, Santander</string>
+    <string name="mock_shelter_country_name">Clínica Vet del Country</string>
+    <string name="mock_shelter_country_desc">Líderes en salud animal en la Costa Caribe colombiana.</string>
+    <string name="mock_shelter_country_addr">Barrio El Prado, Barranquilla</string>
+    <string name="mock_shelter_paraiso_name">Refugio Paraíso Animal</string>
+    <string name="mock_shelter_paraiso_desc">Un paraíso entre las montañas para animales rescatados.</string>
+    <string name="mock_shelter_paraiso_addr">Manizales, Caldas</string>
+    <string name="mock_shelter_peludos_name">Clínica Vet Peludos</string>
+    <string name="mock_shelter_peludos_desc">Atención integral para las mascotas de la ciudad amurallada.</string>
+    <string name="mock_shelter_peludos_addr">Barrio Manga, Cartagena</string>
+    <string name="mock_shelter_huellitas_name">Fundación Huellitas Felices</string>
+    <string name="mock_shelter_huellitas_desc_ibague">Protección y adopción responsable en el centro de Colombia.</string>
+    <string name="mock_shelter_huellitas_addr_ibague">Ibagué, Tolima</string>
+    <string name="mock_shelter_plus_name">Vet Plus Villavicencio</string>
+    <string name="mock_shelter_plus_desc">Servicios especializados en el llano colombiano.</string>
+    <string name="mock_shelter_plus_addr">Avenida 40, Villavicencio</string>
+
+    <string name="nav_admin_panel">Panel Control</string>
+
+    <string name="nav_admin_requests">Solicitudes</string>
+    <string name="nav_admin_pets">Mascotas</string>
+    <string name="nav_admin_logout">Salir</string>
+
+    <!-- Admin: Estadisticas (Panel Administrativo) -->
+    <string name="admin_panel_title">Panel Administrativo 🛡️</string>
+    <string name="admin_panel_subtitle">Centro de Control y Gestión</string>
+    <string name="admin_panel_resumen_operativo">RESUMEN OPERATIVO</string>
+    <string name="admin_panel_metric_requests">SOLICITUDES</string>
+    <string name="admin_panel_metric_moderation">MODERACIÓN</string>
+    <string name="admin_panel_metric_users">USUARIOS</string>
+    <string name="admin_panel_tools_title">HERRAMIENTAS DE GESTIÓN</string>
+    <string name="admin_panel_tool_store">Gestión Tienda</string>
+    <string name="admin_panel_tool_reports">Reportes Gráficos</string>
+    <string name="admin_panel_tool_sales">Historial Ventas</string>
+    <string name="admin_panel_tool_shelters">Gestión Refugios</string>
+    <string name="admin_panel_tool_chat">Moderar Chat</string>
+    <string name="admin_panel_tool_add_pet">Subir Mascota</string>
+    <string name="admin_panel_tool_stories">Administrar Stories</string>
+    <string name="admin_panel_tool_view_stories">Ver Stories Feed</string>
+
+    <!-- Refugios -->
+    <string name="refugios_title">Refugios Aliados 🏠</string>
+    <string name="refugios_subtitle">Encuentra lugares de confianza cerca de ti</string>
+    <string name="refugios_empty">No hay refugios verificados aún</string>
+    <string name="refugios_verified">Verificado</string>
+    <string name="refugios_btn_contact">CONTACTAR REFUGIO</string>
+    <string name="refugios_fab_add">Registrar Refugio</string>
+    <string name="refugios_common_like">Like</string>
+
+    <!-- Adopción Exitosa -->
+    <string name="adoption_success_title">¡ADOPCIÓN EXITOSA!</string>
+    <string name="adoption_success_subtitle">¡Ya forma parte de tu vida!</string>
+    <string name="adoption_success_label_date">Fecha</string>
+    <string name="adoption_success_label_adopter">Adoptante</string>
+    <string name="adoption_success_section_summary">Resumen de Solicitud:</string>
+    <string name="adoption_success_btn_back">VOLVER AL INICIO</string>
+
+    <!-- Mock Pets Home -->
+    <string name="mock_pet_1_name">Luna</string>
+    <string name="mock_pet_1_age">2 años</string>
+    <string name="mock_pet_1_location">Armenia, Quindío</string>
+    <string name="mock_pet_1_type">Gato</string>
+
+    <string name="mock_pet_2_name">Max</string>
+    <string name="mock_pet_2_age">1 año</string>
+    <string name="mock_pet_2_location">Bogotá, Cund.</string>
+    <string name="mock_pet_2_type">Perro</string>
+
+    <string name="mock_pet_3_name">Toby</string>
+    <string name="mock_pet_3_age">3 meses</string>
+    <string name="mock_pet_3_location">Medellín, Ant.</string>
+    <string name="mock_pet_3_type">Perro</string>
+
+    <string name="mock_pet_4_name">Bella</string>
+    <string name="mock_pet_4_age">4 años</string>
+    <string name="mock_pet_4_location">Cali, Valle</string>
+    <string name="mock_pet_4_type">Gato</string>
+
+    <!-- Pet Detail Screen -->
+    <string name="pet_detail_title">Detalles de Mascota</string>
+    <string name="pet_detail_description">Descripción</string>
+    <string name="pet_detail_comments">Comentarios (%1$d)</string>
+    <string name="pet_detail_fav_removed">Eliminado de favoritos</string>
+    <string name="pet_detail_fav_added">¡Añadido a favoritos!</string>
+    <string name="pet_detail_comment_placeholder">Escribe un comentario...</string>
+    <string name="pet_detail_reply_placeholder">Escribe tu respuesta...</string>
+    <string name="pet_detail_replying_to">Respondiendo a %1$s</string>
+    <string name="pet_detail_penalty_active">Penalización activa. Tiempo restante: %1$s</string>
+    <string name="pet_detail_btn_cancel_request">CANCELAR SOLICITUD / LIBERAR</string>
+    <string name="pet_detail_request_cancelled">Solicitud cancelada. Mascota liberada.</string>
+    <string name="pet_detail_btn_back_home">VOLVER AL INICIO</string>
+    <string name="pet_detail_btn_view_cert">VER MI CERTIFICADO 🎉</string>
+    <string name="pet_detail_btn_view_rejection">VER MOTIVO DE RECHAZO ❌</string>
+    <string name="pet_detail_already_adopted">ESTA MASCOTA YA TIENE HOGAR ❤️</string>
+    <string name="pet_detail_request_pending">SOLICITUD PENDIENTE ⏳</string>
+    <string name="pet_detail_btn_adopt">ME INTERESA ADOPTAR 🐾</string>
+    <string name="pet_detail_penalty_msg">Estás penalizado. Tiempo restante: %1$s</string>
+    <string name="pet_detail_request_review_msg">Tu solicitud está siendo revisada.</string>
+    <string name="pet_detail_btn_retry">REINTENTAR CUESTIONARIO</string>
+
+    <!-- My Adoptions Screen -->
+    <string name="my_adoptions_title">MIS ADOPCIONES 🐾</string>
+    <string name="my_adoptions_empty">Aún no tienes mascotas adoptadas</string>
+    <string name="my_adoptions_btn_health">VER CARNET DE SALUD</string>
+
+    <!-- Adoption Confirmation Screen -->
+    <string name="adoption_summary_motivation">Motivación: %1$s</string>
+    <string name="adoption_summary_housing">Vivienda: %1$s</string>
+    <string name="adoption_summary_hours">Horas solo: %1$s</string>
+    <string name="adoption_summary_reference">Referencia: %1$s (%2$s)</string>
+    <string name="adoption_admin_comment_template">La adopción de la mascota %1$s, de tipo %2$s, ha sido registrada exitosamente a nombre de %3$s. La información ha sido almacenada correctamente en el sistema y el estado de la mascota ha sido actualizado como adoptada. Gracias por completar el proceso de adopción en PetAdopt.</string>
+
+    <string name="nav_admin_stats">Estadísticas</string>
+    <string name="nav_admin_solicitudes">Solicitudes</string>
+    <string name="nav_admin_encontrar">Encontrar</string>
+    <string name="nav_admin_salir">Salir</string>
+
 </resources>

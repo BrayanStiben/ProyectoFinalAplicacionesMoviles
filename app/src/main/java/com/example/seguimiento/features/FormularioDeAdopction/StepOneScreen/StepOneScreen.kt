@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,7 @@ fun StepOneScreen(
                 CenterAlignedTopAppBar(
                     title = { 
                         Text(
-                            "Formulario",
+                            stringResource(R.string.form_title),
                             color = Color.White, 
                             fontWeight = FontWeight.Black,
                             fontSize = 20.sp
@@ -98,9 +99,9 @@ fun StepOneScreen(
                         Column(modifier = Modifier.padding(24.dp)) {
                             
                             // SECCIÓN 1: SELECCIÓN DE MASCOTA
-                            SectionHeader(Icons.Default.Pets, "Preferencia")
+                            SectionHeader(Icons.Default.Pets, stringResource(R.string.form_step1_preference))
                             CustomInput(
-                                label = "Tipo de animal (Perro/Gato/Otro)", 
+                                label = stringResource(R.string.form_step1_pet_type_label), 
                                 value = vm.state.petType,
                                 icon = Icons.Default.Category
                             ) { vm.updateState(vm.state.copy(petType = it)) }
@@ -108,9 +109,9 @@ fun StepOneScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 2: MOTIVACIÓN
-                            SectionHeader(Icons.Default.Favorite, "Motivación")
+                            SectionHeader(Icons.Default.Favorite, stringResource(R.string.form_step1_motivation))
                             CustomInput(
-                                label = "¿Por qué quieres adoptar ahora?", 
+                                label = stringResource(R.string.form_step1_motivation_label), 
                                 value = vm.state.motivation,
                                 icon = Icons.Default.ChatBubble
                             ) { vm.updateState(vm.state.copy(motivation = it)) }
@@ -118,10 +119,15 @@ fun StepOneScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 3: EXPECTATIVAS (Chips)
-                            SectionHeader(Icons.Default.Star, "Expectativas")
-                            Text("¿Qué personalidad buscas?", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                            SectionHeader(Icons.Default.Star, stringResource(R.string.form_step1_expectations))
+                            Text(stringResource(R.string.form_step1_personality_q), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
                             
-                            val opcionesExpectativas = listOf("Activo", "Tranquilo", "Guardián", "Compañía")
+                            val opcionesExpectativas = listOf(
+                                stringResource(R.string.form_step1_exp_active),
+                                stringResource(R.string.form_step1_exp_calm),
+                                stringResource(R.string.form_step1_exp_guardian),
+                                stringResource(R.string.form_step1_exp_companion)
+                            )
                             FlowRow(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -139,8 +145,8 @@ fun StepOneScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 4: TIEMPO DISPONIBLE
-                            SectionHeader(Icons.Default.Schedule, "Tiempo Disponible")
-                            Text("Horas que pasará sola al día: ${vm.state.hoursAlone}h", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                            SectionHeader(Icons.Default.Schedule, stringResource(R.string.form_step1_time))
+                            Text(stringResource(R.string.form_step1_hours_alone_label, vm.state.hoursAlone), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
                             Slider(
                                 value = vm.state.hoursAlone.toFloat(),
                                 onValueChange = { vm.updateState(vm.state.copy(hoursAlone = it.toInt())) },
@@ -185,7 +191,7 @@ fun StepOneScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                             ) {
-                                Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                                Text(stringResource(R.string.form_btn_continue), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
                             }
                         }
                     }
@@ -235,10 +241,10 @@ fun CustomInput(label: String, value: String, icon: ImageVector, onValueChange: 
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
         )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(

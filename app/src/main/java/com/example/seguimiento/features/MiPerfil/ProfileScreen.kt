@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,7 +96,7 @@ fun ProfileScreen(
                         }
 
                         Spacer(Modifier.height(12.dp))
-                        Text(user?.name ?: "Usuario", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(user?.name ?: stringResource(id = R.string.placeholder_name), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         
                         // Badge de Rango justo debajo del nombre
                         user?.let { u ->
@@ -105,7 +106,7 @@ fun ProfileScreen(
                                 modifier = Modifier.padding(top = 4.dp)
                             ) {
                                 Text(
-                                    u.getLevelName(),
+                                    stringResource(u.getLevelNameResId()),
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                                     color = Color.White,
                                     fontSize = 14.sp,
@@ -118,20 +119,20 @@ fun ProfileScreen(
 
                         // Dashboard de Estadísticas Personales
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            StatCard("Activas", state.activePosts.toString(), Color(0xFF2196F3), Modifier.weight(1f))
-                            StatCard("Finalizadas", state.resolvedPosts.toString(), VerdeApp, Modifier.weight(1f))
-                            StatCard("Pendientes", state.pendingPosts.toString(), Color(0xFFFFC107), Modifier.weight(1f))
+                            StatCard(stringResource(id = R.string.profile_stats_active), state.activePosts.toString(), Color(0xFF2196F3), Modifier.weight(1f))
+                            StatCard(stringResource(id = R.string.profile_stats_finalized), state.resolvedPosts.toString(), VerdeApp, Modifier.weight(1f))
+                            StatCard(stringResource(id = R.string.profile_stats_pending), state.pendingPosts.toString(), Color(0xFFFFC107), Modifier.weight(1f))
                         }
 
                         Spacer(Modifier.height(20.dp))
                         
-                        Text("Puntos totales: ${user?.points ?: 0} 🏆", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(id = R.string.profile_total_points, user?.points ?: 0), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         
                         Spacer(Modifier.height(32.dp))
 
                         // --- SECCIÓN: DETALLE DE CUENTA ---
                         Text(
-                            "Detalle de cuenta", 
+                            stringResource(id = R.string.profile_account_details), 
                             fontSize = 22.sp, 
                             fontWeight = FontWeight.Black, 
                             color = Color.White, 
@@ -141,7 +142,7 @@ fun ProfileScreen(
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             // Botón: Mis Adopciones
                             ProfileActionButton(
-                                text = "Mascotas Adoptadas", 
+                                text = stringResource(id = R.string.profile_btn_adopted_pets), 
                                 icon = Icons.Default.Pets,
                                 onClick = onNavigateToMisAdopciones,
                                 backgroundColor = NaranjaApp,
@@ -150,7 +151,7 @@ fun ProfileScreen(
 
                             // Botón: Mis Publicaciones
                             ProfileActionButton(
-                                text = "Mis Publicaciones", 
+                                text = stringResource(id = R.string.profile_btn_my_posts), 
                                 icon = Icons.Default.FormatListBulleted,
                                 onClick = onNavigateToMisPublicaciones,
                                 backgroundColor = CafeApp,
@@ -172,7 +173,7 @@ fun ProfileScreen(
                         ) {
                             Icon(Icons.AutoMirrored.Filled.Logout, null, tint = Color.White)
                             Spacer(Modifier.width(8.dp))
-                            Text("Cerrar Sesión", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(stringResource(id = R.string.profile_btn_logout), color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         Spacer(Modifier.height(40.dp))

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,7 +90,7 @@ fun PantallaPetAdopta(
                     containerColor = Color(0xFFE67E22),
                     contentColor = Color.White,
                     icon = { Icon(Icons.Default.Add, null) },
-                    text = { Text("Compartir Historia") },
+                    text = { Text(stringResource(R.string.stories_btn_share)) },
                     shape = RoundedCornerShape(16.dp)
                 )
             }
@@ -123,13 +124,13 @@ fun PantallaPetAdopta(
                             }
                             Column {
                                 Text(
-                                    "PetAdopta Stories ✨",
+                                    stringResource(R.string.stories_title),
                                     color = Color.White,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Black
                                 )
                                 Text(
-                                    "Historias que cambian vidas",
+                                    stringResource(R.string.stories_subtitle),
                                     color = Color.White.copy(0.9f),
                                     fontSize = 14.sp
                                 )
@@ -174,7 +175,7 @@ fun PantallaPetAdopta(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Nueva Historia 🐾", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF5D2E17))
+                                Text(stringResource(R.string.stories_dialog_new_title), fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF5D2E17))
                                 IconButton(onClick = { showPostForm = false }) {
                                     Icon(Icons.Default.Close, null)
                                 }
@@ -185,7 +186,7 @@ fun PantallaPetAdopta(
                             OutlinedTextField(
                                 value = mascotaNombre,
                                 onValueChange = { viewModel.alCambiarNombreMascota(it) },
-                                label = { Text("Nombre de la mascota") },
+                                label = { Text(stringResource(R.string.stories_label_pet_name)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
                             )
@@ -195,7 +196,7 @@ fun PantallaPetAdopta(
                             OutlinedTextField(
                                 value = textoHistoria,
                                 onValueChange = { viewModel.alCambiarTexto(it) },
-                                label = { Text("Cuéntanos tu historia...") },
+                                label = { Text(stringResource(R.string.stories_label_story_text)) },
                                 modifier = Modifier.fillMaxWidth().height(120.dp),
                                 shape = RoundedCornerShape(12.dp)
                             )
@@ -220,7 +221,7 @@ fun PantallaPetAdopta(
                                 ) {
                                     Icon(Icons.Default.AddPhotoAlternate, null, tint = Color(0xFFE67E22))
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Elegir Foto", color = Color(0xFFE67E22))
+                                    Text(stringResource(R.string.stories_btn_choose_photo), color = Color(0xFFE67E22))
                                 }
                             }
 
@@ -237,7 +238,7 @@ fun PantallaPetAdopta(
                                 shape = RoundedCornerShape(16.dp),
                                 enabled = mascotaNombre.isNotBlank() && textoHistoria.isNotBlank()
                             ) {
-                                Text("COMPARTIR AHORA", fontWeight = FontWeight.Black)
+                                Text(stringResource(R.string.stories_btn_share_now), fontWeight = FontWeight.Black)
                             }
                         }
                     }
@@ -265,17 +266,17 @@ fun SocialHistoryCard(
     val totalFollowers = historia.followersIds.size
 
     val textLikes = when {
-        isLiked && totalLikes > 1 -> "Tú y ${totalLikes - 1} personas"
-        isLiked -> "Tú"
-        totalLikes > 0 -> "$totalLikes personas"
-        else -> "0 likes"
+        isLiked && totalLikes > 1 -> stringResource(R.string.stories_likes_you_and_others, totalLikes - 1)
+        isLiked -> stringResource(R.string.stories_likes_you)
+        totalLikes > 0 -> stringResource(R.string.stories_likes_others, totalLikes)
+        else -> stringResource(R.string.stories_likes_none)
     }
 
     val textFollows = when {
-        isFollowed && totalFollowers > 1 -> "Tú y ${totalFollowers - 1} personas siguen esto"
-        isFollowed -> "Sigues esta historia"
-        totalFollowers > 0 -> "$totalFollowers seguidores"
-        else -> "0 seguidores"
+        isFollowed && totalFollowers > 1 -> stringResource(R.string.stories_follows_you_and_others, totalFollowers - 1)
+        isFollowed -> stringResource(R.string.stories_follows_you)
+        totalFollowers > 0 -> stringResource(R.string.stories_follows_others, totalFollowers)
+        else -> stringResource(R.string.stories_follows_none)
     }
 
     Card(
@@ -303,13 +304,13 @@ fun SocialHistoryCard(
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {
                     Text(historia.autorNombre, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("Acaba de compartir un momento", fontSize = 11.sp, color = Color.Gray)
+                    Text(stringResource(R.string.stories_card_shared_moment), fontSize = 11.sp, color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 
                 if (isAdmin || historia.autorId == currentUserId) {
                     IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                        Icon(Icons.Default.Delete, stringResource(R.string.btn_delete), tint = Color.Red.copy(alpha = 0.7f))
                     }
                 } else {
                     IconButton(onClick = onFollow) {
@@ -351,7 +352,7 @@ fun SocialHistoryCard(
                 
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "La historia de ${historia.mascotaNombre} 🐾",
+                    text = stringResource(R.string.stories_card_pet_story_title, historia.mascotaNombre),
                     fontWeight = FontWeight.Black,
                     fontSize = 16.sp,
                     color = Color(0xFFE67E22)
@@ -381,7 +382,7 @@ fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
     val showRepliesMap = remember { mutableStateMapOf<String, Boolean>() }
 
     Column(modifier = Modifier.padding(16.dp).background(Color(0xFFF9F9F9), RoundedCornerShape(12.dp)).padding(12.dp)) {
-        Text("Comentarios", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Text(stringResource(R.string.stories_comments_title), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
         
         comentarios.filter { it.parentId == null }.forEach { principal ->
             val respuestas = comentarios.filter { it.parentId == principal.id }
@@ -411,7 +412,7 @@ fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
 
         if (replyingToId != null) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
-                Text("Respondiendo a $replyingToName", fontSize = 11.sp, color = Color(0xFFE67E22), modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.stories_label_replying_to, replyingToName), fontSize = 11.sp, color = Color(0xFFE67E22), modifier = Modifier.weight(1f))
                 IconButton(onClick = { replyingToId = null }, modifier = Modifier.size(16.dp)) {
                     Icon(Icons.Default.Close, null, modifier = Modifier.size(12.dp))
                 }
@@ -422,7 +423,7 @@ fun CommentsSection(historiaId: String, viewModel: HistoriaMascotaViewModel) {
             OutlinedTextField(
                 value = nuevoComentario,
                 onValueChange = { nuevoComentario = it },
-                placeholder = { Text("Escribe un comentario...", fontSize = 12.sp) },
+                placeholder = { Text(stringResource(R.string.stories_placeholder_comment), fontSize = 12.sp) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(20.dp),
                 maxLines = 2
@@ -460,7 +461,7 @@ fun CommentItem(
                     Text(comentario.autorNombre, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     if (onReply != null) {
                         Text(
-                            "Responder", 
+                            stringResource(R.string.stories_btn_reply), 
                             fontSize = 10.sp, 
                             color = Color(0xFFE67E22), 
                             modifier = Modifier.padding(start = 12.dp).clickable { onReply() }
@@ -473,7 +474,7 @@ fun CommentItem(
         
         if (hasReplies && onToggleReplies != null) {
             Text(
-                text = if (repliesVisible) "Ocultar respuestas" else "Ver respuestas...",
+                text = if (repliesVisible) stringResource(R.string.stories_btn_hide_replies) else stringResource(R.string.stories_btn_show_replies),
                 fontSize = 11.sp,
                 color = Color.Gray,
                 fontWeight = FontWeight.Bold,
@@ -488,10 +489,10 @@ fun BottomNavPet(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val naranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
         )
 
         items.forEach { (label, icon, index) ->

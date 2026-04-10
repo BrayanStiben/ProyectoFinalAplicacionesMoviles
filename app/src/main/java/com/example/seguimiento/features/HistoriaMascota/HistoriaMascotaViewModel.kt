@@ -8,6 +8,7 @@ import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.HistoriaFelizRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -66,9 +67,9 @@ class HistoriaMascotaViewModel @Inject constructor(
 
         if (currentUser != null) {
             notificacionRepository.addNotificacion(
-                titulo = "¡Historia compartida! ✨",
-                mensaje = "Tu historia con ${_mascotaNombre.value} ha sido enviada y está en revisión.",
-                tipo = "INFO",
+                tituloResId = R.string.stories_notif_shared_title,
+                mensajeResId = R.string.stories_notif_shared_msg,
+                mensajeArgs = listOf(_mascotaNombre.value),
                 userId = currentUser.id
             )
         }
@@ -122,9 +123,9 @@ class HistoriaMascotaViewModel @Inject constructor(
             
             if (historia != null) {
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Historia Aprobada! 🌟",
-                    mensaje = "Tu historia sobre ${historia.mascotaNombre} ya es pública.",
-                    tipo = "INFO",
+                    tituloResId = R.string.stories_notif_approved_title,
+                    mensajeResId = R.string.stories_notif_approved_msg,
+                    mensajeArgs = listOf(historia.mascotaNombre),
                     userId = historia.autorId
                 )
             }
@@ -138,9 +139,9 @@ class HistoriaMascotaViewModel @Inject constructor(
 
             if (historia != null) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Historia no aprobada 📝",
-                    mensaje = "Tu historia sobre ${historia.mascotaNombre} no cumple con las normas actuales.",
-                    tipo = "INFO",
+                    tituloResId = R.string.stories_notif_rejected_title,
+                    mensajeResId = R.string.stories_notif_rejected_msg,
+                    mensajeArgs = listOf(historia.mascotaNombre),
                     userId = historia.autorId
                 )
             }

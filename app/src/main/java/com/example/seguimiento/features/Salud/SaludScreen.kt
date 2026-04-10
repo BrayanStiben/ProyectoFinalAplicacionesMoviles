@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.R
 import com.example.seguimiento.Dominio.modelos.*
@@ -67,7 +68,7 @@ fun SaludScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("CARNET DE SALUD 🏥", fontWeight = FontWeight.Black, color = Color.White) },
+                title = { Text(stringResource(R.string.health_title), fontWeight = FontWeight.Black, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
@@ -112,7 +113,7 @@ fun SaludScreen(
             }
 
             Text(
-                text = "Toca el carnet para girarlo 🔄",
+                text = stringResource(R.string.health_flip_hint),
                 fontSize = 12.sp,
                 color = Color.Gray,
                 modifier = Modifier.fillMaxWidth(),
@@ -127,9 +128,9 @@ fun SaludScreen(
                 contentColor = naranjaApp,
                 divider = {}
             ) {
-                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text("Vacunas", fontSize = 12.sp) })
-                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text("Desparasit.", fontSize = 12.sp) })
-                Tab(selected = tabSelected == 2, onClick = { tabSelected = 2 }, text = { Text("Citas", fontSize = 12.sp) })
+                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text(stringResource(R.string.health_tab_vaccines), fontSize = 12.sp) })
+                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text(stringResource(R.string.health_tab_deworming), fontSize = 12.sp) })
+                Tab(selected = tabSelected == 2, onClick = { tabSelected = 2 }, text = { Text(stringResource(R.string.health_tab_appointments), fontSize = 12.sp) })
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -179,13 +180,13 @@ fun CarnetFrontUI(mascota: Mascota?, carnet: CarnetSalud, adoptionReq: AdoptionR
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "CARNÉ DE IDENTIFICACIÓN PARA MASCOTA",
+                        stringResource(R.string.health_carnet_header),
                         color = navyBlue,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 13.sp
                     )
                     Text(
-                        "PERFIL DISPONIBLE PARA CONSULTA EN LÍNEA",
+                        stringResource(R.string.health_carnet_subtitle),
                         color = navyBlue.copy(alpha = 0.7f),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold
@@ -213,10 +214,10 @@ fun CarnetFrontUI(mascota: Mascota?, carnet: CarnetSalud, adoptionReq: AdoptionR
                     Spacer(Modifier.width(20.dp))
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        CardDataRow("Nombre", mascota?.nombre?.uppercase() ?: "---")
-                        CardDataRow("Raza", mascota?.raza?.uppercase() ?: "---")
-                        CardDataRow("Fecha de nacimiento", adoptionReq?.petAge?.uppercase() ?: "---")
-                        CardDataRow("Sexo", if(mascota?.tipo == "Perro") "MACHO" else "HEMBRA")
+                        CardDataRow(stringResource(R.string.health_label_name), mascota?.nombre?.uppercase() ?: "---")
+                        CardDataRow(stringResource(R.string.health_label_breed), mascota?.raza?.uppercase() ?: "---")
+                        CardDataRow(stringResource(R.string.health_label_birth), adoptionReq?.petAge?.uppercase() ?: "---")
+                        CardDataRow(stringResource(R.string.health_label_sex), if(mascota?.tipo == "Perro") stringResource(R.string.health_sex_male) else stringResource(R.string.health_sex_female))
                     }
                 }
 
@@ -225,7 +226,7 @@ fun CarnetFrontUI(mascota: Mascota?, carnet: CarnetSalud, adoptionReq: AdoptionR
                     color = navyBlue
                 ) {
                     Text(
-                        "ESTE DOCUMENTO ACREDITA A SU PORTADOR COMO PROPIETARIO DE LA MASCOTA",
+                        stringResource(R.string.health_carnet_footer),
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
                         color = Color.White,
                         fontSize = 7.sp,
@@ -252,7 +253,7 @@ fun CarnetBackUI(mascota: Mascota?, user: User?, carnet: CarnetSalud, adoptionRe
         Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    "PERFIL DISPONIBLE PARA CONSULTA EN LÍNEA",
+                    stringResource(R.string.health_carnet_subtitle),
                     color = navyBlue,
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
@@ -260,9 +261,9 @@ fun CarnetBackUI(mascota: Mascota?, user: User?, carnet: CarnetSalud, adoptionRe
                 
                 Spacer(Modifier.height(16.dp))
                 
-                Text("Responsable", color = navyBlue, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.health_label_responsible), color = navyBlue, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 Text(user?.name?.uppercase() ?: "---", color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Black)
-                Text("No. Telefónico: ${adoptionReq?.referencePhone ?: "321 XXX XX XX"}", color = Color.Gray, fontSize = 12.sp)
+                Text(stringResource(R.string.health_label_phone, adoptionReq?.referencePhone ?: "321 XXX XX XX"), color = Color.Gray, fontSize = 12.sp)
 
                 Spacer(Modifier.weight(1f))
 
@@ -274,15 +275,15 @@ fun CarnetBackUI(mascota: Mascota?, user: User?, carnet: CarnetSalud, adoptionRe
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text("PET-ID: ${carnet.petId}", fontWeight = FontWeight.Black, fontSize = 14.sp)
-                        Text("PIN: ${carnet.pin}", color = Color.Gray, fontSize = 10.sp)
+                        Text(stringResource(R.string.health_label_pet_id, carnet.petId), fontWeight = FontWeight.Black, fontSize = 14.sp)
+                        Text(stringResource(R.string.health_label_pin, carnet.pin), color = Color.Gray, fontSize = 10.sp)
                     }
                 }
 
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "CONDICIONES DE SALUD - VACUNAS - DESPARASITANTES",
+                    stringResource(R.string.health_footer_categories),
                     color = navyBlue,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Black
@@ -306,7 +307,7 @@ fun <T> ListaSalud(items: List<T>, itemContent: @Composable (T) -> Unit) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Default.Inbox, null, modifier = Modifier.size(64.dp), tint = Color.LightGray)
-                Text("Sin registros médicos", color = Color.Gray, fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.health_empty_records), color = Color.Gray, fontWeight = FontWeight.Medium)
             }
         }
     } else {
@@ -336,9 +337,9 @@ fun ItemVacuna(v: Vacuna) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.CalendarToday, null, modifier = Modifier.size(12.dp), tint = Color.Gray)
                     Spacer(Modifier.width(4.dp))
-                    Text("Aplicada: ${v.fecha}", fontSize = 12.sp, color = Color.Gray)
+                    Text(stringResource(R.string.health_applied_date, v.fecha), fontSize = 12.sp, color = Color.Gray)
                 }
-                Text("Próxima dosis: ${v.proximaDosis}", fontSize = 12.sp, color = Color(0xFFE67E22), fontWeight = FontWeight.Black)
+                Text(stringResource(R.string.health_next_dose, v.proximaDosis), fontSize = 12.sp, color = Color(0xFFE67E22), fontWeight = FontWeight.Black)
             }
         }
     }
@@ -361,7 +362,7 @@ fun ItemDespar(d: Desparasitacion) {
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(d.producto, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF5D2E17))
-                Text("Fecha: ${d.fecha}", fontSize = 12.sp, color = Color.Gray)
+                Text(stringResource(R.string.health_date_label, d.fecha), fontSize = 12.sp, color = Color.Gray)
             }
         }
     }
@@ -426,7 +427,12 @@ fun DialogoRegistro(
         onDismissRequest = onDismiss,
         title = { 
             Text(
-                when(tipo) { 0 -> "Nueva Vacuna"; 1 -> "Nueva Desparasitación"; 2 -> "Nueva Cita"; else -> "" },
+                when(tipo) { 
+                    0 -> stringResource(R.string.health_dialog_new_vaccine)
+                    1 -> stringResource(R.string.health_dialog_new_deworming)
+                    2 -> stringResource(R.string.health_dialog_new_appointment)
+                    else -> "" 
+                },
                 fontWeight = FontWeight.Black,
                 color = Color(0xFF5D2E17)
             ) 
@@ -435,31 +441,31 @@ fun DialogoRegistro(
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 when(tipo) {
                     0 -> {
-                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text("Nombre Vacuna") }, shape = RoundedCornerShape(12.dp))
-                        OutlinedTextField(value = campo2, onValueChange = {}, label = { Text("Fecha hoy") }, shape = RoundedCornerShape(12.dp), enabled = false, readOnly = true)
+                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text(stringResource(R.string.health_label_vaccine_name)) }, shape = RoundedCornerShape(12.dp))
+                        OutlinedTextField(value = campo2, onValueChange = {}, label = { Text(stringResource(R.string.health_label_today)) }, shape = RoundedCornerShape(12.dp), enabled = false, readOnly = true)
                         OutlinedTextField(
-                            value = campo3, onValueChange = {}, label = { Text("Próxima dosis") }, 
+                            value = campo3, onValueChange = {}, label = { Text(stringResource(R.string.health_label_next_dose)) }, 
                             shape = RoundedCornerShape(12.dp), readOnly = true,
                             trailingIcon = { IconButton(onClick = { datePicker.show() }) { Icon(Icons.Default.CalendarMonth, null) } }
                         )
                     }
                     1 -> {
-                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text("Producto") }, shape = RoundedCornerShape(12.dp))
+                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text(stringResource(R.string.health_label_product)) }, shape = RoundedCornerShape(12.dp))
                         OutlinedTextField(
-                            value = campo2, onValueChange = {}, label = { Text("Fecha") }, 
+                            value = campo2, onValueChange = {}, label = { Text(stringResource(R.string.health_label_date)) }, 
                             shape = RoundedCornerShape(12.dp), readOnly = true,
                             trailingIcon = { IconButton(onClick = { datePicker.show() }) { Icon(Icons.Default.CalendarMonth, null) } }
                         )
                     }
                     2 -> {
-                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text("Motivo") }, shape = RoundedCornerShape(12.dp))
+                        OutlinedTextField(value = campo1, onValueChange = { campo1 = it }, label = { Text(stringResource(R.string.health_label_reason)) }, shape = RoundedCornerShape(12.dp))
                         OutlinedTextField(
-                            value = campo2, onValueChange = {}, label = { Text("Fecha") }, 
+                            value = campo2, onValueChange = {}, label = { Text(stringResource(R.string.health_label_date)) }, 
                             shape = RoundedCornerShape(12.dp), readOnly = true,
                             trailingIcon = { IconButton(onClick = { datePicker.show() }) { Icon(Icons.Default.CalendarMonth, null) } }
                         )
                         OutlinedTextField(
-                            value = campo3, onValueChange = {}, label = { Text("Hora") }, 
+                            value = campo3, onValueChange = {}, label = { Text(stringResource(R.string.health_label_hour)) }, 
                             shape = RoundedCornerShape(12.dp), readOnly = true,
                             trailingIcon = { IconButton(onClick = { timePicker.show() }) { Icon(Icons.Default.AccessTime, null) } }
                         )
@@ -467,7 +473,7 @@ fun DialogoRegistro(
                         // Combo para Clínica
                         Box {
                             OutlinedTextField(
-                                value = campo4, onValueChange = {}, label = { Text("Establecimiento") },
+                                value = campo4, onValueChange = {}, label = { Text(stringResource(R.string.health_label_establishment)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp), readOnly = true,
                                 trailingIcon = { IconButton(onClick = { expanded = true }) { Icon(Icons.Default.ArrowDropDown, null) } }
@@ -475,7 +481,7 @@ fun DialogoRegistro(
                             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                                 aliados.forEach { aliado ->
                                     DropdownMenuItem(
-                                        text = { Text("${aliado.nombre} (${if(aliado.tipo == RefugioTipo.VETERINARIA) "Vet" else "Ref"})") },
+                                        text = { Text("${aliado.nombre} (${if(aliado.tipo == RefugioTipo.VETERINARIA) stringResource(R.string.health_vet_short) else stringResource(R.string.health_shelter_short)})") },
                                         onClick = {
                                             campo4 = aliado.nombre
                                             expanded = false
@@ -500,10 +506,10 @@ fun DialogoRegistro(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("GUARDAR") }
+            ) { Text(stringResource(R.string.btn_save_simple)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("CANCELAR", color = Color.Gray) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel), color = Color.Gray) }
         },
         shape = RoundedCornerShape(24.dp),
         containerColor = Color.White

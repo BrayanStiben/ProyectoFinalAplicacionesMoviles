@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 data class Logro(
     val id: String,
-    val titulo: String,
-    val descripcion: String,
+    val tituloResId: Int,
+    val descripcionResId: Int,
     val puntos: Int = 100,
     val categoria: String, // "RESCATE", "COMUNIDAD", "PERFIL", "ADOPCION", "SISTEMA"
     val esNegativo: Boolean = false,

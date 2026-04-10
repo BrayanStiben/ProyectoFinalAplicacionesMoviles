@@ -4,6 +4,8 @@ import com.example.seguimiento.Dominio.modelos.User
 import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.Dominio.modelos.UsuarioEstadisticas
 import com.example.seguimiento.Dominio.repositorios.UserRepository
+import com.example.seguimiento.R
+import com.example.seguimiento.core.utils.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +14,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepositoryImpl @Inject constructor() : UserRepository {
+class UserRepositoryImpl @Inject constructor(
+    private val resourceProvider: ResourceProvider
+) : UserRepository {
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
     override val users: StateFlow<List<User>> = _users.asStateFlow()
@@ -118,10 +122,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         return listOf(
             User(
                 id = "user_colaborador",
-                name = "Carlos Colaborador",
-                city = "Bogotá",
-                departamento = "Cundinamarca",
-                address = "Calle 10",
+                name = resourceProvider.getString(R.string.mock_user_colaborador),
+                city = resourceProvider.getString(R.string.mock_location_bogota),
+                departamento = resourceProvider.getString(R.string.mock_dept_cundinamarca),
+                address = resourceProvider.getString(R.string.mock_address_1),
                 email = "colaborador@gmail.com",
                 password = "123",
                 profilePictureUrl = "https://picsum.photos/200?random=10",
@@ -130,10 +134,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             ),
             User(
                 id = "user_protector",
-                name = "Patricia Protectora",
-                city = "Medellín",
-                departamento = "Antioquia",
-                address = "Carrera 20",
+                name = resourceProvider.getString(R.string.mock_user_protector),
+                city = resourceProvider.getString(R.string.mock_location_medellin),
+                departamento = resourceProvider.getString(R.string.mock_dept_antioquia),
+                address = resourceProvider.getString(R.string.mock_address_2),
                 email = "protector@gmail.com",
                 password = "123",
                 profilePictureUrl = "https://picsum.photos/200?random=11",
@@ -142,10 +146,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             ),
             User(
                 id = "user_heroe",
-                name = "Humberto Héroe",
-                city = "Cali",
-                departamento = "Valle del Cauca",
-                address = "Avenida 30",
+                name = resourceProvider.getString(R.string.mock_user_heroe),
+                city = resourceProvider.getString(R.string.mock_location_cali),
+                departamento = resourceProvider.getString(R.string.mock_dept_valle),
+                address = resourceProvider.getString(R.string.mock_address_3),
                 email = "heroe@gmail.com",
                 password = "123",
                 profilePictureUrl = "https://picsum.photos/200?random=12",
@@ -154,10 +158,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             ),
             User(
                 id = "user_leyenda",
-                name = "Luis Leyenda",
-                city = "Barranquilla",
-                departamento = "Atlántico",
-                address = "Calle 40",
+                name = resourceProvider.getString(R.string.mock_user_leyenda),
+                city = resourceProvider.getString(R.string.mock_location_barranquilla),
+                departamento = resourceProvider.getString(R.string.mock_dept_atlantico),
+                address = resourceProvider.getString(R.string.mock_address_4),
                 email = "leyenda@gmail.com",
                 password = "123",
                 profilePictureUrl = "https://picsum.photos/200?random=13",
@@ -166,10 +170,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             ),
             User(
                 id = "admin_id",
-                name = "Administrador",
-                city = "Armenia",
-                departamento = "Quindío",
-                address = "Oficina Central",
+                name = resourceProvider.getString(R.string.mock_user_admin),
+                city = resourceProvider.getString(R.string.mock_location_armenia),
+                departamento = resourceProvider.getString(R.string.mock_dept_quindio),
+                address = resourceProvider.getString(R.string.mock_address_central),
                 email = "admin@gmail.com",
                 password = "admin",
                 profilePictureUrl = "https://picsum.photos/200?random=1",

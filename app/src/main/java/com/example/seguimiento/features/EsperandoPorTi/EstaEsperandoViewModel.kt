@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
+import com.example.seguimiento.R
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -96,11 +97,12 @@ class EstaEsperandoViewModel @Inject constructor(
         
         mascotaRepository.toggleLike(currentMascotaId, user.id)
         
-        // NOTIFICACIÓN: Like
+        // NOTIFICACIÓN: Like - Usando recursos
         if (m.autorId != user.id) {
             notificacionRepository.addNotificacion(
-                titulo = "¡Nuevo Like! ❤️",
-                mensaje = "A ${user.name} le gusta tu publicación de ${m.nombre}.",
+                tituloResId = R.string.home_notif_like_title,
+                mensajeResId = R.string.notif_like_msg_detailed,
+                mensajeArgs = listOf(user.name, m.nombre),
                 tipo = "POST_VOTADO",
                 userId = m.autorId
             )
@@ -112,11 +114,12 @@ class EstaEsperandoViewModel @Inject constructor(
             val request = adoptionRepository.getById(requestId)
             adoptionRepository.deleteRequest(requestId)
             
-            // NOTIFICACIÓN: Cancelación
+            // NOTIFICACIÓN: Cancelación - Usando recursos
             if (request != null) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Solicitud cancelada ⚠️",
-                    mensaje = "Has cancelado tu solicitud de adopción para ${request.petName}.",
+                    tituloResId = R.string.notif_adoption_cancelled_title,
+                    mensajeResId = R.string.notif_adoption_cancelled_msg,
+                    mensajeArgs = listOf(request.petName),
                     tipo = "INFO",
                     userId = request.userId
                 )
@@ -139,11 +142,12 @@ class EstaEsperandoViewModel @Inject constructor(
             )
             comentarioRepository.agregarComentario(nuevoComentario)
 
-            // NOTIFICACIÓN: Comentario nuevo al dueño de la mascota
+            // NOTIFICACIÓN: Comentario nuevo al dueño de la mascota - Usando recursos
             if (user != null && m.autorId != user.id) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Nuevo comentario 💬",
-                    mensaje = "${user.name} comentó en la publicación de ${m.nombre}.",
+                    tituloResId = R.string.notif_comment_new_title,
+                    mensajeResId = R.string.notif_comment_new_msg,
+                    mensajeArgs = listOf(user.name, m.nombre),
                     tipo = "COMENTARIO_NUEVO",
                     userId = m.autorId
                 )

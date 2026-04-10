@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,14 +87,14 @@ fun GestionUsuariosScreen(
                         }
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            "Gestión de Usuarios 👥",
+                            stringResource(R.string.admin_user_mgmt_title),
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Text(
-                        "Administra accesos y roles de la comunidad",
+                        stringResource(R.string.admin_user_mgmt_subtitle),
                         color = Color.White.copy(0.9f),
                         fontSize = 15.sp,
                         modifier = Modifier.padding(start = 52.dp)
@@ -119,12 +119,12 @@ fun GestionUsuariosScreen(
                 Tab(
                     selected = tabIndex == 0,
                     onClick = { tabIndex = 0 },
-                    text = { Text("ACTIVOS (${state.usuariosTotales})", fontWeight = FontWeight.Bold) }
+                    text = { Text(stringResource(R.string.admin_user_tab_active, state.usuariosTotales), fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = tabIndex == 1,
                     onClick = { tabIndex = 1 },
-                    text = { Text("BANEADOS (${state.usuariosBaneados})", fontWeight = FontWeight.Bold) }
+                    text = { Text(stringResource(R.string.admin_user_tab_banned, state.usuariosBaneados), fontWeight = FontWeight.Bold) }
                 )
             }
 
@@ -135,7 +135,7 @@ fun GestionUsuariosScreen(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.Search, null, tint = Color.LightGray, modifier = Modifier.size(64.dp))
-                        Text("No se encontraron usuarios", color = Color.Gray, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.admin_user_empty_list), color = Color.Gray, fontWeight = FontWeight.Medium)
                     }
                 }
             } else {
@@ -160,15 +160,15 @@ fun GestionUsuariosScreen(
     if (userParaBanear != null) {
         AlertDialog(
             onDismissRequest = { userParaBanear = null; motivoBaneo = "" },
-            title = { Text("Restringir Usuario", fontWeight = FontWeight.Black, color = cafeFuerte) },
+            title = { Text(stringResource(R.string.admin_user_dialog_ban_title), fontWeight = FontWeight.Black, color = cafeFuerte) },
             text = {
                 Column {
-                    Text("Indica el motivo para banear a ${userParaBanear?.name}:", fontSize = 14.sp)
+                    Text(stringResource(R.string.admin_user_dialog_ban_question, userParaBanear?.name ?: ""), fontSize = 14.sp)
                     Spacer(Modifier.height(12.dp))
                     OutlinedTextField(
                         value = motivoBaneo,
                         onValueChange = { motivoBaneo = it },
-                        placeholder = { Text("Ej: Spam, lenguaje ofensivo...") },
+                        placeholder = { Text(stringResource(R.string.admin_user_dialog_ban_placeholder)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -183,10 +183,10 @@ fun GestionUsuariosScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                     shape = RoundedCornerShape(12.dp)
-                ) { Text("BANEAR", fontWeight = FontWeight.Bold) }
+                ) { Text(stringResource(R.string.admin_user_btn_ban), fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
-                TextButton(onClick = { userParaBanear = null; motivoBaneo = "" }) { Text("CANCELAR") }
+                TextButton(onClick = { userParaBanear = null; motivoBaneo = "" }) { Text(stringResource(R.string.btn_cancel)) }
             }
         )
     }
@@ -227,7 +227,7 @@ fun UsuarioCardAdmin(
                     Text(user.email, fontSize = 13.sp, color = Color.Gray)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.LocationOn, null, tint = naranjaApp, modifier = Modifier.size(14.dp))
-                        Text(user.city.ifEmpty { "Sin ubicación" }, fontSize = 12.sp, color = Color.Gray)
+                        Text(user.city.ifEmpty { stringResource(R.string.admin_user_location_undefined) }, fontSize = 12.sp, color = Color.Gray)
                     }
                 }
 
@@ -264,7 +264,7 @@ fun UsuarioCardAdmin(
                         ) {
                             Icon(Icons.Default.Block, null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Banear", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.admin_user_btn_ban_short), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     } else {
                         Button(
@@ -276,7 +276,7 @@ fun UsuarioCardAdmin(
                         ) {
                             Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Activar", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.admin_user_btn_unban), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -291,7 +291,7 @@ fun UsuarioCardAdmin(
                     border = BorderStroke(1.dp, Color.Red.copy(alpha = 0.1f))
                 ) {
                     Text(
-                        text = "Motivo: ${user.banReason}",
+                        text = stringResource(R.string.admin_user_ban_reason_label, user.banReason),
                         modifier = Modifier.padding(10.dp),
                         color = Color.Red,
                         fontSize = 12.sp,

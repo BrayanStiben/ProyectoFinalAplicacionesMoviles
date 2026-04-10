@@ -9,6 +9,12 @@ data class AdoptionUiState(
     val date: String = "",
     val shelter: String = "Refugio PetAdopt",
     val adoptedBy: String = "",
-    val summary: String = "",
-    val adminComment: String = ""
+    // Campos para construcción dinámica de strings en UI
+    val motivation: String = "",
+    val homeType: String = "",
+    val hoursAlone: String = "",
+    val refName: String = "",
+    val refPhone: String = "",
+    val summary: String = "", // Mantener por compatibilidad si es necesario
+    val adminComment: String = "" // Mantener por compatibilidad
 )

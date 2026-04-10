@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.R
@@ -70,7 +71,7 @@ fun PantallaAdopcion(
                 }
             } else {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay mascotas para gestionar", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(id = R.string.pet_mgmt_no_pets), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -88,19 +89,19 @@ fun ReelMascotaAdmin(
     if (showConfirmDelete) {
         AlertDialog(
             onDismissRequest = { showConfirmDelete = false },
-            title = { Text("¿Eliminar mascota?") },
-            text = { Text("Esta acción no se puede deshacer. Se borrará a ${mascota.nombre} del sistema.") },
+            title = { Text(stringResource(id = R.string.pet_mgmt_delete_title)) },
+            text = { Text(stringResource(id = R.string.pet_mgmt_delete_confirm, mascota.nombre)) },
             confirmButton = {
                 TextButton(onClick = { 
                     onEliminar()
                     showConfirmDelete = false
                 }) {
-                    Text("ELIMINAR", color = Color.Red)
+                    Text(stringResource(id = R.string.pet_mgmt_btn_delete), color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDelete = false }) {
-                    Text("CANCELAR")
+                    Text(stringResource(id = R.string.pet_mgmt_btn_cancel))
                 }
             }
         )
@@ -147,13 +148,20 @@ fun ReelMascotaAdmin(
                     else -> Color.Gray
                 }
                 
+                val labelEstado = when(mascota.estado) {
+                    PublicacionEstado.ADOPTADA -> stringResource(R.string.status_adopted)
+                    PublicacionEstado.PENDIENTE -> stringResource(R.string.status_pending)
+                    PublicacionEstado.VERIFICADA -> stringResource(R.string.status_verified)
+                    else -> mascota.estado.name
+                }
+                
                 Surface(
                     color = colorEstado,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     Text(
-                        mascota.estado.name,
+                        labelEstado,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         color = Color.White,
                         fontSize = 10.sp,
@@ -211,7 +219,7 @@ fun ReelMascotaAdmin(
                     shape = CircleShape,
                     modifier = Modifier.size(56.dp)
                 ) {
-                    Icon(Icons.Default.Edit, "Editar")
+                    Icon(Icons.Default.Edit, stringResource(id = R.string.pet_mgmt_edit_desc))
                 }
 
                 FloatingActionButton(
@@ -221,7 +229,7 @@ fun ReelMascotaAdmin(
                     shape = CircleShape,
                     modifier = Modifier.size(56.dp)
                 ) {
-                    Icon(Icons.Default.Delete, "Borrar")
+                    Icon(Icons.Default.Delete, stringResource(id = R.string.pet_mgmt_delete_desc))
                 }
                 
                 Spacer(modifier = Modifier.height(10.dp))

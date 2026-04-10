@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import com.example.seguimiento.R
 
 @HiltViewModel
 class RefugioViewModel @Inject constructor(
@@ -66,8 +67,9 @@ class RefugioViewModel @Inject constructor(
             
             val etiqueta = if (tipo == RefugioTipo.VETERINARIA) "veterinaria" else "refugio"
             notificacionRepository.addNotificacion(
-                titulo = "Registro en revisión ✨",
-                mensaje = "Tu solicitud para registrar la $etiqueta '$nombre' ha sido enviada.",
+                tituloResId = R.string.notif_refugio_review_title,
+                mensajeResId = R.string.notif_refugio_review_msg,
+                mensajeArgs = listOf(etiqueta, nombre),
                 userId = userId
             )
             onSuccess()
@@ -82,8 +84,9 @@ class RefugioViewModel @Inject constructor(
             refugio?.let {
                 val etiqueta = if (it.tipo == RefugioTipo.VETERINARIA) "Veterinaria" else "Refugio"
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Registro Aprobado! 🎉",
-                    mensaje = "Tu $etiqueta '${it.nombre}' ya es visible para toda la comunidad.",
+                    tituloResId = R.string.notif_refugio_approved_title,
+                    mensajeResId = R.string.notif_refugio_approved_msg,
+                    mensajeArgs = listOf(etiqueta, it.nombre),
                     userId = it.autorId
                 )
             }
@@ -98,8 +101,9 @@ class RefugioViewModel @Inject constructor(
             refugio?.let {
                 val etiqueta = if (it.tipo == RefugioTipo.VETERINARIA) "veterinaria" else "refugio"
                 notificacionRepository.addNotificacion(
-                    titulo = "Solicitud Rechazada ❌",
-                    mensaje = "Lo sentimos, el registro de tu $etiqueta '${it.nombre}' no ha sido aprobado.",
+                    tituloResId = R.string.notif_refugio_rejected_title,
+                    mensajeResId = R.string.notif_refugio_rejected_msg,
+                    mensajeArgs = listOf(etiqueta, it.nombre),
                     userId = it.autorId
                 )
             }

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.R
@@ -51,19 +52,23 @@ fun HomeScreen(
 ) {
     val userName by viewModel.userName.collectAsState()
     val userProfilePicture by viewModel.userProfilePicture.collectAsState()
-    val mascotasFeed by viewModel.mascotasFeed.collectAsState()
-    val mascotasRecomendadas by viewModel.mascotasRecomendadas.collectAsState()
     val filtroCategoria by viewModel.filtroCategoria.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
     val notificaciones by viewModel.notificaciones.collectAsState()
+    val mascotasFeed by viewModel.mascotasFeed.collectAsState()
 
-    val categorias = listOf("Todos", "Perro", "Gato", "Otro")
+    val categorias = listOf(
+        R.string.home_category_all to "Todos",
+        R.string.home_category_dog to "Perro",
+        R.string.home_category_cat to "Gato",
+        R.string.home_category_other to "Otro"
+    )
 
     Scaffold(
         bottomBar = {
             BottomNav(
                 selectedItem = 0,
-                onNavigateToHome = { /* Ya estamos aqui */ },
+                onNavigateToHome = { /* Already here */ },
                 onNavigateToFiltros = onNavigateToFiltros,
                 onNavigateToFavoritos = onNavigateToFavoritos,
                 onNavigateToProfile = onNavigateToProfile
@@ -76,7 +81,7 @@ fun HomeScreen(
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
-                Icon(Icons.Default.Add, "Registrar Mascota")
+                Icon(Icons.Default.Add, stringResource(R.string.home_fab_add_pet))
             }
         }
     ) { paddingValues ->
@@ -87,7 +92,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .background(Color(0xFFFDFBFA))
         ) {
-            // --- HEADER LIMPIO ---
+            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -102,9 +107,9 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Hola, $userName 🐾", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Text("¡Encuentra tu mascota ideal!", color = Color.White.copy(0.9f), fontSize = 14.sp)
-                        Text("${currentUser?.points ?: 0} pts", color = Color.White.copy(0.8f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.home_welcome_title, userName), color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.home_welcome_subtitle), color = Color.White.copy(0.9f), fontSize = 14.sp)
+                        Text(stringResource(R.string.home_points_label, currentUser?.points ?: 0), color = Color.White.copy(0.8f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
                     
                     IconButton(onClick = onNavigateToLogros) {
@@ -146,7 +151,7 @@ fun HomeScreen(
                 }
             }
 
-            // --- CATEGORÍAS ---
+            // Quick Categories
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,16 +159,16 @@ fun HomeScreen(
                     .padding(top = 25.dp, bottom = 20.dp, start = 16.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                CategoryItem("Refugios", Color(0xFF00ACC1), Icons.Default.Apartment) { onNavigateToRefugios() }
-                CategoryItem("Tienda", Color(0xFFFF9800), Icons.Default.Storefront) { onNavigateToTienda() }
-                CategoryItem("Nutrición", Color(0xFFFB8C00), Icons.AutoMirrored.Filled.MenuBook) { onNavigateToNutricion() }
-                CategoryItem("Filtros", Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
-                CategoryItem("Citas", Color(0xFF2196F3), Icons.Default.CalendarMonth) { onNavigateToMisAdopciones() }
+                CategoryItem(stringResource(R.string.home_cat_shelters), Color(0xFF00ACC1), Icons.Default.Apartment) { onNavigateToRefugios() }
+                CategoryItem(stringResource(R.string.home_cat_store), Color(0xFFFF9800), Icons.Default.Storefront) { onNavigateToTienda() }
+                CategoryItem(stringResource(R.string.home_cat_nutrition), Color(0xFFFB8C00), Icons.AutoMirrored.Filled.MenuBook) { onNavigateToNutricion() }
+                CategoryItem(stringResource(R.string.home_cat_filters), Color(0xFF7CB342), Icons.Default.Tune) { onNavigateToFiltros() }
+                CategoryItem(stringResource(R.string.home_cat_appointments), Color(0xFF2196F3), Icons.Default.CalendarMonth) { onNavigateToMisAdopciones() }
             }
 
-            // --- RESTO DEL CONTENIDO ---
+            // Section Explore
             Text(
-                "Explorar Publicaciones",
+                stringResource(R.string.home_section_explore),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
@@ -174,12 +179,12 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                items(categorias) { cat ->
-                    val isSelected = (filtroCategoria == cat) || (filtroCategoria == null && cat == "Todos")
+                items(categorias) { (resId, catKey) ->
+                    val isSelected = (filtroCategoria == catKey) || (filtroCategoria == null && catKey == "Todos")
                     FilterChip(
                         selected = isSelected,
-                        onClick = { viewModel.filtrarPorCategoria(if(cat == "Todos") null else cat) },
-                        label = { Text(cat) },
+                        onClick = { viewModel.filtrarPorCategoria(if(catKey == "Todos") null else catKey) },
+                        label = { Text(stringResource(resId)) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = NaranjaApp,
                             selectedLabelColor = Color.White
@@ -190,7 +195,7 @@ fun HomeScreen(
 
             if (mascotasFeed.isEmpty()) {
                 Box(Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
-                    Text("No hay publicaciones en esta categoría", color = Color.Gray)
+                    Text(stringResource(R.string.home_empty_feed), color = Color.Gray)
                 }
             } else {
                 val pagerState = rememberPagerState(pageCount = { mascotasFeed.size })
@@ -210,8 +215,9 @@ fun HomeScreen(
                 }
             }
 
+            // Section Recommended
             Text(
-                "Recomendados para ti",
+                stringResource(R.string.home_section_recommended),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(start = 16.dp, top = 20.dp, bottom = 12.dp)
@@ -220,14 +226,14 @@ fun HomeScreen(
             Row(
                 modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 16.dp, bottom = 20.dp)
             ) {
-                mascotasRecomendadas.forEach { mascota ->
+                mascotasFeed.take(5).forEach { mascota ->
                     PetCard(mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl) {
                         onNavigateToMascotaDestacada(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl)
                     }
                 }
             }
 
-            Text("Historias Felices", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp, bottom = 12.dp))
+            Text(stringResource(R.string.home_section_stories), fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp, bottom = 12.dp))
             HappyStoryCard { onNavigateToHistorias() }
             Spacer(modifier = Modifier.height(30.dp))
         }
@@ -239,10 +245,10 @@ fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClic
     val isLiked = mascota.likerIds.contains(currentUserId)
     val otherLikes = if (isLiked) mascota.totalLikes - 1 else mascota.totalLikes
     val textLikes = when {
-        isLiked && otherLikes > 0 -> "Tú y $otherLikes personas"
-        isLiked -> "Tú"
-        otherLikes > 0 -> "$otherLikes personas"
-        else -> "Sin likes aún"
+        isLiked && otherLikes > 0 -> stringResource(R.string.home_likes_you_and_others, otherLikes)
+        isLiked -> stringResource(R.string.home_likes_only_you)
+        otherLikes > 0 -> stringResource(R.string.home_likes_others, otherLikes)
+        else -> stringResource(R.string.home_likes_none)
     }
 
     Card(
@@ -256,7 +262,9 @@ fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClic
                 model = mascota.imagenUrl,
                 contentDescription = null,
                 modifier = Modifier.size(90.dp).clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.petadopticono),
+                error = painterResource(id = R.drawable.petadopticono)
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
@@ -268,7 +276,7 @@ fun FeedCard(mascota: Mascota, currentUserId: String, onLike: () -> Unit, onClic
             IconButton(onClick = onLike) {
                 Icon(
                     imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Like",
+                    contentDescription = stringResource(R.string.refugios_common_like),
                     tint = if (isLiked) Color.Red else Color.Gray
                 )
             }
@@ -293,12 +301,19 @@ fun CategoryItem(label: String, color: Color, icon: ImageVector, onClick: () -> 
 fun PetCard(nombre: String, edad: String, ciudad: String, url: String, onClick: () -> Unit) {
     Card(shape = RoundedCornerShape(20.dp), modifier = Modifier.width(160.dp).padding(end = 15.dp), colors = CardDefaults.cardColors(containerColor = Color.White), elevation = CardDefaults.cardElevation(4.dp)) {
         Column {
-            AsyncImage(model = url, contentDescription = null, modifier = Modifier.height(130.dp).fillMaxWidth(), contentScale = ContentScale.Crop, placeholder = painterResource(id = R.drawable.petadopticono), error = painterResource(id = R.drawable.petadopticono))
+            AsyncImage(
+                model = url,
+                contentDescription = null,
+                modifier = Modifier.height(130.dp).fillMaxWidth(),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.petadopticono),
+                error = painterResource(id = R.drawable.petadopticono)
+            )
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("$edad • $ciudad", fontSize = 12.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(10.dp) )
-                Button(onClick = onClick, modifier = Modifier.fillMaxWidth().height(36.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(10.dp)) { Text("Adoptar", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                Button(onClick = onClick, modifier = Modifier.fillMaxWidth().height(36.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(10.dp)) { Text(stringResource(R.string.home_btn_adopt), fontSize = 12.sp, fontWeight = FontWeight.Bold) }
             }
         }
     }
@@ -311,8 +326,8 @@ fun HappyStoryCard(onClick: () -> Unit) {
             AsyncImage(model = "https://images.pexels.com/photos/4587995/pexels-photo-4587995.jpeg", contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop, placeholder = painterResource(id = R.drawable.petadopticono), error = painterResource(id = R.drawable.petadopticono))
             Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(0.7f)))))
             Row(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("¡Max encontró hogar!", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Surface(color = Color(0xFFFF6D00), shape = RoundedCornerShape(8.dp)) { Text("Ver más", fontSize = 11.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) }
+                Text(stringResource(R.string.home_story_example_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Surface(color = Color(0xFFFF6D00), shape = RoundedCornerShape(8.dp)) { Text(stringResource(R.string.home_btn_see_more), fontSize = 11.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) }
             }
         }
     }
@@ -322,7 +337,12 @@ fun HappyStoryCard(onClick: () -> Unit) {
 fun BottomNav(selectedItem: Int, onNavigateToHome: () -> Unit = {}, onNavigateToFiltros: () -> Unit = {}, onNavigateToFavoritos: () -> Unit = {}, onNavigateToProfile: () -> Unit = {}) {
     val naranjaNav = Color(0xFFE67E22)
     NavigationBar(containerColor = Color.White) {
-        val items = listOf(Triple("Inicio", Icons.Default.Home, 0), Triple("Buscar", Icons.Default.Search, 1), Triple("Favs", Icons.Default.FavoriteBorder, 2), Triple("Perfil", Icons.Default.Person, 3))
+        val items = listOf(
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
+        )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(
                 icon = { Icon(icon, null) },

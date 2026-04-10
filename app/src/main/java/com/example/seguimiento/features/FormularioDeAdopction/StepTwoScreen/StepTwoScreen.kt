@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,7 @@ fun StepTwoScreen(
                 CenterAlignedTopAppBar(
                     title = { 
                         Text(
-                            "Cuestionario de Adopción", 
+                            stringResource(R.string.form_step2_title), 
                             color = Color.White, 
                             fontWeight = FontWeight.Black,
                             fontSize = 20.sp
@@ -98,16 +99,16 @@ fun StepTwoScreen(
                         Column(modifier = Modifier.padding(24.dp)) {
                             
                             // SECCIÓN 1: DATOS MASCOTA
-                            SectionHeader(Icons.Default.Pets, "Datos de la Mascota")
+                            SectionHeader(Icons.Default.Pets, stringResource(R.string.form_step2_pet_data))
                             
                             CustomInput(
-                                label = "Nombre de la mascota", 
+                                label = stringResource(R.string.form_step2_pet_name_label), 
                                 value = vm.state.petName,
                                 icon = Icons.Default.Badge
                             ) { vm.updateState(vm.state.copy(petName = it)) }
 
                             CustomInput(
-                                label = "Edad aproximada", 
+                                label = stringResource(R.string.form_step2_pet_age_label), 
                                 value = vm.state.petAge,
                                 icon = Icons.Default.Event
                             ) { vm.updateState(vm.state.copy(petAge = it)) }
@@ -115,10 +116,10 @@ fun StepTwoScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 2: HOGAR
-                            SectionHeader(Icons.Default.Home, "Hogar y Familia")
+                            SectionHeader(Icons.Default.Home, stringResource(R.string.form_step2_home_family))
                             
                             CustomInput(
-                                label = "Tipo de vivienda", 
+                                label = stringResource(R.string.form_step2_home_type_label), 
                                 value = vm.state.homeType,
                                 icon = Icons.Default.Apartment
                             ) { vm.updateState(vm.state.copy(homeType = it)) }
@@ -126,10 +127,10 @@ fun StepTwoScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 3: EXPERIENCIA
-                            SectionHeader(Icons.Default.AutoAwesome, "Experiencia")
+                            SectionHeader(Icons.Default.AutoAwesome, stringResource(R.string.form_step2_experience))
                             
                             BooleanOption(
-                                question = "¿Tiene patio cercado?", 
+                                question = stringResource(R.string.form_step2_yard_q), 
                                 value = vm.state.hasFencedYard
                             ) { vm.updateState(vm.state.copy(hasFencedYard = it)) }
 
@@ -165,7 +166,7 @@ fun StepTwoScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                             ) {
-                                Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                                Text(stringResource(R.string.form_btn_continue), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
                             }
                         }
                     }
@@ -222,7 +223,7 @@ fun BooleanOption(question: String, value: Boolean, onValueChange: (Boolean) -> 
             FilterChip(
                 selected = value,
                 onClick = { onValueChange(true) },
-                label = { Text("Sí") },
+                label = { Text(stringResource(R.string.form_yes)) },
                 leadingIcon = if (value) { { Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)) } } else null,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -230,7 +231,7 @@ fun BooleanOption(question: String, value: Boolean, onValueChange: (Boolean) -> 
             FilterChip(
                 selected = !value,
                 onClick = { onValueChange(false) },
-                label = { Text("No") },
+                label = { Text(stringResource(R.string.form_no)) },
                 leadingIcon = if (!value) { { Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp)) } } else null,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -242,10 +243,10 @@ fun BooleanOption(question: String, value: Boolean, onValueChange: (Boolean) -> 
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
         )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(

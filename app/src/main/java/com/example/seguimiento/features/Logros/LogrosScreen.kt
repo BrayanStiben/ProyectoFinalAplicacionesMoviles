@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,13 +80,13 @@ fun LogrosScreen(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Mis Logros 🎖️",
+                            stringResource(R.string.logros_title),
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Colecciona medallas y gana puntos",
+                            stringResource(R.string.logros_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 15.sp
                         )
@@ -109,7 +110,7 @@ fun LogrosScreen(
                 ) {
                     item {
                         Text(
-                            "Desbloquea medallas realizando acciones en la App y gana puntos extra.",
+                            stringResource(R.string.logros_instruction),
                             fontSize = 14.sp,
                             color = cafeApp,
                             fontWeight = FontWeight.Medium,
@@ -170,20 +171,20 @@ fun LogroItemView(logro: com.example.seguimiento.Dominio.modelos.Logro, esObteni
 
             Column(Modifier.weight(1f)) {
                 Text(
-                    logro.titulo,
+                    stringResource(logro.tituloResId),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 17.sp,
                     color = if (esObtenido) cafeApp else Color.Gray
                 )
                 Text(
-                    logro.descripcion,
+                    stringResource(logro.descripcionResId),
                     fontSize = 13.sp,
                     color = if (esObtenido) Color.DarkGray else Color.Gray.copy(0.8f),
                     lineHeight = 18.sp
                 )
                 if (esObtenido) {
                     Text(
-                        "¡COMPLETADO! +100 PUNTOS",
+                        stringResource(R.string.logros_completed_tag),
                         color = naranjaApp,
                         fontWeight = FontWeight.Black,
                         fontSize = 11.sp,

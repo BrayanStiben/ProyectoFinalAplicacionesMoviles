@@ -2,10 +2,14 @@ package com.example.seguimiento.Dominio.modelos
 
 data class Notificacion(
     val id: String,
-    val titulo: String,
-    val mensaje: String,
-    val userId: String = "", // Agregado para filtrar notificaciones por usuario
+    val titulo: String = "",
+    val tituloResId: Int? = null,
+    val tituloArgs: List<String> = emptyList(),
+    val mensaje: String = "",
+    val mensajeResId: Int? = null,
+    val mensajeArgs: List<String> = emptyList(),
+    val userId: String = "", 
     val fecha: Long = System.currentTimeMillis(),
     val leida: Boolean = false,
-    val tipo: String = "INFO" // "INFO", "POST_VOTADO", "COMENTARIO_NUEVO", "ZONA_NUEVA"
+    val tipo: String = "INFO"
 )

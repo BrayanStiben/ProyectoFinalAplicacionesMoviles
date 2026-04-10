@@ -1,10 +1,16 @@
 package com.example.seguimiento.features.login
 
+import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -16,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -24,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun LoginScreen(
@@ -37,7 +45,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // Observamos el estado del login para navegar o mostrar error
     LaunchedEffect(loginState) {
         when (val state = loginState) {
             is LoginResult.Success -> {
@@ -45,7 +52,11 @@ fun LoginScreen(
                 viewModel.resetLoginState()
             }
             is LoginResult.Error -> {
-                snackbarHostState.showSnackbar("❌ ${state.message}")
+                val errorMessage = context.getString(state.messageResId)
+                val prefix = context.getString(com.example.seguimiento.R.string.login_error_prefix, errorMessage)
+                scope.launch {
+                    snackbarHostState.showSnackbar(prefix)
+                }
                 viewModel.resetLoginState()
             }
             null -> {}
@@ -73,6 +84,14 @@ fun LoginScreen(
                 )
             }
 
+            // Selector de Idioma con Banderas
+            LanguageSelector(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+                context = context
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -84,9 +103,9 @@ fun LoginScreen(
                 CustomInputField(
                     value = viewModel.email.value,
                     onValueChange = { viewModel.email.onChange(it) },
-                    placeholder = "usuario",
+                    placeholder = stringResource(id = com.example.seguimiento.R.string.login_user_placeholder),
                     icon = Icons.Default.Person,
-                    error = viewModel.email.error
+                    errorResId = viewModel.email.errorResId
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -94,14 +113,14 @@ fun LoginScreen(
                 CustomInputField(
                     value = viewModel.password.value,
                     onValueChange = { viewModel.password.onChange(it) },
-                    placeholder = "contraseña",
+                    placeholder = stringResource(id = com.example.seguimiento.R.string.login_password_placeholder),
                     icon = Icons.Default.Lock,
                     isPassword = true,
-                    error = viewModel.password.error
+                    errorResId = viewModel.password.errorResId
                 )
 
                 Text(
-                    text = "¿Olvidaste tu contraseña?",
+                    text = stringResource(id = com.example.seguimiento.R.string.login_forgot_password),
                     color = Color(0xFFD37506), 
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -119,8 +138,9 @@ fun LoginScreen(
                         if (viewModel.isFormValid) {
                             viewModel.login()
                         } else {
+                            val msg = context.getString(com.example.seguimiento.R.string.login_form_invalid)
                             scope.launch {
-                                snackbarHostState.showSnackbar("⚠️ Completa los campos correctamente")
+                                snackbarHostState.showSnackbar(msg)
                             }
                         }
                     },
@@ -132,7 +152,7 @@ fun LoginScreen(
                         containerColor = Color(0xFFD37506)
                     )
                 ) {
-                    Text(text = "Iniciar Sesión", fontSize = 18.sp, color = Color.White)
+                    Text(text = stringResource(id = com.example.seguimiento.R.string.login_button), fontSize = 18.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -141,9 +161,9 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "¿No tienes cuenta? ", color = Color.White, fontSize = 14.sp)
+                    Text(text = stringResource(id = com.example.seguimiento.R.string.login_no_account), color = Color.White, fontSize = 14.sp)
                     Text(
-                        text = "Regístrate",
+                        text = stringResource(id = com.example.seguimiento.R.string.login_register_link),
                         color = Color(0xFFD37506),
                         fontWeight = FontWeight.ExtraBold,
                         textDecoration = TextDecoration.Underline,
@@ -156,6 +176,77 @@ fun LoginScreen(
     }
 }
 
+@Composable
+fun LanguageSelector(modifier: Modifier = Modifier, context: Context) {
+    var expanded by remember { mutableStateOf(false) }
+    val currentLocale = context.resources.configuration.locales[0]
+    
+    // Texto y Bandera según idioma actual
+    val (label, flagEmoji) = if (currentLocale.language == "en") {
+        "English" to "🇺🇸"
+    } else {
+        "Español" to "🇪🇸"
+    }
+
+    Box(modifier = modifier) {
+        Surface(
+            modifier = Modifier.clickable { expanded = true },
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White.copy(alpha = 0.9f),
+            shadowElevation = 6.dp,
+            border = BorderStroke(1.dp, Color.LightGray)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = flagEmoji, fontSize = 20.sp)
+                Spacer(Modifier.width(8.dp))
+                Text(text = label, color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.Gray)
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color.White)
+        ) {
+            DropdownMenuItem(
+                leadingIcon = { Text("🇪🇸", fontSize = 18.sp) },
+                text = { Text("Español") },
+                onClick = {
+                    expanded = false
+                    updateLocale(context, "es")
+                }
+            )
+            DropdownMenuItem(
+                leadingIcon = { Text("🇺🇸", fontSize = 18.sp) },
+                text = { Text("English") },
+                onClick = {
+                    expanded = false
+                    updateLocale(context, "en")
+                }
+            )
+        }
+    }
+}
+
+private fun updateLocale(context: Context, lang: String) {
+    val sharedPref = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    sharedPref.edit().putString("language", lang).apply()
+
+    val locale = Locale(lang)
+    Locale.setDefault(locale)
+    val config = Configuration(context.resources.configuration)
+    config.setLocale(locale)
+    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+
+    if (context is Activity) {
+        context.recreate()
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomInputField(
@@ -164,8 +255,9 @@ fun CustomInputField(
     placeholder: String,
     icon: ImageVector,
     isPassword: Boolean = false,
-    error: String? = null
+    errorResId: Int? = null
 ) {
+    val error = errorResId?.let { stringResource(id = it) }
     Column(
         modifier = Modifier
             .fillMaxWidth()

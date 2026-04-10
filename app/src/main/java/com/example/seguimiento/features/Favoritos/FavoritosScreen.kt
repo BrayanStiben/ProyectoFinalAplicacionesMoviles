@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
@@ -72,8 +73,8 @@ fun FavoritosScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Tus favoritos, $userName ❤️", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Text("¡Encuentra el amor de tu vida!", color = Color.White.copy(alpha = 0.9f), fontSize = 14.sp)
+                        Text(stringResource(R.string.favs_title, userName), color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.favs_subtitle), color = Color.White.copy(alpha = 0.9f), fontSize = 14.sp)
                     }
 
                     Box(
@@ -110,7 +111,7 @@ fun FavoritosScreen(
                             modifier = Modifier.size(120.dp).alpha(0.3f)
                         )
                         Spacer(Modifier.height(16.dp))
-                        Text("No tienes favoritos aún", color = Color.Gray, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.favs_empty_title), color = Color.Gray, fontWeight = FontWeight.Medium)
                     }
                 }
             } else {
@@ -193,7 +194,7 @@ fun FavoritePetCard(
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text(
-                                "ADOPTADO",
+                                stringResource(R.string.status_adopted),
                                 color = Color.White,
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
@@ -262,7 +263,7 @@ fun FavoritePetCard(
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text(
-                        if (isAdopted) "Adoptado ✓" else "¡Adoptame!",
+                        if (isAdopted) stringResource(R.string.favs_btn_adopted) else stringResource(R.string.favs_btn_adopt_me),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )

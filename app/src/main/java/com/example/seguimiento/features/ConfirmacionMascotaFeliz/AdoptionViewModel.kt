@@ -37,13 +37,11 @@ class AdoptionViewModel @Inject constructor(
                     petLoc = mascota?.ubicacion ?: "",
                     date = sdf.format(Date(request.timestamp)),
                     adoptedBy = request.userName,
-                    summary = """
-                        Motivación: ${request.motivation}
-                        Vivienda: ${request.homeType}
-                        Horas solo: ${request.hoursAlone}
-                        Referencia: ${request.referenceName} (${request.referencePhone})
-                    """.trimIndent(),
-                    adminComment = "La adopción de la mascota ${request.petName}, de tipo ${request.petType}, ha sido registrada exitosamente a nombre de ${request.userName}. La información ha sido almacenada correctamente en el sistema y el estado de la mascota ha sido actualizado como adoptada. Gracias por completar el proceso de adopción en PetAdopt."
+                    motivation = request.motivation,
+                    homeType = request.homeType,
+                    hoursAlone = request.hoursAlone.toString(),
+                    refName = request.referenceName,
+                    refPhone = request.referencePhone
                 ))
             }
         }
@@ -51,9 +49,5 @@ class AdoptionViewModel @Inject constructor(
 
     fun setRequestId(id: String) {
         _requestId.value = id
-    }
-
-    fun onHistoryClick() {
-        // Implementar si se desea navegar a un detalle histórico
     }
 }

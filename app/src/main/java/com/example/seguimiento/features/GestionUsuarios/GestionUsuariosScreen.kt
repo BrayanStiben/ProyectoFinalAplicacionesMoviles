@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.User
@@ -55,7 +56,7 @@ fun GestionUsuariosScreen(
 
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
-                title = { Text("GESTIÓN DE USUARIOS", fontWeight = FontWeight.Black, fontSize = 18.sp) },
+                title = { Text(stringResource(R.string.admin_user_mgmt_title), fontWeight = FontWeight.Black, fontSize = 18.sp) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -80,12 +81,12 @@ fun GestionUsuariosScreen(
                 Tab(
                     selected = tabIndex == 0,
                     onClick = { tabIndex = 0 },
-                    text = { Text("ACTIVOS (${state.usuariosTotales})", fontWeight = FontWeight.Bold) }
+                    text = { Text(stringResource(R.string.admin_user_tab_active, state.usuariosTotales), fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = tabIndex == 1,
                     onClick = { tabIndex = 1 },
-                    text = { Text("BANEADOS (${state.usuariosBaneados})", fontWeight = FontWeight.Bold) }
+                    text = { Text(stringResource(R.string.admin_user_tab_banned, state.usuariosBaneados), fontWeight = FontWeight.Bold) }
                 )
             }
 
@@ -100,7 +101,7 @@ fun GestionUsuariosScreen(
                 
                 if (listaMostrar.isEmpty()) {
                     Box(Modifier.fillMaxWidth().padding(top = 40.dp), contentAlignment = Alignment.Center) {
-                        Text("No hay usuarios en esta lista", color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.admin_user_empty_list), color = Color.Gray, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     listaMostrar.forEach { user ->
@@ -120,15 +121,15 @@ fun GestionUsuariosScreen(
     if (userParaBanear != null) {
         AlertDialog(
             onDismissRequest = { userParaBanear = null; motivoBaneo = "" },
-            title = { Text("Banear Usuario", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.admin_user_dialog_ban_title), fontWeight = FontWeight.Bold) },
             text = {
                 Column {
-                    Text("¿Por qué deseas banear a ${userParaBanear?.name}?")
+                    Text(stringResource(R.string.admin_user_dialog_ban_question, userParaBanear?.name ?: ""))
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = motivoBaneo,
                         onValueChange = { motivoBaneo = it },
-                        placeholder = { Text("Ej: Incumplimiento de normas") },
+                        placeholder = { Text(stringResource(R.string.admin_user_dialog_ban_placeholder)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -144,12 +145,12 @@ fun GestionUsuariosScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text("Banear", color = Color.White)
+                    Text(stringResource(R.string.admin_user_btn_ban), color = Color.White)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { userParaBanear = null; motivoBaneo = "" }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.btn_cancel))
                 }
             }
         )
@@ -188,7 +189,7 @@ fun UsuarioCardDetallada(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.LocationOn, null, tint = ColorVivoNaranja, modifier = Modifier.size(16.dp))
                         Text(
-                            text = user.city.ifEmpty { "Ubicación no definida" },
+                            text = user.city.ifEmpty { stringResource(R.string.admin_user_location_undefined) },
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = ColorVivoNaranja
@@ -215,11 +216,11 @@ fun UsuarioCardDetallada(
                     if (user.role.name != "ADMIN") {
                         if (!user.isBanned) {
                             IconButton(onClick = { onBanClick(user) }) {
-                                Icon(Icons.Default.Block, "Banear", tint = Color.Red)
+                                Icon(Icons.Default.Block, stringResource(R.string.admin_user_btn_ban), tint = Color.Red)
                             }
                         } else {
                             IconButton(onClick = { onUnbanClick(user) }) {
-                                Icon(Icons.Default.CheckCircle, "Desbanear", tint = ColorVivoVerde)
+                                Icon(Icons.Default.CheckCircle, stringResource(R.string.admin_user_btn_unban), tint = ColorVivoVerde)
                             }
                         }
                     }
@@ -234,7 +235,7 @@ fun UsuarioCardDetallada(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "Motivo: ${user.banReason}",
+                        text = stringResource(R.string.admin_user_ban_reason_label, user.banReason),
                         modifier = Modifier.padding(8.dp),
                         color = Color.Red,
                         fontSize = 12.sp,

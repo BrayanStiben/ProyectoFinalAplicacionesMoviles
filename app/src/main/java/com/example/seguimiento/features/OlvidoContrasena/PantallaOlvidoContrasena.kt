@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +33,7 @@ fun OlvidoContrasenaScreen(
     viewModel: OlvidoContrasenaViewModel = hiltViewModel(),
     onNavigateToCode: (String) -> Unit = {}
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val email by viewModel.email.collectAsState()
     val esValido by viewModel.esEmailValido.collectAsState()
     val codigoGenerado by viewModel.codigoGenerado.collectAsState()
@@ -52,13 +54,13 @@ fun OlvidoContrasenaScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                 ) {
-                    Text("Entendido", color = Color.White)
+                    Text(stringResource(id = R.string.forgot_password_btn_understood), color = Color.White)
                 }
             },
-            title = { Text("Código de Verificación", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(id = R.string.forgot_password_dialog_title), fontWeight = FontWeight.Bold) },
             text = { 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Tu código para restablecer la contraseña es:", textAlign = TextAlign.Center)
+                    Text(stringResource(id = R.string.forgot_password_dialog_text), textAlign = TextAlign.Center)
                     Text(
                         text = codigoGenerado!!, 
                         fontSize = 32.sp, 
@@ -122,14 +124,14 @@ fun OlvidoContrasenaScreen(
                             )
 
                             Text(
-                                text = "Recuperar Contraseña",
+                                text = stringResource(id = R.string.forgot_password_title),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = Color(0xFF333333)
                             )
 
                             Text(
-                                text = "Ingresa tu correo y te mostraremos un código de seguridad.",
+                                text = stringResource(id = R.string.forgot_password_instruction),
                                 textAlign = TextAlign.Center,
                                 fontSize = 15.sp,
                                 color = Color.Gray,
@@ -175,7 +177,8 @@ fun OlvidoContrasenaScreen(
                                         if (viewModel.ejecutarValidacionFinal()) {
                                             viewModel.generarCodigo()
                                         } else {
-                                            snackbarHostState.showSnackbar("Error: Correo inválido")
+                                            val msg = context.getString(R.string.forgot_password_error_invalid_email)
+                                            snackbarHostState.showSnackbar(msg)
                                         }
                                     }
                                 },
@@ -183,7 +186,7 @@ fun OlvidoContrasenaScreen(
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                             ) {
-                                Text("Obtener Código", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(id = R.string.forgot_password_btn_get_code), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

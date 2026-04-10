@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,15 +88,18 @@ fun EstaEsperandoPorTiScreen(
 
     val comentariosPrincipales = todosComentarios.filter { it.parentId == null }
 
+    val favRemovedMsg = stringResource(R.string.pet_detail_fav_removed)
+    val favAddedMsg = stringResource(R.string.pet_detail_fav_added)
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             NavigationBar(containerColor = Color.White, tonalElevation = 0.dp) {
                 val items = listOf(
-                    Triple("Inicio", Icons.Default.Home, 0), 
-                    Triple("Buscar", Icons.Default.Search, 1), 
-                    Triple("Favs", Icons.Default.FavoriteBorder, 2), 
-                    Triple("Perfil", Icons.Default.Person, 3)
+                    Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0), 
+                    Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1), 
+                    Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2), 
+                    Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
                 )
                 items.forEach { (label, icon, index) ->
                     NavigationBarItem(
@@ -131,9 +135,9 @@ fun EstaEsperandoPorTiScreen(
                         Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent), endY = 300f)))
                         
                         if (estadoMascota == PublicacionEstado.ADOPTADA) {
-                            StatusStamp(text = "ADOPTADO", color = Color(0xFF4CAF50))
+                            StatusStamp(text = stringResource(R.string.status_adopted), color = Color(0xFF4CAF50))
                         } else if (isMyRejection) {
-                            StatusStamp(text = "RECHAZADA", color = Color.Red)
+                            StatusStamp(text = stringResource(R.string.status_rejected), color = Color.Red)
                         }
 
                         Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -141,7 +145,7 @@ fun EstaEsperandoPorTiScreen(
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                             }
-                            Text("Detalles de Mascota", modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                            Text(stringResource(R.string.pet_detail_title), modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             Spacer(Modifier.width(48.dp))
                         }
                     }
@@ -175,7 +179,7 @@ fun EstaEsperandoPorTiScreen(
                                 IconButton(
                                     onClick = { 
                                         miViewModel.toggleLike()
-                                        scope.launch { snackbarHostState.showSnackbar(if(isLiked) "Eliminado de favoritos" else "¡Añadido a favoritos!") } 
+                                        scope.launch { snackbarHostState.showSnackbar(if(isLiked) favRemovedMsg else favAddedMsg) } 
                                     }, 
                                     modifier = Modifier.size(48.dp).background(Color(0xFFFEEAE6), CircleShape)
                                 ) {
@@ -192,18 +196,18 @@ fun EstaEsperandoPorTiScreen(
 
                 item {
                     Column(modifier = Modifier.padding(horizontal = 24.dp).offset(y = (-20).dp)) {
-                        Text("Descripción", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = Color(0xFF5D2E17))
+                        Text(stringResource(R.string.pet_detail_description), fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = Color(0xFF5D2E17))
                         Text(text = mascota?.descripcion ?: "...", fontSize = 16.sp, color = Color.DarkGray, lineHeight = 24.sp)
                         Spacer(modifier = Modifier.height(24.dp))
                         
-                        Text("Comentarios (${comentariosPrincipales.size})", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = Color(0xFF5D2E17))
+                        Text(stringResource(R.string.pet_detail_comments, comentariosPrincipales.size), fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = Color(0xFF5D2E17))
                         Spacer(modifier = Modifier.height(8.dp))
 
                         AnimatedVisibility(visible = respondientoA != null) {
                             Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).background(Color(0xFFFFF4C2), RoundedCornerShape(12.dp)).padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.AutoMirrored.Filled.Reply, null, tint = Color(0xFFE67E22), modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text(text = "Respondiendo a ${respondientoA?.autorNombre}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF5D2E17), modifier = Modifier.weight(1f))
+                                Text(text = stringResource(R.string.pet_detail_replying_to, respondientoA?.autorNombre ?: ""), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF5D2E17), modifier = Modifier.weight(1f))
                                 IconButton(onClick = { respondientoA = null }, modifier = Modifier.size(24.dp)) { Icon(Icons.Default.Close, null, modifier = Modifier.size(16.dp)) }
                             }
                         }
@@ -211,7 +215,7 @@ fun EstaEsperandoPorTiScreen(
                         OutlinedTextField(
                             value = nuevoComentarioTexto,
                             onValueChange = { nuevoComentarioTexto = it },
-                            placeholder = { Text(if(respondientoA == null) "Escribe un comentario..." else "Escribe tu respuesta...") },
+                            placeholder = { Text(if(respondientoA == null) stringResource(R.string.pet_detail_comment_placeholder) else stringResource(R.string.pet_detail_reply_placeholder)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(28.dp),
                             trailingIcon = {
@@ -268,7 +272,7 @@ fun EstaEsperandoPorTiScreen(
                                 Icon(Icons.Default.Timer, null, tint = Color.Red)
                                 Spacer(Modifier.width(12.dp))
                                 Text(
-                                    "Penalización activa. Tiempo restante: $penaltyTime",
+                                    stringResource(R.string.pet_detail_penalty_active, penaltyTime),
                                     color = Color.Red,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
@@ -278,11 +282,12 @@ fun EstaEsperandoPorTiScreen(
                     }
 
                     // Botón para cancelar si hay una solicitud activa (Pendiente o Rechazada)
+                    val reqCancelledMsg = stringResource(R.string.pet_detail_request_cancelled)
                     if (req != null && !isMyAdoption && estadoMascota != PublicacionEstado.ADOPTADA) {
                          OutlinedButton(
                             onClick = { 
                                 req?.let { miViewModel.cancelarSolicitud(it.id) }
-                                scope.launch { snackbarHostState.showSnackbar("Solicitud cancelada. Mascota liberada.") }
+                                scope.launch { snackbarHostState.showSnackbar(reqCancelledMsg) }
                             },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp).height(50.dp),
                             border = BorderStroke(2.dp, Color.Red.copy(alpha = 0.6f)),
@@ -291,22 +296,22 @@ fun EstaEsperandoPorTiScreen(
                         ) {
                             Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("CANCELAR SOLICITUD / LIBERAR", fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.pet_detail_btn_cancel_request), fontWeight = FontWeight.Bold)
                         }
                     }
 
                     TextButton(onClick = { onNavigateToHome() }, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
                         Icon(Icons.Default.Home, null, tint = Color(0xFFE67E22))
                         Spacer(Modifier.width(8.dp))
-                        Text("VOLVER AL INICIO", color = Color(0xFFE67E22), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.pet_detail_btn_back_home), color = Color(0xFFE67E22), fontWeight = FontWeight.Bold)
                     }
                     
                     val buttonText = when {
-                        estadoMascota == PublicacionEstado.ADOPTADA && isMyAdoption -> "VER MI CERTIFICADO 🎉"
-                        isMyRejection -> "VER MOTIVO DE RECHAZO ❌"
-                        estadoMascota == PublicacionEstado.ADOPTADA -> "ESTA MASCOTA YA TIENE HOGAR ❤️"
-                        req?.status == AdoptionRequestStatus.PENDING -> "SOLICITUD PENDIENTE ⏳"
-                        else -> "ME INTERESA ADOPTAR 🐾"
+                        estadoMascota == PublicacionEstado.ADOPTADA && isMyAdoption -> stringResource(R.string.pet_detail_btn_view_cert)
+                        isMyRejection -> stringResource(R.string.pet_detail_btn_view_rejection)
+                        estadoMascota == PublicacionEstado.ADOPTADA -> stringResource(R.string.pet_detail_already_adopted)
+                        req?.status == AdoptionRequestStatus.PENDING -> stringResource(R.string.pet_detail_request_pending)
+                        else -> stringResource(R.string.pet_detail_btn_adopt)
                     }
                     val buttonColor = when {
                         estadoMascota == PublicacionEstado.ADOPTADA && isMyAdoption -> Color(0xFF4CAF50)
@@ -323,16 +328,19 @@ fun EstaEsperandoPorTiScreen(
                         else -> !isPenalized
                     }
 
+                    val penaltyMsg = stringResource(R.string.pet_detail_penalty_msg, penaltyTime)
+                    val reviewMsg = stringResource(R.string.pet_detail_request_review_msg)
+
                     Button(
                         onClick = {
                             if (isPenalized) {
-                                scope.launch { snackbarHostState.showSnackbar("Estás penalizado. Tiempo restante: $penaltyTime") }
+                                scope.launch { snackbarHostState.showSnackbar(penaltyMsg) }
                             } else if (isMyRejection) {
                                 rejectedRequest?.let { onNavigateToRechazo(it.id) }
                             } else if (estadoMascota == PublicacionEstado.ADOPTADA) {
                                 if (isMyAdoption) approvedRequest?.let { onNavigateToCertificado(it.id) }
                             } else if (req?.status == AdoptionRequestStatus.PENDING) {
-                                scope.launch { snackbarHostState.showSnackbar("Tu solicitud está siendo revisada.") }
+                                scope.launch { snackbarHostState.showSnackbar(reviewMsg) }
                             } else {
                                 adoptionViewModel.setPetInfo(id, petName, petType, petAge)
                                 onNavigateToRequisitos()
@@ -361,7 +369,7 @@ fun EstaEsperandoPorTiScreen(
                         ) {
                             Icon(Icons.Default.Refresh, null)
                             Spacer(Modifier.width(8.dp))
-                            Text("REINTENTAR CUESTIONARIO", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                            Text(stringResource(R.string.pet_detail_btn_retry), fontWeight = FontWeight.Black, fontSize = 16.sp)
                         }
                     }
                     

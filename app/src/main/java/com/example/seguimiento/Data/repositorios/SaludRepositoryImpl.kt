@@ -3,9 +3,9 @@ package com.example.seguimiento.Data.repositorios
 import com.example.seguimiento.Dominio.modelos.*
 import com.example.seguimiento.Dominio.repositorios.SaludRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +18,8 @@ class SaludRepositoryImpl @Inject constructor(
 
     private val _carnets = MutableStateFlow<Map<String, CarnetSalud>>(emptyMap())
 
-    override fun getCarnetPorMascota(mascotaId: String): StateFlow<CarnetSalud> {
+    override fun getCarnetPorMascota(mascotaId: String): Flow<CarnetSalud> {
+        // Inicializar si no existe
         if (!_carnets.value.containsKey(mascotaId)) {
             val nuevoCarnet = CarnetSalud(
                 mascotaId = mascotaId,
@@ -27,8 +28,11 @@ class SaludRepositoryImpl @Inject constructor(
             )
             _carnets.update { it + (mascotaId to nuevoCarnet) }
         }
-        // Retornamos un StateFlow que observe los cambios específicos de este carnet
-        return MutableStateFlow(_carnets.value[mascotaId] ?: CarnetSalud(mascotaId)).asStateFlow()
+        
+        // Retornamos un Flow que reacciona a cualquier cambio en el mapa _carnets
+        return _carnets.map { mapa -> 
+            mapa[mascotaId] ?: CarnetSalud(mascotaId) 
+        }
     }
 
     override suspend fun agregarVacuna(mascotaId: String, vacuna: Vacuna) {
@@ -36,8 +40,9 @@ class SaludRepositoryImpl @Inject constructor(
             carnet.copy(vacunas = carnet.vacunas + vacuna)
         }
         notificacionRepository.addNotificacion(
-            titulo = "Vacuna Registrada 💉",
-            mensaje = "Se ha registrado la vacuna ${vacuna.nombre}. Próxima dosis: ${vacuna.proximaDosis}.",
+            tituloResId = com.example.seguimiento.R.string.health_notif_vaccine_title,
+            mensajeResId = com.example.seguimiento.R.string.health_notif_vaccine_msg,
+            mensajeArgs = listOf(vacuna.nombre, vacuna.proximaDosis),
             tipo = "SUCCESS"
         )
     }
@@ -53,8 +58,9 @@ class SaludRepositoryImpl @Inject constructor(
             carnet.copy(citas = carnet.citas + cita)
         }
         notificacionRepository.addNotificacion(
-            titulo = "Cita Agendada 📅",
-            mensaje = "Tienes una cita el ${cita.fecha} a las ${cita.hora} en ${cita.clinica}.",
+            tituloResId = com.example.seguimiento.R.string.health_notif_appointment_title,
+            mensajeResId = com.example.seguimiento.R.string.health_notif_appointment_msg,
+            mensajeArgs = listOf(cita.fecha, cita.hora, cita.clinica),
             tipo = "INFO"
         )
     }

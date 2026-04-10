@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
 import com.example.seguimiento.Dominio.modelos.Producto
 import com.example.seguimiento.R
 import com.example.seguimiento.features.home.BottomNav
@@ -82,13 +83,13 @@ fun TiendaScreen(
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Mercado PetAdopt 🦴",
+                            stringResource(R.string.store_market_title),
                             color = Color.White,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Canjea tus puntos por premios",
+                            stringResource(R.string.store_market_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 14.sp
                         )
@@ -116,12 +117,19 @@ fun TiendaScreen(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf("Todos", "Comida", "Juguetes", "Accesorios", "Salud").forEach { cat ->
-                    val isSelected = uiState.categoriaSeleccionada == cat
+                val categorias = listOf(
+                    stringResource(R.string.store_cat_all) to "Todos",
+                    stringResource(R.string.store_cat_food) to "Comida",
+                    stringResource(R.string.store_cat_toys) to "Juguetes",
+                    stringResource(R.string.store_cat_acc) to "Accesorios",
+                    stringResource(R.string.store_cat_health) to "Salud"
+                )
+                categorias.forEach { (label, value) ->
+                    val isSelected = uiState.categoriaSeleccionada == value
                     FilterChip(
                         selected = isSelected,
-                        onClick = { viewModel.seleccionarCategoria(cat) },
-                        label = { Text(cat) },
+                        onClick = { viewModel.seleccionarCategoria(value) },
+                        label = { Text(label) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = naranjaApp,
                             selectedLabelColor = Color.White
@@ -204,7 +212,7 @@ fun TarjetaProducto(producto: Producto, onBuy: () -> Unit) {
                     Spacer(Modifier.height(4.dp))
                     
                     Text(
-                        text = if (estaAgotado) "Sin Stock" else "Stock: ${producto.stock} uds",
+                        text = if (estaAgotado) stringResource(R.string.store_out_of_stock) else stringResource(R.string.store_stock_value, producto.stock),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (estaAgotado) Color.Red else Color.Gray
@@ -220,7 +228,7 @@ fun TarjetaProducto(producto: Producto, onBuy: () -> Unit) {
                         shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(0.dp)
                     ) {
-                        Text(if(estaAgotado) "AGOTADO" else "CANJEAR", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(if(estaAgotado) stringResource(R.string.store_btn_sold_out) else stringResource(R.string.store_btn_redeem), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -240,7 +248,7 @@ fun TarjetaProducto(producto: Producto, onBuy: () -> Unit) {
                             .border(2.dp, Color.White, RoundedCornerShape(8.dp))
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text("AGOTADO", color = Color.White, fontWeight = FontWeight.Black, fontSize = 20.sp)
+                        Text(stringResource(R.string.store_btn_sold_out), color = Color.White, fontWeight = FontWeight.Black, fontSize = 20.sp)
                     }
                 }
             }

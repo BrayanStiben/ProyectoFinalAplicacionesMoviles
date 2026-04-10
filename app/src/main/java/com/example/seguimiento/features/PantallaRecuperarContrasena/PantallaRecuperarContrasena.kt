@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,6 +44,7 @@ fun PantallaRecuperarContrasena(
     
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -53,11 +56,11 @@ fun PantallaRecuperarContrasena(
             onDismissRequest = { onPasswordUpdated() },
             confirmButton = {
                 Button(onClick = { onPasswordUpdated() }) {
-                    Text("Ir al Login")
+                    Text(stringResource(id = R.string.reset_password_btn_go_to_login))
                 }
             },
-            title = { Text("¡Éxito!") },
-            text = { Text("Tu contraseña ha sido actualizada correctamente.") },
+            title = { Text(stringResource(id = R.string.reset_password_success_title)) },
+            text = { Text(stringResource(id = R.string.reset_password_success_text)) },
             shape = RoundedCornerShape(20.dp)
         )
     }
@@ -101,14 +104,14 @@ fun PantallaRecuperarContrasena(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Nueva Contraseña",
+                            text = stringResource(id = R.string.reset_password_title),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF333333)
                         )
 
                         Text(
-                            text = "Ingresa tu nueva contraseña para la cuenta $email",
+                            text = stringResource(id = R.string.reset_password_instruction, email),
                             textAlign = TextAlign.Center,
                             fontSize = 14.sp,
                             color = Color.Gray,
@@ -118,7 +121,7 @@ fun PantallaRecuperarContrasena(
                         OutlinedTextField(
                             value = password,
                             onValueChange = { viewModel.onPasswordChanged(it) },
-                            label = { Text("Contraseña Nueva") },
+                            label = { Text(stringResource(id = R.string.reset_password_label_new)) },
                             modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(20.dp)),
                             shape = RoundedCornerShape(20.dp),
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -141,7 +144,7 @@ fun PantallaRecuperarContrasena(
                         OutlinedTextField(
                             value = confirmPassword,
                             onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-                            label = { Text("Confirmar Contraseña") },
+                            label = { Text(stringResource(id = R.string.reset_password_label_confirm)) },
                             modifier = Modifier.fillMaxWidth().background(Color.White, RoundedCornerShape(20.dp)),
                             shape = RoundedCornerShape(20.dp),
                             visualTransformation = PasswordVisualTransformation(),
@@ -162,7 +165,8 @@ fun PantallaRecuperarContrasena(
                                     if (viewModel.actualizarContrasena()) {
                                         // El dialogo se encarga
                                     } else {
-                                        snackbarHostState.showSnackbar("Las contraseñas no coinciden o están vacías")
+                                        val msg = context.getString(R.string.reset_password_error_mismatch)
+                                        snackbarHostState.showSnackbar(msg)
                                     }
                                 }
                             },
@@ -170,7 +174,7 @@ fun PantallaRecuperarContrasena(
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                         ) {
-                            Text("Guardar Cambios", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(id = R.string.reset_password_btn_save), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

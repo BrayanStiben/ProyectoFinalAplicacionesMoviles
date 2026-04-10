@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 
     class CampoValidado<T>(
         private val initialValue: T,
-        private val validate: (T) -> String?
+        private val validate: (T) -> Int?
     ) {
         // Estado del valor del campo
         var value by mutableStateOf(initialValue)
@@ -16,8 +16,8 @@ import androidx.compose.runtime.setValue
         var showError by mutableStateOf(false)
             private set
 
-        // Mensaje de error. get() para que sea de solo lectura desde el exterior
-        val error: String?
+        // ID del mensaje de error. get() para que sea de solo lectura desde el exterior
+        val errorResId: Int?
             get() = if (showError) validate(value) else null
 
         // Indica si el campo es válido, es de solo lectura desde el exterior

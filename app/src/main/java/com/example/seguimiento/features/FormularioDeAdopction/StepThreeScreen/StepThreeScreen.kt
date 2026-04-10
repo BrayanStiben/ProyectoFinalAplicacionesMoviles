@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,7 @@ fun StepThreeScreen(
                 CenterAlignedTopAppBar(
                     title = { 
                         Text(
-                            "Formulario", 
+                            stringResource(R.string.form_title), 
                             color = Color.White, 
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -98,7 +99,7 @@ fun StepThreeScreen(
                         Column(modifier = Modifier.padding(24.dp)) {
                             
                             Text(
-                                text = "Compromiso y Logística",
+                                text = stringResource(R.string.form_step3_header),
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Black,
                                 color = Color(0xFF5D2E17)
@@ -107,18 +108,18 @@ fun StepThreeScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // SECCIÓN 1: PRESUPUESTO
-                            SectionHeaderLocal(Icons.Default.Payments, "Presupuesto")
+                            SectionHeaderLocal(Icons.Default.Payments, stringResource(R.string.form_step3_budget))
                             BooleanOptionLocal(
-                                question = "¿Es consciente de los gastos de alimentación y veterinario?",
+                                question = stringResource(R.string.form_step3_budget_q),
                                 value = vm.state.awareOfCosts
                             ) { vm.updateState(vm.state.copy(awareOfCosts = it)) }
 
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 2: PLAN DE CONTINGENCIA
-                            SectionHeaderLocal(Icons.Default.HealthAndSafety, "Plan de contingencia")
+                            SectionHeaderLocal(Icons.Default.HealthAndSafety, stringResource(R.string.form_step3_contingency))
                             CustomInputLocalLocal(
-                                label = "¿Quién cuidará de la mascota si viaja o se enferma?", 
+                                label = stringResource(R.string.form_step3_contingency_label), 
                                 value = vm.state.contingencyPlan,
                                 icon = Icons.Default.SupportAgent
                             ) { vm.updateState(vm.state.copy(contingencyPlan = it)) }
@@ -126,18 +127,18 @@ fun StepThreeScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 3: ACUERDO
-                            SectionHeaderLocal(Icons.Default.Gavel, "Acuerdos")
+                            SectionHeaderLocal(Icons.Default.Gavel, stringResource(R.string.form_step3_agreements))
                             BooleanOptionLocal(
-                                question = "Acuerdo de castración/vacunación: ¿Acepta las normas?",
+                                question = stringResource(R.string.form_step3_agreements_q),
                                 value = vm.state.acceptsTerms
                             ) { vm.updateState(vm.state.copy(acceptsTerms = it)) }
 
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // SECCIÓN 4: MUDANZAS
-                            SectionHeaderLocal(Icons.Default.LocalShipping, "Mudanzas")
+                            SectionHeaderLocal(Icons.Default.LocalShipping, stringResource(R.string.form_step3_moving))
                             CustomInputLocalLocal(
-                                label = "¿Qué pasaría con la mascota si se muda?", 
+                                label = stringResource(R.string.form_step3_moving_label), 
                                 value = vm.state.movingPlan,
                                 icon = Icons.Default.Info
                             ) { vm.updateState(vm.state.copy(movingPlan = it)) }
@@ -174,7 +175,7 @@ fun StepThreeScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                             ) {
-                                Text("CONTINUAR", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                                Text(stringResource(R.string.form_btn_continue), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
                             }
                         }
                     }
@@ -230,7 +231,7 @@ fun BooleanOptionLocal(question: String, value: Boolean, onValueChange: (Boolean
             FilterChip(
                 selected = value,
                 onClick = { onValueChange(true) },
-                label = { Text("Sí") },
+                label = { Text(stringResource(R.string.form_yes)) },
                 leadingIcon = if (value) { { Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)) } } else null,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -238,7 +239,7 @@ fun BooleanOptionLocal(question: String, value: Boolean, onValueChange: (Boolean
             FilterChip(
                 selected = !value,
                 onClick = { onValueChange(false) },
-                label = { Text("No") },
+                label = { Text(stringResource(R.string.form_no)) },
                 leadingIcon = if (!value) { { Icon(Icons.Default.Close, null, modifier = Modifier.size(18.dp)) } } else null,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -250,10 +251,10 @@ fun BooleanOptionLocal(question: String, value: Boolean, onValueChange: (Boolean
 fun BottomNav(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
         )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(

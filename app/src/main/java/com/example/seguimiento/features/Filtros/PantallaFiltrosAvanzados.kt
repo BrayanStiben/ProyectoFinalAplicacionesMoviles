@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.seguimiento.R
 import com.example.seguimiento.features.Favoritos.FavoritePetCard
 import com.example.seguimiento.features.home.BottomNav
 
@@ -71,7 +73,7 @@ fun PantallaFiltrosAvanzado(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(20.dp))
                 }
                 Spacer(modifier = Modifier.width(12.dp))
-                Text("Búsqueda Avanzada", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                Text(stringResource(R.string.filters_title), color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
             }
 
             // --- CUERPO CREMA ---
@@ -91,14 +93,14 @@ fun PantallaFiltrosAvanzado(
                 ) {
                     // FILTRO NOMBRE
                     FiltroCheckboxRow(
-                        label = "Filtrar por Nombre",
+                        label = stringResource(R.string.filters_label_name),
                         isEnabled = modelo.habilitarNombre,
                         onToggle = { modelo.habilitarNombre = it }
                     )
                     CustomInputField(
                         value = modelo.nombreFiltro,
                         onValueChange = { modelo.nombreFiltro = it },
-                        placeholder = "Ej: Max, Bella...",
+                        placeholder = stringResource(R.string.filters_placeholder_name),
                         isEnabled = modelo.habilitarNombre
                     )
 
@@ -106,7 +108,7 @@ fun PantallaFiltrosAvanzado(
 
                     // FILTRO TIPO
                     FiltroCheckboxRow(
-                        label = "Filtrar por Tipo de Animal",
+                        label = stringResource(R.string.filters_label_type),
                         isEnabled = modelo.habilitarTipo,
                         onToggle = { modelo.habilitarTipo = it }
                     )
@@ -117,10 +119,17 @@ fun PantallaFiltrosAvanzado(
                             .alphaIfDisabled(!modelo.habilitarTipo), 
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        listOf("Perro", "Gato", "Otro").forEach { tipo ->
+                        listOf(
+                            stringResource(R.string.home_category_dog),
+                            stringResource(R.string.home_category_cat),
+                            stringResource(R.string.home_category_other)
+                        ).forEach { tipo ->
                             ChipFiltro(
                                 texto = tipo,
-                                seleccionado = modelo.tipoSeleccionado == tipo && modelo.habilitarTipo,
+                                seleccionado = (modelo.tipoSeleccionado == tipo || 
+                                              (tipo == stringResource(R.string.home_category_dog) && modelo.tipoSeleccionado == "Perro") ||
+                                              (tipo == stringResource(R.string.home_category_cat) && modelo.tipoSeleccionado == "Gato") ||
+                                              (tipo == stringResource(R.string.home_category_other) && modelo.tipoSeleccionado == "Otro")) && modelo.habilitarTipo,
                                 alClick = { if(modelo.habilitarTipo) modelo.tipoSeleccionado = tipo }
                             )
                         }
@@ -130,14 +139,14 @@ fun PantallaFiltrosAvanzado(
 
                     // FILTRO UBICACIÓN (Municipio o Departamento)
                     FiltroCheckboxRow(
-                        label = "Ubicación (Municipio o Depto)",
+                        label = stringResource(R.string.filters_label_location),
                         isEnabled = modelo.habilitarUbicacion,
                         onToggle = { modelo.habilitarUbicacion = it }
                     )
                     CustomInputField(
                         value = modelo.ubicacionFiltro,
                         onValueChange = { modelo.ubicacionFiltro = it },
-                        placeholder = "Ej: Armenia, Quindío...",
+                        placeholder = stringResource(R.string.filters_placeholder_location),
                         isEnabled = modelo.habilitarUbicacion
                     )
 
@@ -145,14 +154,14 @@ fun PantallaFiltrosAvanzado(
 
                     // FILTRO EDAD
                     FiltroCheckboxRow(
-                        label = "Filtrar por Edad/Años",
+                        label = stringResource(R.string.filters_label_age),
                         isEnabled = modelo.habilitarEdad,
                         onToggle = { modelo.habilitarEdad = it }
                     )
                     CustomInputField(
                         value = modelo.edadFiltro,
                         onValueChange = { modelo.edadFiltro = it },
-                        placeholder = "Ej: 2 años, Cachorro...",
+                        placeholder = stringResource(R.string.filters_placeholder_age),
                         isEnabled = modelo.habilitarEdad
                     )
 
@@ -168,7 +177,7 @@ fun PantallaFiltrosAvanzado(
                         ) {
                             Icon(Icons.Default.FilterAlt, null, tint = Color.White)
                             Spacer(Modifier.width(8.dp))
-                            Text("APLICAR FILTROS", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                            Text(stringResource(R.string.filters_btn_apply), color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
                         }
                     }
                     
@@ -176,7 +185,7 @@ fun PantallaFiltrosAvanzado(
                         onClick = { modelo.limpiarFiltros() },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
-                        Text("Limpiar Filtros", color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.filters_btn_clear), color = Color.Gray, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -184,7 +193,7 @@ fun PantallaFiltrosAvanzado(
                 if (resultados.isNotEmpty()) {
                     HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
                     Text(
-                        "Resultados de búsqueda:",
+                        stringResource(R.string.filters_results_header),
                         modifier = Modifier.padding(start = 24.dp, top = 16.dp, bottom = 8.dp),
                         fontWeight = FontWeight.Bold,
                         color = TextoMarron
@@ -209,7 +218,7 @@ fun PantallaFiltrosAvanzado(
                     }
                 } else if (resultados.isEmpty() && (modelo.habilitarNombre || modelo.habilitarTipo || modelo.habilitarUbicacion || modelo.habilitarEdad)) {
                     Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                        Text("No se encontraron mascotas con esos criterios.", color = Color.Gray)
+                        Text(stringResource(R.string.filters_empty_results), color = Color.Gray)
                     }
                 }
             }

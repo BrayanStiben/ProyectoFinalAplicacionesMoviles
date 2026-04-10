@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -49,11 +50,11 @@ fun EnvioDeCodigoScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF37021))
                 ) {
-                    Text("Continuar", color = Color.White)
+                    Text(stringResource(id = R.string.code_verification_btn_continue), color = Color.White)
                 }
             },
-            title = { Text("Código Correcto", fontWeight = FontWeight.Bold) },
-            text = { Text("Identidad verificada con éxito. Ahora puedes cambiar tu contraseña.", fontSize = 16.sp) },
+            title = { Text(stringResource(id = R.string.code_verification_dialog_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.code_verification_dialog_text), fontSize = 16.sp) },
             shape = RoundedCornerShape(24.dp)
         )
     }
@@ -88,14 +89,14 @@ fun EnvioDeCodigoScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Verificación de Código",
+                        text = stringResource(id = R.string.code_verification_screen_title),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF333333)
                     )
 
                     Text(
-                        text = "Ingresa el código que te mostramos anteriormente para la cuenta $email",
+                        text = stringResource(id = R.string.code_verification_screen_instruction, email),
                         textAlign = TextAlign.Center,
                         color = Color.Gray,
                         modifier = Modifier.padding(vertical = 12.dp)
@@ -141,7 +142,7 @@ fun EnvioDeCodigoScreen(
                     }
 
                     if (viewModel.errorCodigo) {
-                        Text("Código incorrecto, intenta de nuevo", color = Color.Red, fontSize = 12.sp)
+                        Text(stringResource(id = R.string.code_verification_error), color = Color.Red, fontSize = 12.sp)
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -152,13 +153,13 @@ fun EnvioDeCodigoScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF37021)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Verificar Código", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(id = R.string.code_verification_btn_verify_label), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
             }
 
             Text(
-                text = "Volver al inicio de sesión",
+                text = stringResource(id = R.string.code_verification_back_to_login),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 40.dp).clickable { onBackToLogin() }

@@ -10,6 +10,7 @@ import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -77,6 +78,12 @@ class HomeViewModel @Inject constructor(
         _filtroCategoria.value = categoria
     }
 
+    fun asegurarMascotaEnRepo(mascota: Mascota) {
+        if (mascotaRepository.getById(mascota.id) == null) {
+            mascotaRepository.save(mascota)
+        }
+    }
+
     fun toggleLike(id: String) {
         val userId = currentUser.value?.id ?: return
         val mascota = mascotaRepository.getById(id)
@@ -84,10 +91,11 @@ class HomeViewModel @Inject constructor(
         mascotaRepository.toggleLike(id, userId)
         
         // Notificar al autor de la mascota (si no es el mismo usuario)
-        if (mascota != null && mascota.autorId != userId) {
+        if (mascota != null && mascota.autorId != userId && mascota.autorId.isNotEmpty()) {
             notificacionRepository.addNotificacion(
-                titulo = "¡A alguien le gusta tu mascota! ❤️",
-                mensaje = "A un usuario le interesa ${mascota.nombre}. ¡Sigue así!",
+                tituloResId = R.string.home_notif_like_title,
+                mensajeResId = R.string.home_notif_like_msg,
+                mensajeArgs = listOf(mascota.nombre),
                 tipo = "POST_VOTADO",
                 userId = mascota.autorId
             )

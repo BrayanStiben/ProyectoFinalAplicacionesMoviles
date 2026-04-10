@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,7 +75,7 @@ fun StepFourScreen(
             containerColor = Color.Transparent,
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Finalizar Solicitud", color = Color.White, fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.form_step4_title), color = Color.White, fontWeight = FontWeight.Bold) },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = AzulForm.copy(alpha = 0.9f))
                 )
             },
@@ -109,29 +110,29 @@ fun StepFourScreen(
                     ) {
                         Column(modifier = Modifier.padding(24.dp)) {
                             
-                            Text("Formalización Final", fontSize = 22.sp, fontWeight = FontWeight.Black, color = CafeApp)
+                            Text(stringResource(R.string.form_step4_header), fontSize = 22.sp, fontWeight = FontWeight.Black, color = CafeApp)
 
-                            SectionHeaderLocal(Icons.Default.CloudUpload, "Documentación")
-                            FilaCargaArchivoLocal("Foto DNI / Cédula", vm.state.idPhotoUri != null) {
+                            SectionHeaderLocal(Icons.Default.CloudUpload, stringResource(R.string.form_step4_documentation))
+                            FilaCargaArchivoLocal(stringResource(R.string.form_step4_id_photo), vm.state.idPhotoUri != null) {
                                 launcherDni.launch("image/*")
                             }
-                            FilaCargaArchivoLocal("Fotos del hogar/patio", vm.state.yardPhotoUri != null) {
+                            FilaCargaArchivoLocal(stringResource(R.string.form_step4_home_photo), vm.state.yardPhotoUri != null) {
                                 launcherPatio.launch("image/*")
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            SectionHeaderLocal(Icons.Default.Groups, "Referencias")
-                            CustomInputLocalFour("Nombre de Referencia", vm.state.referenceName) { 
+                            SectionHeaderLocal(Icons.Default.Groups, stringResource(R.string.form_step4_references))
+                            CustomInputLocalFour(stringResource(R.string.form_step4_ref_name), vm.state.referenceName) { 
                                 vm.updateState(vm.state.copy(referenceName = it)) 
                             }
-                            CustomInputLocalFour("Teléfono", vm.state.referencePhone) { 
+                            CustomInputLocalFour(stringResource(R.string.form_step4_ref_phone), vm.state.referencePhone) { 
                                 vm.updateState(vm.state.copy(referencePhone = it)) 
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            SectionHeaderLocal(Icons.Default.Gavel, "Términos y Condiciones")
+                            SectionHeaderLocal(Icons.Default.Gavel, stringResource(R.string.form_step4_terms_title))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Checkbox(
                                     checked = vm.state.termsAccepted,
@@ -139,7 +140,7 @@ fun StepFourScreen(
                                     colors = CheckboxDefaults.colors(checkedColor = NaranjaApp)
                                 )
                                 Text(
-                                    "Acepto los términos de adopción responsable.",
+                                    stringResource(R.string.form_step4_terms_accept),
                                     fontSize = 12.sp,
                                     color = Color.Gray
                                 )
@@ -156,7 +157,7 @@ fun StepFourScreen(
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                val textoFirma = if (vm.state.signatureBitmap != null) "FIRMA DIGITAL REGISTRADA ✓" else "FIRMA DIGITAL"
+                                val textoFirma = if (vm.state.signatureBitmap != null) stringResource(R.string.form_step4_signature_done) else stringResource(R.string.form_step4_signature_pending)
                                 Icon(
                                     Icons.Default.Draw, 
                                     contentDescription = null, 
@@ -184,7 +185,7 @@ fun StepFourScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 enabled = vm.state.termsAccepted && vm.state.idPhotoUri != null && vm.state.signatureBitmap != null
                             ) {
-                                Text("ENVIAR SOLICITUD", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
+                                Text(stringResource(R.string.form_btn_send), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, letterSpacing = 1.sp)
                             }
                         }
                     }
@@ -201,7 +202,7 @@ fun StepFourScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Dibuje su firma aquí", fontWeight = FontWeight.Bold, color = CafeApp)
+                    Text(stringResource(R.string.form_step4_sig_dialog_title), fontWeight = FontWeight.Bold, color = CafeApp)
                     
                     val paths = remember { mutableStateListOf<Path>() }
                     var currentPath by remember { mutableStateOf<Path?>(null) }
@@ -235,13 +236,13 @@ fun StepFourScreen(
                             }
                         }
                         if (paths.isEmpty()) {
-                            Text("Firme aquí", modifier = Modifier.align(Alignment.Center), color = Color.LightGray, fontStyle = FontStyle.Italic)
+                            Text(stringResource(R.string.form_step4_sig_dialog_hint), modifier = Modifier.align(Alignment.Center), color = Color.LightGray, fontStyle = FontStyle.Italic)
                         }
                     }
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(onClick = { paths.clear() }, modifier = Modifier.weight(1f)) {
-                            Text("LIMPIAR", color = Color.Red)
+                            Text(stringResource(R.string.btn_delete), color = Color.Red)
                         }
                         Button(
                             onClick = { 
@@ -251,7 +252,7 @@ fun StepFourScreen(
                             },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = VerdeFinal)
-                        ) { Text("GUARDAR") }
+                        ) { Text(stringResource(R.string.btn_save_simple)) }
                     }
                 }
             }
@@ -280,7 +281,7 @@ fun FilaCargaArchivoLocal(label: String, subido: Boolean, onClick: () -> Unit) {
         Text(label, modifier = Modifier.weight(1f), fontSize = 14.sp, color = CafeApp, fontWeight = FontWeight.Medium)
         
         Text(
-            text = if (subido) "Cambiar" else "Subir",
+            text = if (subido) stringResource(R.string.form_btn_change) else stringResource(R.string.form_btn_upload),
             color = NaranjaApp,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
@@ -315,10 +316,10 @@ fun CustomInputLocalFour(label: String, value: String, onValueChange: (String) -
 fun BottomNavLocal(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar(containerColor = Color.White.copy(alpha = 0.9f)) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, 0),
-            Triple("Buscar", Icons.Default.Search, 1),
-            Triple("Favs", Icons.Default.FavoriteBorder, 2),
-            Triple("Perfil", Icons.Default.Person, 3)
+            Triple(stringResource(R.string.nav_home), Icons.Default.Home, 0),
+            Triple(stringResource(R.string.nav_search), Icons.Default.Search, 1),
+            Triple(stringResource(R.string.nav_favorites), Icons.Default.FavoriteBorder, 2),
+            Triple(stringResource(R.string.nav_profile), Icons.Default.Person, 3)
         )
         items.forEach { (label, icon, index) ->
             NavigationBarItem(

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.example.seguimiento.Dominio.modelos.Producto
 import com.example.seguimiento.R
@@ -61,7 +62,7 @@ fun TiendaAdminScreen(
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
-                Icon(Icons.Default.Add, "Subir Producto")
+                Icon(Icons.Default.Add, stringResource(R.string.admin_store_fab_add))
             }
         }
     ) { padding ->
@@ -91,13 +92,13 @@ fun TiendaAdminScreen(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Inventario de Tienda 📦",
+                            stringResource(R.string.admin_store_title),
                             color = Color.White,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Gestiona productos y stock del mercado",
+                            stringResource(R.string.admin_store_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 14.sp
                         )
@@ -107,7 +108,7 @@ fun TiendaAdminScreen(
 
             if (productos.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay productos en la tienda", color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.admin_store_empty), color = Color.Gray, fontWeight = FontWeight.Bold)
                 }
             } else {
                 LazyColumn(
@@ -186,14 +187,14 @@ fun TarjetaProductoAdmin(
             Column(Modifier.weight(1f)) {
                 Text(producto.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = cafeApp)
                 Text("${producto.categoria} • ${producto.precioPuntos} pts", fontSize = 14.sp, color = Color.Gray)
-                Text("Stock disponible: ${producto.stock}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if(producto.stock > 0) Color(0xFF4CAF50) else Color.Red)
+                Text(stringResource(R.string.admin_store_stock_label, producto.stock), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if(producto.stock > 0) Color(0xFF4CAF50) else Color.Red)
             }
             Row {
                 IconButton(onClick = { onEdit(producto) }) {
-                    Icon(Icons.Default.Edit, "Editar", tint = Color(0xFF2196F3))
+                    Icon(Icons.Default.Edit, stringResource(R.string.pet_mgmt_edit_desc), tint = Color(0xFF2196F3))
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red)
+                    Icon(Icons.Default.Delete, stringResource(R.string.pet_mgmt_btn_delete), tint = Color.Red)
                 }
             }
         }
@@ -214,26 +215,32 @@ fun ProductFormDialog(
     var categoria by remember { mutableStateOf(producto?.categoria ?: "Comida") }
     var expanded by remember { mutableStateOf(false) }
     
-    val categorias = listOf("Comida", "Juguetes", "Accesorios", "Salud")
+    val categorias = listOf(
+        stringResource(R.string.store_cat_food) to "Comida",
+        stringResource(R.string.store_cat_toys) to "Juguetes",
+        stringResource(R.string.store_cat_acc) to "Accesorios",
+        stringResource(R.string.store_cat_health) to "Salud"
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if(producto == null) "Nuevo Producto" else "Editar Producto", fontWeight = FontWeight.Black) },
+        title = { Text(if(producto == null) stringResource(R.string.admin_store_dialog_new_title) else stringResource(R.string.admin_store_dialog_edit_title), fontWeight = FontWeight.Black) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
-                OutlinedTextField(value = desc, onValueChange = { desc = it }, label = { Text("Descripción") })
-                OutlinedTextField(value = puntos, onValueChange = { puntos = it }, label = { Text("Puntos (Max 2000)") })
-                OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text("URL de imagen real") })
-                OutlinedTextField(value = stock, onValueChange = { stock = it }, label = { Text("Stock") })
+                OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text(stringResource(R.string.admin_store_label_name)) })
+                OutlinedTextField(value = desc, onValueChange = { desc = it }, label = { Text(stringResource(R.string.admin_store_label_desc)) })
+                OutlinedTextField(value = puntos, onValueChange = { puntos = it }, label = { Text(stringResource(R.string.admin_store_label_points)) })
+                OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text(stringResource(R.string.admin_store_label_url)) })
+                OutlinedTextField(value = stock, onValueChange = { stock = it }, label = { Text(stringResource(R.string.admin_store_label_stock)) })
                 
                 Box {
+                    val labelActual = categorias.find { it.second == categoria }?.first ?: categoria
                     OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text("Categoría: $categoria")
+                        Text(stringResource(R.string.admin_store_btn_category, labelActual))
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        categorias.forEach { cat ->
-                            DropdownMenuItem(text = { Text(cat) }, onClick = { categoria = cat; expanded = false })
+                        categorias.forEach { (label, value) ->
+                            DropdownMenuItem(text = { Text(label) }, onClick = { categoria = value; expanded = false })
                         }
                     }
                 }
@@ -244,8 +251,8 @@ fun ProductFormDialog(
                 val p = puntos.toIntOrNull() ?: 0
                 val s = stock.toIntOrNull() ?: 0
                 onConfirm(nombre, desc, p.coerceAtMost(2000), url, s, categoria)
-            }) { Text(if(producto == null) "AÑADIR" else "GUARDAR") }
+            }) { Text(if(producto == null) stringResource(R.string.admin_store_btn_add) else stringResource(R.string.admin_store_btn_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("CANCELAR") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) } }
     )
 }

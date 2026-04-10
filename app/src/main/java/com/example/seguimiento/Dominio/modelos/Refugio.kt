@@ -1,11 +1,14 @@
 package com.example.seguimiento.Dominio.modelos
 
+import com.example.seguimiento.R
+
 enum class RefugioEstado {
     PENDIENTE, APROBADO, RECHAZADO
 }
 
-enum class RefugioTipo {
-    REFUGIO, VETERINARIA
+enum class RefugioTipo(val resId: Int) {
+    REFUGIO(R.string.refugio_tipo_refugio),
+    VETERINARIA(R.string.refugio_tipo_veterinaria)
 }
 
 data class Refugio(

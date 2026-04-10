@@ -16,12 +16,25 @@ class NotificacionRepositoryImpl @Inject constructor() : NotificacionRepository 
     private val _notificaciones = MutableStateFlow<List<Notificacion>>(emptyList())
     override val notificaciones: StateFlow<List<Notificacion>> = _notificaciones.asStateFlow()
 
-    override fun addNotificacion(titulo: String, mensaje: String, tipo: String, userId: String) {
+    override fun addNotificacion(
+        titulo: String,
+        tituloResId: Int?,
+        tituloArgs: List<String>,
+        mensaje: String,
+        mensajeResId: Int?,
+        mensajeArgs: List<String>,
+        tipo: String,
+        userId: String
+    ) {
         val nueva = Notificacion(
             id = UUID.randomUUID().toString(),
             titulo = titulo,
+            tituloResId = tituloResId,
+            tituloArgs = tituloArgs,
             mensaje = mensaje,
-            userId = userId, // Ahora sí se guarda el userId
+            mensajeResId = mensajeResId,
+            mensajeArgs = mensajeArgs,
+            userId = userId,
             tipo = tipo
         )
         _notificaciones.update { listOf(nueva) + it }

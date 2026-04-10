@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +41,6 @@ fun RefugiosScreen(
 ) {
     val listaRefugios by viewModel.refugiosAprobados.collectAsState()
     val naranjaApp = Color(0xFFE67E22)
-    val cafeApp = Color(0xFF5D2E17)
 
     Scaffold(
         bottomBar = {
@@ -59,7 +59,7 @@ fun RefugiosScreen(
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Registrar Refugio")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.refugios_fab_add))
             }
         }
     ) { padding ->
@@ -89,13 +89,13 @@ fun RefugiosScreen(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Refugios Aliados 🏠",
+                            stringResource(R.string.refugios_title),
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Encuentra lugares de confianza cerca de ti",
+                            stringResource(R.string.refugios_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 15.sp
                         )
@@ -105,7 +105,7 @@ fun RefugiosScreen(
 
             if (listaRefugios.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay refugios verificados aún", color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.refugios_empty), color = Color.Gray, fontWeight = FontWeight.Bold)
                 }
             } else {
                 LazyColumn(
@@ -150,7 +150,7 @@ fun TarjetaRefugioPublica(refugio: Refugio) {
                         Row(Modifier.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Verified, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Verificado", color = Color(0xFF2E7D32), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.refugios_verified), color = Color(0xFF2E7D32), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -174,7 +174,7 @@ fun TarjetaRefugioPublica(refugio: Refugio) {
                     colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("CONTACTAR REFUGIO", fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.refugios_btn_contact), fontWeight = FontWeight.Black)
                 }
             }
         }

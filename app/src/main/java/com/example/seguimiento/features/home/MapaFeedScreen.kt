@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.seguimiento.R
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -30,7 +32,7 @@ fun MapaFeedScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mascotas en el Mapa") },
+                title = { Text(stringResource(R.string.map_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -47,7 +49,7 @@ fun MapaFeedScreen(
                 Marker(
                     state = MarkerState(position = LatLng(mascota.lat, mascota.lng)),
                     title = mascota.nombre,
-                    snippet = "${mascota.tipo} - ${mascota.edad}",
+                    snippet = stringResource(R.string.map_marker_snippet, mascota.tipo, mascota.edad),
                     onInfoWindowClick = {
                         onNavigateToDetail(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl)
                     }

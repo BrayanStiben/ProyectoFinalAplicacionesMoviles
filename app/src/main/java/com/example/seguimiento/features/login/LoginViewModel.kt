@@ -25,16 +25,16 @@ class LoginViewModel @Inject constructor(
 
     val email = CampoValidado("") { value ->
         when {
-            value.isEmpty() -> "El usuario es obligatorio"
-            !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> "Email inválido"
+            value.isEmpty() -> com.example.seguimiento.R.string.error_user_required
+            !Patterns.EMAIL_ADDRESS.matcher(value).matches() -> com.example.seguimiento.R.string.error_email_invalid
             else -> null
         }
     }
 
     val password = CampoValidado("") { value ->
         when {
-            value.isEmpty() -> "La contraseña es obligatoria"
-            value.length < 3 -> "Mínimo 3 caracteres"
+            value.isEmpty() -> com.example.seguimiento.R.string.error_password_required
+            value.length < 3 -> com.example.seguimiento.R.string.error_password_too_short
             else -> null
         }
     }
@@ -56,8 +56,9 @@ class LoginViewModel @Inject constructor(
                     user?.let {
                         logrosRepository.ganarLogro(it.id, "sys_1")
                         notificacionRepository.addNotificacion(
-                            titulo = "¡Hola de nuevo, ${it.name}! 🐾",
-                            mensaje = "Qué alegría verte. Explora las nuevas mascotas que buscan un hogar hoy.",
+                            tituloResId = com.example.seguimiento.R.string.login_welcome_back_title,
+                            tituloArgs = listOf(it.name),
+                            mensajeResId = com.example.seguimiento.R.string.login_welcome_back_message,
                             tipo = "INFO",
                             userId = it.id
                         )
@@ -65,7 +66,7 @@ class LoginViewModel @Inject constructor(
 
                     _loginState.value = LoginResult.Success(isAdmin = user?.role == UserRole.ADMIN)
                 } else {
-                    _loginState.value = LoginResult.Error("Credenciales incorrectas")
+                    _loginState.value = LoginResult.Error(com.example.seguimiento.R.string.error_invalid_credentials)
                 }
             }
         }
@@ -83,5 +84,5 @@ class LoginViewModel @Inject constructor(
 
 sealed class LoginResult {
     data class Success(val isAdmin: Boolean) : LoginResult()
-    data class Error(val message: String) : LoginResult()
+    data class Error(val messageResId: Int) : LoginResult()
 }

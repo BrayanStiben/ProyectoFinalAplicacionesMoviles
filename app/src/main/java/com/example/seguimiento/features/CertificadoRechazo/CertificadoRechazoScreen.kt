@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,10 +55,10 @@ fun CertificadoRechazoScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Constancia de Revisión", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.cert_rechazo_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cerrar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.btn_close))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -92,7 +93,7 @@ fun CertificadoRechazoScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "PETADOPTA",
+                            text = stringResource(id = R.string.cert_rechazo_petadopta),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Black,
                             color = Color.Red,
@@ -134,7 +135,7 @@ fun CertificadoRechazoScreen(
                                         fontSize = 20.sp
                                     )
                                     Text(
-                                        text = "BLOQUEO ACTIVO",
+                                        text = stringResource(id = R.string.cert_rechazo_locked),
                                         color = Color.Red,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold
@@ -146,7 +147,7 @@ fun CertificadoRechazoScreen(
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "CONSTANCIA DE NO APROBACIÓN",
+                            text = stringResource(id = R.string.cert_rechazo_header),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -169,16 +170,27 @@ fun CertificadoRechazoScreen(
                             else -> uiState.userRejectionCount + 1
                         }
 
-                        val textoRechazo = """
-                            La solicitud de adopción de la mascota $petName, de tipo $petType, registrada a nombre de $userName, ha sido revisada por el equipo administrativo el $fechaExacta.
+                        val accountStatus = if (uiState.isPenalized) {
+                            stringResource(id = R.string.cert_rechazo_penalty_status)
+                        } else {
+                            stringResource(id = R.string.cert_rechazo_not_approved_status, attemptNumber)
+                        }
 
-                            Estado de la cuenta: ${if(uiState.isPenalized) "Penalización por reincidencia (3/3 intentos fallidos)" else "Solicitud no aprobada (Intento $attemptNumber/3)"}. 
-                            
-                            ${if (uiState.isPenalized) 
-                                "Debido a que se han alcanzado los 3 intentos fallidos permitidos, su cuenta ha sido inhabilitada para nuevas solicitudes por el tiempo mostrado en el cronómetro superior." 
-                            else 
-                                "Su solicitud no cumple con todos los requisitos en este momento. Puede intentarlo nuevamente con esta u otra mascota cuando se encuentre preparado, siempre que no exceda el límite de intentos ($attemptNumber de 3 utilizados)."}
-                        """.trimIndent()
+                        val additionalInfo = if (uiState.isPenalized) {
+                            stringResource(id = R.string.cert_rechazo_penalty_msg)
+                        } else {
+                            stringResource(id = R.string.cert_rechazo_retry_msg, attemptNumber)
+                        }
+
+                        val textoRechazo = stringResource(
+                            id = R.string.cert_rechazo_body,
+                            petName,
+                            petType,
+                            userName,
+                            fechaExacta,
+                            accountStatus,
+                            additionalInfo
+                        )
 
                         Text(
                             text = textoRechazo,
@@ -190,7 +202,7 @@ fun CertificadoRechazoScreen(
 
                         Spacer(modifier = Modifier.height(32.dp))
 
-                        Text("FIRMA DEL ADMINISTRADOR:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(stringResource(id = R.string.cert_rechazo_signature_label), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         
                         Box(
                             modifier = Modifier
@@ -221,7 +233,7 @@ fun CertificadoRechazoScreen(
                                     viewModel.setSignature(bitmap)
                                 }
                             } else {
-                                Text("Firma validada por el sistema", color = Color.Gray, fontStyle = FontStyle.Italic)
+                                Text(stringResource(id = R.string.cert_rechazo_system_validated), color = Color.Gray, fontStyle = FontStyle.Italic)
                             }
                         }
 
@@ -238,7 +250,7 @@ fun CertificadoRechazoScreen(
                                 if (uiState.isLoading) {
                                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                                 } else {
-                                    Text("CONFIRMAR Y NOTIFICAR RECHAZO", fontWeight = FontWeight.Bold)
+                                    Text(stringResource(id = R.string.cert_rechazo_btn_confirm), fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -252,7 +264,7 @@ fun CertificadoRechazoScreen(
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = if (uiState.isPenalized) "USUARIO PENALIZADO" else "RECHAZO NOTIFICADO",
+                                            text = if (uiState.isPenalized) stringResource(id = R.string.cert_rechazo_user_penalized) else stringResource(id = R.string.cert_rechazo_notified),
                                             color = if (uiState.isPenalized) Color.Red else Color.Black,
                                             fontWeight = FontWeight.Bold,
                                             modifier = Modifier.padding(12.dp),
@@ -267,7 +279,7 @@ fun CertificadoRechazoScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
-                                    Text("SALIR", fontWeight = FontWeight.Bold)
+                                    Text(stringResource(id = R.string.btn_exit), fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -323,10 +335,10 @@ fun SignaturePadRechazo(onSignatureCaptured: (Bitmap) -> Unit) {
             }
         }
         if (paths.isEmpty()) {
-            Text("Firma del administrador (Admin)", modifier = Modifier.align(Alignment.Center), color = Color.LightGray, fontStyle = FontStyle.Italic)
+            Text(stringResource(id = R.string.cert_rechazo_signature_hint), modifier = Modifier.align(Alignment.Center), color = Color.LightGray, fontStyle = FontStyle.Italic)
         }
         IconButton(onClick = { paths.clear() }, modifier = Modifier.align(Alignment.BottomEnd)) {
-            Icon(Icons.Default.Delete, "Limpiar", tint = Color.Red.copy(alpha = 0.5f))
+            Icon(Icons.Default.Delete, stringResource(id = R.string.btn_delete), tint = Color.Red.copy(alpha = 0.5f))
         }
     }
 }

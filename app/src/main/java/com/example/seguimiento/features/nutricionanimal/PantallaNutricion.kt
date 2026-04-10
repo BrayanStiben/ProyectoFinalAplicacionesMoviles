@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,13 +88,13 @@ fun PantallaNutricion(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Guía de Nutrición 🍖",
+                            stringResource(R.string.nutrition_title),
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Consejos para una vida saludable",
+                            stringResource(R.string.nutrition_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 15.sp
                         )
@@ -110,10 +111,10 @@ fun PantallaNutricion(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf(
-                    "Nutrición" to "nutricion",
-                    "Necesidades" to "necesidades",
-                    "Así funciona" to "asifunciona",
-                    "Acerca de" to "acerca"
+                    stringResource(R.string.nutrition_cat_nutri) to "nutricion",
+                    stringResource(R.string.nutrition_cat_needs) to "necesidades",
+                    stringResource(R.string.nutrition_cat_how_it_works) to "asifunciona",
+                    stringResource(R.string.nutrition_cat_about) to "acerca"
                 ).forEach { (label, slug) ->
                     val isSelected = categoriaSel == slug
                     FilterChip(
@@ -158,8 +159,8 @@ fun PantallaNutricion(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Ver más detalles", fontWeight = FontWeight.Bold, color = cafeApp) },
-            text = { Text("¿Deseas abrir el enlace externo para leer más sobre este tema?") },
+            title = { Text(stringResource(R.string.nutrition_dialog_title), fontWeight = FontWeight.Bold, color = cafeApp) },
+            text = { Text(stringResource(R.string.nutrition_dialog_text)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -169,12 +170,12 @@ fun PantallaNutricion(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = naranjaApp)
                 ) {
-                    Text("CONTINUAR", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_continue), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("CANCELAR", color = Color.Gray)
+                    Text(stringResource(R.string.btn_cancel), color = Color.Gray)
                 }
             },
             shape = RoundedCornerShape(20.dp)
@@ -217,13 +218,13 @@ fun TarjetaInformativa(regulacion: Regulacion, onClick: () -> Unit) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = regulacion.titulo, 
+                    text = stringResource(regulacion.tituloRes), 
                     fontWeight = FontWeight.Bold, 
                     fontSize = 17.sp,
                     color = cafeApp
                 )
                 Text(
-                    text = regulacion.subtitulo, 
+                    text = stringResource(regulacion.subtituloRes),
                     fontSize = 13.sp, 
                     color = Color.Gray,
                     maxLines = 2

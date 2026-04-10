@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +43,7 @@ fun GestionHistoriasScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Administrar Stories 🛡️", fontWeight = FontWeight.Black) },
+                title = { Text(stringResource(R.string.admin_stories_title), fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -61,8 +62,8 @@ fun GestionHistoriasScreen(
                 containerColor = Color.White,
                 contentColor = Color(0xFFE67E22)
             ) {
-                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text("Moderación") })
-                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text("Todas") })
+                Tab(selected = tabSelected == 0, onClick = { tabSelected = 0 }, text = { Text(stringResource(R.string.admin_panel_metric_moderation)) })
+                Tab(selected = tabSelected == 1, onClick = { tabSelected = 1 }, text = { Text(stringResource(R.string.home_category_all)) })
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
@@ -82,7 +83,7 @@ fun GestionHistoriasScreen(
 
                 if (filteredList.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No hay historias en esta sección", color = Color.Gray)
+                        Text(stringResource(R.string.admin_stories_empty), color = Color.Gray)
                     }
                 } else {
                     LazyColumn(
@@ -116,6 +117,8 @@ fun GestionHistoriasScreen(
                                         currentUserId = currentUser?.id ?: "",
                                         onLike = { viewModel.toggleLike(historia.id) },
                                         onFollow = { viewModel.toggleFollow(historia.id) },
+                                        onDelete = { viewModel.eliminarHistoria(historia.id) },
+                                        isAdmin = true,
                                         viewModel = viewModel
                                     )
 
@@ -131,7 +134,7 @@ fun GestionHistoriasScreen(
                                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                                                 shape = RoundedCornerShape(12.dp)
                                             ) {
-                                                Text("APROBAR", fontWeight = FontWeight.Black)
+                                                Text(stringResource(R.string.admin_stories_btn_approve), fontWeight = FontWeight.Black)
                                             }
                                             Button(
                                                 onClick = { viewModel.rechazarHistoria(historia.id) },
@@ -139,7 +142,7 @@ fun GestionHistoriasScreen(
                                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)),
                                                 shape = RoundedCornerShape(12.dp)
                                             ) {
-                                                Text("RECHAZAR", fontWeight = FontWeight.Black)
+                                                Text(stringResource(R.string.admin_stories_btn_reject), fontWeight = FontWeight.Black)
                                             }
                                         }
                                     }
@@ -155,10 +158,15 @@ fun GestionHistoriasScreen(
 
 @Composable
 fun StatusBadge(estado: HistoriaEstado) {
-    val (color, texto) = when(estado) {
-        HistoriaEstado.PENDIENTE -> Color(0xFFFFA000) to "PENDIENTE"
-        HistoriaEstado.APROBADA -> Color(0xFF4CAF50) to "APROBADA"
-        HistoriaEstado.RECHAZADA -> Color(0xFFF44336) to "RECHAZADA"
+    val color = when(estado) {
+        HistoriaEstado.PENDIENTE -> Color(0xFFFFA000)
+        HistoriaEstado.APROBADA -> Color(0xFF4CAF50)
+        HistoriaEstado.RECHAZADA -> Color(0xFFF44336)
+    }
+    val texto = when(estado) {
+        HistoriaEstado.PENDIENTE -> stringResource(R.string.profile_stats_pending)
+        HistoriaEstado.APROBADA -> "APROBADA"
+        HistoriaEstado.RECHAZADA -> stringResource(R.string.status_rejected)
     }
     Surface(color = color.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp)) {
         Text(texto, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = color, fontSize = 10.sp, fontWeight = FontWeight.Bold)

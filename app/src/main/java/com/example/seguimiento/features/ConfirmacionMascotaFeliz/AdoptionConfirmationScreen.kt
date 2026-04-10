@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +65,7 @@ fun AdoptionConfirmationScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                     }
                     Text(
-                        "¡ADOPCIÓN EXITOSA!",
+                        stringResource(R.string.adoption_success_title),
                         color = Color.White,
                         fontWeight = FontWeight.Black,
                         fontSize = 18.sp
@@ -132,7 +133,7 @@ fun AdoptionConfirmationScreen(
                                     color = Color(0xFF5D2E17)
                                 )
                                 Text(
-                                    "¡Ya forma parte de tu vida!",
+                                    stringResource(R.string.adoption_success_subtitle),
                                     fontSize = 14.sp,
                                     color = Color.Gray
                                 )
@@ -141,23 +142,34 @@ fun AdoptionConfirmationScreen(
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-                        FilaDetalle(Icons.Default.CalendarToday, "Fecha", uiState.date)
-                        FilaDetalle(Icons.Default.Person, "Adoptante", uiState.adoptedBy)
+                        FilaDetalle(Icons.Default.CalendarToday, stringResource(R.string.adoption_success_label_date), uiState.date)
+                        FilaDetalle(Icons.Default.Person, stringResource(R.string.adoption_success_label_adopter), uiState.adoptedBy)
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            "Resumen de Solicitud:",
+                            stringResource(R.string.adoption_success_section_summary),
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF5D2E17)
                         )
-                        Text(uiState.summary, fontSize = 13.sp, color = Color.DarkGray)
+                        
+                        Column(modifier = Modifier.padding(top = 4.dp)) {
+                            Text(stringResource(R.string.adoption_summary_motivation, uiState.motivation), fontSize = 13.sp, color = Color.DarkGray)
+                            Text(stringResource(R.string.adoption_summary_housing, uiState.homeType), fontSize = 13.sp, color = Color.DarkGray)
+                            Text(stringResource(R.string.adoption_summary_hours, uiState.hoursAlone), fontSize = 13.sp, color = Color.DarkGray)
+                            Text(stringResource(R.string.adoption_summary_reference, uiState.refName, uiState.refPhone), fontSize = 13.sp, color = Color.DarkGray)
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Surface(color = Color(0xFFE8F5E9), shape = RoundedCornerShape(12.dp)) {
                             Text(
-                                text = uiState.adminComment,
+                                text = stringResource(
+                                    R.string.adoption_admin_comment_template,
+                                    uiState.petName,
+                                    uiState.petType,
+                                    uiState.adoptedBy
+                                ),
                                 modifier = Modifier.padding(12.dp),
                                 fontSize = 14.sp,
                                 color = Color(0xFF2E7D32),
@@ -173,7 +185,7 @@ fun AdoptionConfirmationScreen(
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
                             shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text("VOLVER AL INICIO", fontWeight = FontWeight.ExtraBold)
+                            Text(stringResource(R.string.adoption_success_btn_back), fontWeight = FontWeight.ExtraBold)
                         }
                     }
                 }

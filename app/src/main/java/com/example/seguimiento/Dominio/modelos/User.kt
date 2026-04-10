@@ -2,6 +2,8 @@ package com.example.seguimiento.Dominio.modelos
 
 import androidx.compose.ui.graphics.Color
 
+import com.example.seguimiento.R
+
 enum class UserRole {
     USER, MODERATOR, ADMIN
 }
@@ -34,12 +36,12 @@ data class User(
         else -> 1           // Novato
     }
 
-    fun getLevelName(): String = when (level) {
-        1 -> "Novato"
-        2 -> "Colaborador"
-        3 -> "Protector"
-        4 -> "Héroe"
-        else -> "Leyenda"
+    fun getLevelNameResId(): Int = when (level) {
+        1 -> R.string.profile_level_1
+        2 -> R.string.profile_level_2
+        3 -> R.string.profile_level_3
+        4 -> R.string.profile_level_4
+        else -> R.string.profile_level_5
     }
 
     fun getLevelColor(): Color = when (level) {

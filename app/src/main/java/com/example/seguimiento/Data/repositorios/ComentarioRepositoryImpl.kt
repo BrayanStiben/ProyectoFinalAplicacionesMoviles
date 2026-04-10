@@ -37,8 +37,9 @@ class ComentarioRepositoryImpl @Inject constructor(
         if (mascota != null) {
             if (mascota.autorId != comentario.autorId) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Nuevo comentario",
-                    mensaje = "${comentario.autorNombre} comentó en tu publicación de ${mascota.nombre}",
+                    tituloResId = com.example.seguimiento.R.string.notif_comment_new_title,
+                    mensajeResId = com.example.seguimiento.R.string.notif_comment_new_msg,
+                    mensajeArgs = listOf(comentario.autorNombre, mascota.nombre),
                     tipo = "INFO",
                     userId = mascota.autorId
                 )
@@ -47,8 +48,9 @@ class ComentarioRepositoryImpl @Inject constructor(
             val historia = historiaRepository.getById(comentario.targetId)
             if (historia != null && historia.autorId != comentario.autorId) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Nuevo comentario en tu historia",
-                    mensaje = "${comentario.autorNombre} comentó en tu historia de ${historia.mascotaNombre}",
+                    tituloResId = com.example.seguimiento.R.string.notif_comment_story_title,
+                    mensajeResId = com.example.seguimiento.R.string.notif_comment_story_msg,
+                    mensajeArgs = listOf(comentario.autorNombre, historia.mascotaNombre),
                     tipo = "INFO",
                     userId = historia.autorId
                 )
@@ -60,8 +62,9 @@ class ComentarioRepositoryImpl @Inject constructor(
             val padre = _comentarios.value.find { it.id == comentario.parentId }
             if (padre != null && padre.autorId != comentario.autorId) {
                 notificacionRepository.addNotificacion(
-                    titulo = "Nueva respuesta",
-                    mensaje = "${comentario.autorNombre} respondió a tu comentario",
+                    tituloResId = com.example.seguimiento.R.string.notif_comment_reply_title,
+                    mensajeResId = com.example.seguimiento.R.string.notif_comment_reply_msg,
+                    mensajeArgs = listOf(comentario.autorNombre),
                     tipo = "INFO",
                     userId = padre.autorId
                 )
@@ -81,8 +84,8 @@ class ComentarioRepositoryImpl @Inject constructor(
         
         comentario?.let {
             notificacionRepository.addNotificacion(
-                titulo = "Comentario Moderado",
-                mensaje = "Tu comentario ha sido editado por un moderador.",
+                tituloResId = com.example.seguimiento.R.string.notif_comment_moderated_title,
+                mensajeResId = com.example.seguimiento.R.string.notif_comment_moderated_msg,
                 tipo = "WARNING",
                 userId = it.autorId
             )

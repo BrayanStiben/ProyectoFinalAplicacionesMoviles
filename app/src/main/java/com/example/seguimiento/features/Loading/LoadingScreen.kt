@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ fun LoadingScreen(
             )
 
             Text(
-                text = "Buscando nuevos amigos...",
+                text = stringResource(id = R.string.loading_searching),
                 color = TextPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
@@ -93,7 +94,7 @@ fun LoadingScreen(
             )
 
             Text(
-                text = "Estamos preparando todo para ti.",
+                text = stringResource(id = R.string.loading_preparing),
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
@@ -108,14 +109,14 @@ fun LoadingScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "PetAdopta App v1.2",
+                    text = stringResource(id = R.string.app_version),
                     color = TextPrimary.copy(alpha = 0.6f),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
 
                 Text(
-                    text = "© Copyright PetAdopta apy Inc.",
+                    text = stringResource(id = R.string.app_copyright),
                     color = TextPrimary.copy(alpha = 0.5f),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal

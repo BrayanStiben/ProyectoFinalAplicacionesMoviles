@@ -5,6 +5,7 @@ import com.example.seguimiento.Dominio.modelos.Producto
 import com.example.seguimiento.Dominio.repositorios.TiendaRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.core.utils.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,8 @@ interface OpenPetFoodFactsApi {
 @Singleton
 class TiendaRepositoryImpl @Inject constructor(
     private val userRepository: UserRepository,
-    private val notificacionRepository: NotificacionRepository
+    private val notificacionRepository: NotificacionRepository,
+    private val resourceProvider: ResourceProvider
 ) : TiendaRepository {
 
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
@@ -76,9 +78,9 @@ class TiendaRepositoryImpl @Inject constructor(
                 val allFetched = mutableListOf<Producto>()
 
                 val djQueries = mapOf(
-                    "Juguetes" to "pet",
-                    "Accesorios" to "furniture",
-                    "Salud" to "care"
+                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "pet",
+                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc) to "furniture",
+                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "care"
                 )
                 
                 djQueries.forEach { (categoria, query) ->
@@ -104,6 +106,10 @@ class TiendaRepositoryImpl @Inject constructor(
 
                 try {
                     val petFoodQueries = listOf("dog food", "cat food", "pet treat")
+                    val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
+                    val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
+                    val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
+
                     petFoodQueries.forEach { query ->
                         try {
                             val responsePf = petFoodApi.search(query, limit = 10)
@@ -111,12 +117,12 @@ class TiendaRepositoryImpl @Inject constructor(
                                 allFetched.add(
                                     Producto(
                                         id = "pf_${query}_$index",
-                                        nombre = (item.product_name ?: "Alimento Premium").take(30),
-                                        descripcion = "Nutrición balanceada formulada para el bienestar de tu mascota.",
+                                        nombre = (item.product_name ?: defaultFoodName).take(30),
+                                        descripcion = defaultFoodDesc,
                                         precioPuntos = (200..1500).random(),
                                         imagenUrl = item.image_url!!.replace("http://", "https://"),
                                         stock = (1..15).random(),
-                                        categoria = "Comida"
+                                        categoria = foodCategory
                                     )
                                 )
                             }
@@ -179,8 +185,9 @@ class TiendaRepositoryImpl @Inject constructor(
                     val newStock = it.stock - 1
                     if (newStock == 0) {
                         notificacionRepository.addNotificacion(
-                            titulo = "¡Producto Agotado!",
-                            mensaje = "El producto ${it.nombre} se ha quedado sin stock.",
+                            tituloResId = com.example.seguimiento.R.string.store_notif_out_of_stock_title,
+                            mensajeResId = com.example.seguimiento.R.string.store_notif_out_of_stock_msg,
+                            mensajeArgs = listOf(it.nombre),
                             tipo = "WARNING"
                         )
                     }
@@ -190,8 +197,9 @@ class TiendaRepositoryImpl @Inject constructor(
         }
 
         notificacionRepository.addNotificacion(
-            titulo = "Compra Exitosa",
-            mensaje = "Has canjeado ${producto.nombre} por ${producto.precioPuntos} puntos.",
+            tituloResId = com.example.seguimiento.R.string.store_notif_success_title,
+            mensajeResId = com.example.seguimiento.R.string.store_notif_success_msg,
+            mensajeArgs = listOf(producto.nombre, producto.precioPuntos.toString()),
             tipo = "SUCCESS",
             userId = userId
         )

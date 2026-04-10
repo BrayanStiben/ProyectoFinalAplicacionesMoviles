@@ -45,10 +45,20 @@ class FiltroViewModel @Inject constructor(
             val cumpleNombre = !habilitarNombre || 
                 normalizar(mascota.nombre).contains(normalizar(nombreFiltro), ignoreCase = true)
             
-            val cumpleTipo = !habilitarTipo || if (tipoSeleccionado == "Otro") {
-                mascota.tipo != "Perro" && mascota.tipo != "Gato"
-            } else {
-                mascota.tipo.equals(tipoSeleccionado, ignoreCase = true)
+            val cumpleTipo = !habilitarTipo || when {
+                tipoSeleccionado == "Otro" || tipoSeleccionado == "Other" -> {
+                    mascota.tipo != "Perro" && mascota.tipo != "Gato" && 
+                    mascota.tipo != "Dog" && mascota.tipo != "Cat"
+                }
+                tipoSeleccionado == "Perro" || tipoSeleccionado == "Dog" -> {
+                    mascota.tipo.equals("Perro", ignoreCase = true) || mascota.tipo.equals("Dog", ignoreCase = true)
+                }
+                tipoSeleccionado == "Gato" || tipoSeleccionado == "Cat" -> {
+                    mascota.tipo.equals("Gato", ignoreCase = true) || mascota.tipo.equals("Cat", ignoreCase = true)
+                }
+                else -> {
+                    mascota.tipo.equals(tipoSeleccionado, ignoreCase = true)
+                }
             }
 
             val cumpleUbicacion = !habilitarUbicacion || 

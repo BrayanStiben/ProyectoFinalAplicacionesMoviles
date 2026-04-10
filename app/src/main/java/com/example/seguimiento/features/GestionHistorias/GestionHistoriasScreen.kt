@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +41,7 @@ fun GestionHistoriasScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestionar Historias", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.admin_stories_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -66,7 +67,7 @@ fun GestionHistoriasScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.HistoryEdu, null, modifier = Modifier.size(64.dp), tint = Color.Gray)
                         Spacer(Modifier.height(16.dp))
-                        Text("No hay historias pendientes", color = Color.Gray, fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.admin_stories_empty), color = Color.Gray, fontWeight = FontWeight.Medium)
                     }
                 }
             } else {
@@ -95,7 +96,7 @@ fun GestionHistoriasScreen(
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Column {
                                         Text(historia.mascotaNombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                                        Text("Autor: ${historia.autorNombre}", fontSize = 14.sp, color = Color.Gray)
+                                        Text(stringResource(R.string.admin_stories_author, historia.autorNombre), fontSize = 14.sp, color = Color.Gray)
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -109,14 +110,14 @@ fun GestionHistoriasScreen(
                                         onClick = { viewModel.rechazarHistoria(historia.id) },
                                         modifier = Modifier.background(Color.Red.copy(alpha = 0.1f), CircleShape)
                                     ) {
-                                        Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = Color.Red)
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.admin_stories_btn_reject), tint = Color.Red)
                                     }
                                     Spacer(modifier = Modifier.width(16.dp))
                                     IconButton(
                                         onClick = { viewModel.aprobarHistoria(historia.id) },
                                         modifier = Modifier.background(Color(0xFF00C853).copy(alpha = 0.1f), CircleShape)
                                     ) {
-                                        Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = Color(0xFF00C853))
+                                        Icon(Icons.Default.Check, contentDescription = stringResource(R.string.admin_stories_btn_approve), tint = Color(0xFF00C853))
                                     }
                                 }
                             }

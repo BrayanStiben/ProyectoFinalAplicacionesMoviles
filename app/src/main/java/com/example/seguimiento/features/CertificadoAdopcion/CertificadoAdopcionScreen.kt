@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,10 +51,10 @@ fun CertificadoAdopcionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Certificado de Adopción", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.cert_adopcion_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onFinish) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cerrar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.btn_close))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -85,7 +86,7 @@ fun CertificadoAdopcionScreen(
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text(
-                            text = "PETADOPTA",
+                            text = stringResource(id = R.string.cert_rechazo_petadopta),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Black,
                             color = Color(0xFFE67E22),
@@ -96,7 +97,7 @@ fun CertificadoAdopcionScreen(
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "CERTIFICADO FORMAL DE ADOPCIÓN",
+                            text = stringResource(id = R.string.cert_adopcion_header),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -109,25 +110,22 @@ fun CertificadoAdopcionScreen(
                         val fechaActual = sdf.format(Date(req?.timestamp ?: System.currentTimeMillis()))
                         val masc = uiState.mascota
 
-                        val petName = req?.petName ?: masc?.nombre ?: "[Nombre]"
-                        val petType = req?.petType ?: masc?.tipo ?: "[Tipo]"
-                        val petRaza = masc?.raza ?: "[Raza]"
-                        val petAge = req?.petAge ?: masc?.edad ?: "[Edad]"
-                        val petIdStr = req?.mascotaId ?: masc?.id ?: "[ID]"
+                        val petName = req?.petName ?: masc?.nombre ?: stringResource(id = R.string.placeholder_name)
+                        val petType = req?.petType ?: masc?.tipo ?: stringResource(id = R.string.placeholder_type)
+                        val petRaza = masc?.raza ?: stringResource(id = R.string.placeholder_breed)
+                        val petAge = req?.petAge ?: masc?.edad ?: stringResource(id = R.string.placeholder_age)
+                        val petIdStr = req?.mascotaId ?: masc?.id ?: stringResource(id = R.string.placeholder_id)
                         
-                        val userName = req?.userName ?: "[Nombre del Adoptante]"
-                        val userAddressPart = if (req?.userAddress?.isNotBlank() == true) ", residente en ${req.userAddress}" else ""
-                        val userEmailPart = if (req?.userEmail?.isNotBlank() == true) " y correo electrónico ${req.userEmail}" else ""
+                        val userName = req?.userName ?: stringResource(id = R.string.placeholder_adopter)
+                        val userAddressPart = if (req?.userAddress?.isNotBlank() == true) stringResource(id = R.string.cert_adopcion_residente, req.userAddress) else ""
+                        val userEmailPart = if (req?.userEmail?.isNotBlank() == true) stringResource(id = R.string.cert_adopcion_email, req.userEmail) else ""
 
-                        val textoCertificado = """
-                            Por medio del presente documento, PetAdopta certifica que, luego de haberse llevado a cabo el proceso de evaluación, verificación de información y aprobación correspondiente, se ha formalizado exitosamente la adopción de la mascota descrita a continuación, cumpliendo con los lineamientos, políticas y requisitos establecidos por nuestra organización para garantizar el bienestar, protección y cuidado responsable del animal entregado en adopción.
-
-                            La mascota identificada con el nombre de $petName, de tipo $petType, raza $petRaza, edad aproximada $petAge, y registrada bajo el código o identificador $petIdStr, ha sido entregada en adopción al(la) ciudadano(a) $userName$userAddressPart$userEmailPart, quien ha manifestado de manera voluntaria, consciente y responsable su compromiso de brindarle un hogar digno, seguro y adecuado.
-
-                            Mediante la firma y aceptación de este proceso, el(la) adoptante declara haber recibido a la mascota en condiciones aptas, así como haber sido informado(a) sobre sus necesidades básicas, cuidados generales, alimentación, controles veterinarios, esquema de vacunación (si aplica), desparasitación (si aplica), recomendaciones de adaptación al nuevo hogar y demás observaciones relevantes para asegurar su correcto bienestar físico y emocional.
-
-                            Este certificado deja constancia de que la adopción fue realizada en fecha $fechaActual, quedando registrada oficialmente en la plataforma y en los archivos administrativos de PetAdopta, como evidencia del proceso de entrega responsable de la mascota anteriormente descrita.
-                        """.trimIndent()
+                        val textoCertificado = stringResource(
+                            id = R.string.cert_adopcion_body,
+                            petName, petType, petRaza, petAge, petIdStr,
+                            userName, userAddressPart, userEmailPart,
+                            fechaActual
+                        )
 
                         Text(
                             text = textoCertificado,
@@ -139,7 +137,11 @@ fun CertificadoAdopcionScreen(
 
                         Spacer(modifier = Modifier.height(32.dp))
 
-                        Text("FIRMA DE LA ADMINISTRACIÓN:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(
+                            text = stringResource(id = R.string.cert_adopcion_signature_label),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
                         
                         Box(
                             modifier = Modifier
@@ -171,7 +173,7 @@ fun CertificadoAdopcionScreen(
                                     viewModel.setSignature(bitmap)
                                 }
                             } else {
-                                Text("Firma pendiente de validación", color = Color.Gray, fontStyle = FontStyle.Italic)
+                                Text(stringResource(id = R.string.cert_adopcion_pending_signature), color = Color.Gray, fontStyle = FontStyle.Italic)
                             }
                         }
 
@@ -189,7 +191,7 @@ fun CertificadoAdopcionScreen(
                                 if (uiState.isLoading) {
                                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                                 } else {
-                                    Text("FIRMAR Y VALIDAR ADOPCIÓN", fontWeight = FontWeight.Bold)
+                                    Text(stringResource(id = R.string.cert_adopcion_btn_confirm), fontWeight = FontWeight.Bold)
                                 }
                             }
                         } else if (isApproved) {
@@ -206,7 +208,7 @@ fun CertificadoAdopcionScreen(
                                     Icon(Icons.Default.Verified, null, tint = Color(0xFF2E7D32))
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        text = "DOCUMENTO VALIDADO ✓",
+                                        text = stringResource(id = R.string.cert_adopcion_validated),
                                         color = Color(0xFF2E7D32),
                                         fontWeight = FontWeight.Bold
                                     )
@@ -221,12 +223,12 @@ fun CertificadoAdopcionScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D2E17)),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("REGRESAR", fontWeight = FontWeight.Bold)
+                                Text(stringResource(id = R.string.btn_back), fontWeight = FontWeight.Bold)
                             }
                         } else if (!uiState.isAdmin) {
                             // Usuario normal viendo un certificado aún no firmado por Admin
                             Text(
-                                "Su certificado estará disponible aquí una vez que el administrador complete la validación final.",
+                                stringResource(id = R.string.cert_adopcion_wait_msg),
                                 color = Color.Gray,
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center,
@@ -291,7 +293,7 @@ fun SignaturePadFinal(onSignatureCaptured: (Bitmap) -> Unit) {
         }
         if (paths.isEmpty()) {
             Text(
-                "Firme aquí (Solo Admin)",
+                stringResource(id = R.string.cert_adopcion_signature_hint),
                 modifier = Modifier.align(Alignment.Center),
                 color = Color.LightGray,
                 fontStyle = FontStyle.Italic
@@ -302,7 +304,7 @@ fun SignaturePadFinal(onSignatureCaptured: (Bitmap) -> Unit) {
             onClick = { paths.clear() },
             modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            Icon(Icons.Default.Delete, "Limpiar", tint = Color.Red.copy(alpha = 0.5f))
+            Icon(Icons.Default.Delete, stringResource(id = R.string.btn_delete), tint = Color.Red.copy(alpha = 0.5f))
         }
     }
 }

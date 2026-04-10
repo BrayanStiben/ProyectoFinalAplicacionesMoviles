@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,10 +56,10 @@ fun RegistroRefugioScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Registro de Aliado", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.reg_ally_title), color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.btn_back), tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = naranjaApp)
@@ -92,8 +93,8 @@ fun RegistroRefugioScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("¡Únete a nuestra red!", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
-                    Text("Refugios y Veterinarias al servicio animal", color = Color.White.copy(0.9f), fontSize = 14.sp)
+                    Text(stringResource(R.string.reg_ally_join_title), color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.reg_ally_join_subtitle), color = Color.White.copy(0.9f), fontSize = 14.sp)
                 }
             }
 
@@ -108,18 +109,18 @@ fun RegistroRefugioScreen(
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     
-                    Text("¿Qué tipo de aliado eres?", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    Text(stringResource(R.string.reg_ally_type_q), fontWeight = FontWeight.Bold, color = Color.Gray)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
                             selected = tipoSeleccionado == RefugioTipo.REFUGIO,
                             onClick = { tipoSeleccionado = RefugioTipo.REFUGIO },
-                            label = { Text("REFUGIO 🏠") },
+                            label = { Text(stringResource(R.string.reg_ally_type_shelter)) },
                             modifier = Modifier.weight(1f)
                         )
                         FilterChip(
                             selected = tipoSeleccionado == RefugioTipo.VETERINARIA,
                             onClick = { tipoSeleccionado = RefugioTipo.VETERINARIA },
-                            label = { Text("VETERINARIA 🏥") },
+                            label = { Text(stringResource(R.string.reg_ally_type_vet)) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -139,21 +140,21 @@ fun RegistroRefugioScreen(
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.AddPhotoAlternate, null, tint = naranjaApp, modifier = Modifier.size(40.dp))
-                                Text("Foto del lugar", color = naranjaApp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.reg_ally_photo_label), color = naranjaApp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
 
                     OutlinedTextField(
                         value = nombre, onValueChange = { nombre = it },
-                        label = { Text("Nombre del establecimiento") },
+                        label = { Text(stringResource(R.string.reg_ally_label_name)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
 
                     OutlinedTextField(
                         value = direccion, onValueChange = { direccion = it },
-                        label = { Text("Dirección completa") },
+                        label = { Text(stringResource(R.string.reg_ally_label_address)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         leadingIcon = { Icon(Icons.Default.LocationOn, null, tint = naranjaApp) }
@@ -161,7 +162,7 @@ fun RegistroRefugioScreen(
 
                     OutlinedTextField(
                         value = telefono, onValueChange = { telefono = it },
-                        label = { Text("Teléfono de contacto") },
+                        label = { Text(stringResource(R.string.reg_ally_label_phone)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         leadingIcon = { Icon(Icons.Default.Phone, null, tint = naranjaApp) }
@@ -169,7 +170,7 @@ fun RegistroRefugioScreen(
 
                     OutlinedTextField(
                         value = descripcion, onValueChange = { descripcion = it },
-                        label = { Text("Cuéntanos sobre tu servicio") },
+                        label = { Text(stringResource(R.string.reg_ally_label_desc)) },
                         modifier = Modifier.fillMaxWidth().height(120.dp),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -190,7 +191,7 @@ fun RegistroRefugioScreen(
                             shape = RoundedCornerShape(12.dp),
                             enabled = nombre.isNotBlank() && direccion.isNotBlank() && telefono.isNotBlank()
                         ) {
-                            Text("SOLICITAR REGISTRO", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                            Text(stringResource(R.string.reg_ally_btn_register), fontWeight = FontWeight.Black, fontSize = 16.sp)
                         }
                     }
                 }

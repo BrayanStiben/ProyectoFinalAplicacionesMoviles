@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +54,7 @@ fun NotificacionesScreen(
             containerColor = Color.Transparent,
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("NOTIFICACIONES 🔔", fontWeight = FontWeight.Black, color = Color.White) },
+                    title = { Text(stringResource(R.string.nav_notifications_title), fontWeight = FontWeight.Black, color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
@@ -61,7 +62,7 @@ fun NotificacionesScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.limpiarTodo() }) {
-                            Icon(Icons.Default.DeleteSweep, "Limpiar todo", tint = Color.White)
+                            Icon(Icons.Default.DeleteSweep, stringResource(R.string.btn_delete), tint = Color.White)
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = naranjaApp)
@@ -84,7 +85,7 @@ fun NotificacionesScreen(
                         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
                     ) {
                         Text(
-                            "No tienes notificaciones nuevas", 
+                            stringResource(R.string.notif_empty_list), 
                             modifier = Modifier.padding(24.dp),
                             color = Color.DarkGray,
                             fontWeight = FontWeight.Bold
@@ -112,6 +113,18 @@ fun NotificacionesScreen(
 fun NotificacionItem(notificacion: Notificacion, onRead: () -> Unit) {
     val naranjaApp = Color(0xFFE67E22)
     
+    val titulo = if (notificacion.tituloResId != null) {
+        stringResource(notificacion.tituloResId, *notificacion.tituloArgs.toTypedArray())
+    } else {
+        notificacion.titulo
+    }
+
+    val mensaje = if (notificacion.mensajeResId != null) {
+        stringResource(notificacion.mensajeResId, *notificacion.mensajeArgs.toTypedArray())
+    } else {
+        notificacion.mensaje
+    }
+
     Card(
         onClick = onRead,
         shape = RoundedCornerShape(16.dp),
@@ -141,13 +154,13 @@ fun NotificacionItem(notificacion: Notificacion, onRead: () -> Unit) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    notificacion.titulo, 
+                    titulo, 
                     fontWeight = if (notificacion.leida) FontWeight.Bold else FontWeight.Black, 
                     fontSize = 16.sp,
                     color = if (notificacion.leida) Color.Gray else Color.Black
                 )
                 Text(
-                    notificacion.mensaje, 
+                    mensaje, 
                     fontSize = 14.sp, 
                     color = if (notificacion.leida) Color.Gray.copy(alpha = 0.8f) else Color.DarkGray
                 )

@@ -18,7 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.seguimiento.R
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,14 +63,18 @@ fun PantallaRegistroMascota(
             CenterAlignedTopAppBar(
                 navigationIcon = {
                     IconButton(onClick = { onNavigateBack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.btn_back), tint = Color.White)
                     }
                 },
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(if (mascotaId == null) "🐶" else "📝", fontSize = 22.sp) 
                         Spacer(Modifier.width(8.dp))
-                        Text(if (mascotaId == null) "Ingresar Mascota" else "Editar Mascota", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(
+                            if (mascotaId == null) stringResource(R.string.reg_pet_title_add) else stringResource(R.string.reg_pet_title_edit),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text(if (mascotaId == null) "🐱" else "✨", fontSize = 22.sp)
                     }
@@ -113,7 +119,7 @@ fun PantallaRegistroMascota(
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red)
                                 Spacer(Modifier.width(8.dp))
-                                Text(estado.aiWarning!!, color = Color.Red, fontSize = 14.sp)
+                                Text(stringResource(R.string.reg_pet_warning_ai, estado.aiWarning!!), color = Color.Red, fontSize = 14.sp)
                             }
                         }
                     }
@@ -126,41 +132,41 @@ fun PantallaRegistroMascota(
                         if (estado.fotoUri != null) {
                             AsyncImage(model = estado.fotoUri, contentDescription = null, contentScale = ContentScale.Crop)
                         } else if (mascotaId != null && estado.nombre.isNotEmpty()) {
-                            Text("Foto actual mantenida", color = Color.Gray)
+                            Text(stringResource(R.string.reg_pet_photo_current), color = Color.Gray)
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.CameraAlt, null, tint = Color(0xFF00796B))
-                                Text("Añadir fotos/video", color = Color(0xFF00796B), fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.reg_pet_photo_add), color = Color(0xFF00796B), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
 
-                    Etiqueta("Nombre de la mascota")
-                    CampoEntrada(estado.nombre, "Nombre") { viewModel.cambiarNombre(it) }
+                    Etiqueta(stringResource(R.string.reg_pet_label_name))
+                    CampoEntrada(estado.nombre, stringResource(R.string.reg_pet_placeholder_name)) { viewModel.cambiarNombre(it) }
 
-                    Etiqueta("Descripción")
+                    Etiqueta(stringResource(R.string.reg_pet_label_desc))
                     OutlinedTextField(
                         value = estado.descripcion,
                         onValueChange = { viewModel.cambiarDescripcion(it) },
-                        placeholder = { Text("Escribe algo sobre la mascota...") },
+                        placeholder = { Text(stringResource(R.string.reg_pet_placeholder_desc)) },
                         modifier = Modifier.fillMaxWidth().height(100.dp),
                         shape = RoundedCornerShape(10.dp)
                     )
 
-                    Etiqueta("Tipo de Mascota")
+                    Etiqueta(stringResource(R.string.reg_pet_label_type))
                     SelectorMascota(
-                        label = "Tipo",
+                        label = stringResource(R.string.reg_pet_placeholder_type),
                         seleccionado = estado.tipo,
                         opciones = estado.listaTipos,
                         icon = Icons.Default.Pets
                     ) { viewModel.cambiarTipo(it) }
 
-                    Etiqueta("Raza")
+                    Etiqueta(stringResource(R.string.reg_pet_label_breed))
                     if (estado.tipo == "Otro") {
                         OutlinedTextField(
                             value = estado.raza,
                             onValueChange = { viewModel.cambiarRaza(it) },
-                            placeholder = { Text("Escribe la raza...") },
+                            placeholder = { Text(stringResource(R.string.reg_pet_placeholder_breed_edit)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -170,7 +176,7 @@ fun PantallaRegistroMascota(
                         )
                     } else {
                         SelectorMascota(
-                            label = "Raza",
+                            label = stringResource(R.string.reg_pet_placeholder_breed),
                             seleccionado = estado.raza,
                             opciones = estado.listaRazas,
                             icon = Icons.AutoMirrored.Filled.List,
@@ -178,7 +184,7 @@ fun PantallaRegistroMascota(
                         ) { viewModel.cambiarRaza(it) }
                     }
 
-                    Etiqueta("Edad")
+                    Etiqueta(stringResource(R.string.reg_pet_label_age))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = estado.edad,
@@ -191,26 +197,26 @@ fun PantallaRegistroMascota(
                         OutlinedTextField(value = estado.unidadEdad, onValueChange = { viewModel.cambiarUnidadEdad(it) }, modifier = Modifier.weight(1.2f), shape = RoundedCornerShape(10.dp))
                     }
 
-                    Etiqueta("Sexo")
+                    Etiqueta(stringResource(R.string.reg_pet_label_sex))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = estado.sexo == "Hembra", onClick = { viewModel.cambiarSexo("Hembra") })
-                        Text("Hembra")
+                        Text(stringResource(R.string.reg_pet_sex_female))
                         Spacer(Modifier.width(10.dp))
                         RadioButton(selected = estado.sexo == "Macho", onClick = { viewModel.cambiarSexo("Macho") })
-                        Text("Macho")
+                        Text(stringResource(R.string.reg_pet_sex_male))
                     }
 
-                    Etiqueta("Departamento")
+                    Etiqueta(stringResource(R.string.reg_pet_label_dept))
                     SelectorMascota(
-                        label = "Departamento",
+                        label = stringResource(R.string.reg_pet_placeholder_dept),
                         seleccionado = estado.departamento,
                         opciones = estado.listaDepartamentos,
                         icon = Icons.Default.Map
                     ) { viewModel.cambiarDepartamento(it) }
 
-                    Etiqueta("Municipio / Ciudad")
+                    Etiqueta(stringResource(R.string.reg_pet_label_city))
                     SelectorMascota(
-                        label = "Ciudad",
+                        label = stringResource(R.string.reg_pet_placeholder_city),
                         seleccionado = estado.ciudad,
                         opciones = estado.listaCiudades,
                         icon = Icons.Default.LocationOn,
@@ -232,7 +238,12 @@ fun PantallaRegistroMascota(
                             colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
                             shape = RoundedCornerShape(30.dp)
                         ) {
-                            Text(if (mascotaId == null) "Guardar y Publicar" else "Actualizar Cambios", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                if (mascotaId == null) stringResource(R.string.reg_pet_btn_save) else stringResource(R.string.reg_pet_btn_update),
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }

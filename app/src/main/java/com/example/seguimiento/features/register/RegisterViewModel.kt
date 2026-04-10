@@ -19,24 +19,24 @@ class RegisterViewModel @Inject constructor(
 ) : ViewModel() {
 
     val nombre = CampoValidado("") {
-        if (it.isBlank()) "El nombre es obligatorio" else null
+        if (it.isBlank()) com.example.seguimiento.R.string.error_name_required else null
     }
 
     val correo = CampoValidado("") {
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches())
-            "Correo electrónico inválido"
+            com.example.seguimiento.R.string.error_email_invalid
         else null
     }
 
     val contrasena = CampoValidado("") {
         if (it.length < 6)
-            "La contraseña debe tener mínimo 6 caracteres"
+            com.example.seguimiento.R.string.error_password_too_short_register
         else null
     }
 
     val confirmarContrasena = CampoValidado("") {
         if (it != contrasena.value)
-            "Las contraseñas no coinciden"
+            com.example.seguimiento.R.string.error_passwords_dont_match
         else null
     }
 
@@ -51,7 +51,7 @@ class RegisterViewModel @Inject constructor(
             !confirmarContrasena.isValid
         ) {
             _resultadoRegistro.value =
-                ResultadoPeticion.Error("Por favor complete correctamente el formulario")
+                ResultadoPeticion.ErrorResId(com.example.seguimiento.R.string.error_form_incomplete)
             return
         }
 
@@ -71,10 +71,13 @@ class RegisterViewModel @Inject constructor(
                 // El AuthRepositoryImpl debe actualizar el currentUser para que FinalizarRegistro lo tome
                 authRepository.login(correo.value, contrasena.value)
                 _resultadoRegistro.value =
-                    ResultadoPeticion.Exito("Registro inicial exitoso 🎉")
+                    ResultadoPeticion.ExitoResId(com.example.seguimiento.R.string.register_success)
             } else {
                 _resultadoRegistro.value =
-                    ResultadoPeticion.Error("Error al registrar: ${result.exceptionOrNull()?.message}")
+                    ResultadoPeticion.ErrorResId(
+                        com.example.seguimiento.R.string.error_register_failed,
+                        listOf(result.exceptionOrNull()?.message ?: "Unknown error")
+                    )
             }
         }
     }

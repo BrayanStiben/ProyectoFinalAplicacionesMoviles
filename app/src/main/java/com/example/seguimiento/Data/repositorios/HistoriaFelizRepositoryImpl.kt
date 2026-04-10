@@ -3,6 +3,8 @@ package com.example.seguimiento.Data.repositorios
 import com.example.seguimiento.Dominio.modelos.HistoriaEstado
 import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 import com.example.seguimiento.Dominio.repositorios.HistoriaFelizRepository
+import com.example.seguimiento.R
+import com.example.seguimiento.core.utils.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,14 +13,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class HistoriaFelizRepositoryImpl @Inject constructor() : HistoriaFelizRepository {
+class HistoriaFelizRepositoryImpl @Inject constructor(
+    private val resourceProvider: ResourceProvider
+) : HistoriaFelizRepository {
     private val _historias = MutableStateFlow<List<HistoriaFeliz>>(
         listOf(
             HistoriaFeliz(
                 autorId = "1",
                 autorNombre = "Admin",
                 mascotaNombre = "Firulais",
-                texto = "Fue el mejor día de mi vida cuando lo encontré.",
+                texto = resourceProvider.getString(R.string.mock_story_1_text),
                 imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500",
                 estado = HistoriaEstado.APROBADA
             ),
@@ -26,7 +30,7 @@ class HistoriaFelizRepositoryImpl @Inject constructor() : HistoriaFelizRepositor
                 autorId = "2",
                 autorNombre = "Maria",
                 mascotaNombre = "Luna",
-                texto = "Luna trajo alegría a nuestra casa.",
+                texto = resourceProvider.getString(R.string.mock_story_2_text),
                 imagenUrl = "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=500",
                 estado = HistoriaEstado.APROBADA
             )

@@ -1,12 +1,16 @@
 package com.example.seguimiento.Data.servicios
 
 import com.example.seguimiento.Dominio.servicios.AIService
+import com.example.seguimiento.R
+import com.example.seguimiento.core.utils.ResourceProvider
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AIServiceImpl @Inject constructor() : AIService {
+class AIServiceImpl @Inject constructor(
+    private val resourceProvider: ResourceProvider
+) : AIService {
     
     // Lista simulada de palabras inapropiadas para la detección
     private val palabrasProhibidas = listOf("ofensivo", "insulto", "malo", "odio")
@@ -18,7 +22,7 @@ class AIServiceImpl @Inject constructor() : AIService {
         val containsInappropriate = palabrasProhibidas.any { lowerText.contains(it) }
         
         return if (containsInappropriate) {
-            "El contenido parece inapropiado. Sugerencia: Por favor, utiliza un lenguaje más respetuoso y positivo."
+            resourceProvider.getString(R.string.ai_inappropriate_content_warning)
         } else {
             null
         }
@@ -26,6 +30,12 @@ class AIServiceImpl @Inject constructor() : AIService {
 
     override suspend fun generarResumen(descripcion: String, categoria: String): String {
         delay(500)
-        return "Resumen IA: Publicación sobre un $categoria. Puntos clave: ${descripcion.take(50)}... Relevancia estimada: Media. Acción recomendada: Verificar ubicación."
+        return resourceProvider.getString(
+            R.string.ai_summary_template,
+            categoria,
+            descripcion.take(50),
+            resourceProvider.getString(R.string.ai_relevance_medium),
+            resourceProvider.getString(R.string.ai_action_verify)
+        )
     }
 }

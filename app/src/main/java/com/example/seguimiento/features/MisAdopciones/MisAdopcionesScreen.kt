@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +46,7 @@ fun MisAdopcionesScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("MIS ADOPCIONES 🐾", fontWeight = FontWeight.Black, color = Color.White) },
+                title = { Text(stringResource(R.string.my_adoptions_title), fontWeight = FontWeight.Black, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
@@ -80,7 +81,7 @@ fun MisAdopcionesScreen(
                         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f))
                     ) {
                         Text(
-                            "Aún no tienes mascotas adoptadas", 
+                            stringResource(R.string.my_adoptions_empty), 
                             modifier = Modifier.padding(24.dp),
                             color = cafeApp, 
                             fontWeight = FontWeight.Bold
@@ -165,7 +166,7 @@ fun TarjetaAdopcionExitosa(item: AdopcionConMascota, onClick: () -> Unit, onSalu
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Text(
-                            "¡Adoptado!", 
+                            stringResource(R.string.status_adopted), 
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             color = verdeExito, 
                             fontWeight = FontWeight.Bold, 
@@ -189,7 +190,7 @@ fun TarjetaAdopcionExitosa(item: AdopcionConMascota, onClick: () -> Unit, onSalu
             ) {
                 Icon(Icons.Default.MedicalServices, null, tint = Color(0xFF2196F3), modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("VER CARNET DE SALUD", color = Color(0xFF2196F3), fontWeight = FontWeight.Black, fontSize = 12.sp)
+                Text(stringResource(R.string.my_adoptions_btn_health), color = Color(0xFF2196F3), fontWeight = FontWeight.Black, fontSize = 12.sp)
             }
         }
     }

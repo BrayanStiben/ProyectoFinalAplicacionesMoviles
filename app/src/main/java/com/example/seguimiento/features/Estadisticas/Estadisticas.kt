@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -86,13 +87,13 @@ fun EstadisticasScreen(
             ) {
                 Column {
                     Text(
-                        "Panel Administrativo 🛡️",
+                        stringResource(R.string.admin_panel_title),
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "Centro de Control y Gestión",
+                        stringResource(R.string.admin_panel_subtitle),
                         color = Color.White.copy(0.9f),
                         fontSize = 15.sp
                     )
@@ -103,11 +104,11 @@ fun EstadisticasScreen(
                 Spacer(Modifier.height(24.dp))
 
                 // --- SECCIÓN: MÉTRICAS CLAVE ---
-                Text("RESUMEN OPERATIVO", fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
+                Text(stringResource(R.string.admin_panel_resumen_operativo), fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
                 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     MetricMiniCard(
-                        label = "SOLICITUDES",
+                        label = stringResource(R.string.admin_panel_metric_requests),
                         value = state.adoptionRequestsCount.toString(),
                         icon = Icons.Default.VolunteerActivism,
                         color = Color(0xFF4CAF50),
@@ -115,7 +116,7 @@ fun EstadisticasScreen(
                     ) { onNavigateToGestionAdopciones() }
                     
                     MetricMiniCard(
-                        label = "MODERACIÓN",
+                        label = stringResource(R.string.admin_panel_metric_moderation),
                         value = state.petModerationCount.toString(),
                         icon = Icons.Default.NewReleases,
                         color = NaranjaApp,
@@ -123,7 +124,7 @@ fun EstadisticasScreen(
                     ) { onNavigateToListaSolicitudes() }
 
                     MetricMiniCard(
-                        label = "USUARIOS",
+                        label = stringResource(R.string.admin_panel_metric_users),
                         value = state.usuariosTotales.toString(),
                         icon = Icons.Default.Group,
                         color = Color(0xFF2196F3),
@@ -134,19 +135,19 @@ fun EstadisticasScreen(
                 Spacer(Modifier.height(24.dp))
 
                 // --- SECCIÓN: HERRAMIENTAS DE GESTIÓN (BOTONES CON COLOR) ---
-                Text("HERRAMIENTAS DE GESTIÓN", fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
+                Text(stringResource(R.string.admin_panel_tools_title), fontWeight = FontWeight.Black, fontSize = 14.sp, color = CafeApp, modifier = Modifier.padding(bottom = 12.dp))
 
                 // Fila 1
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ColorfulAdminButton(
-                        title = "Gestión Tienda",
+                        title = stringResource(R.string.admin_panel_tool_store),
                         icon = Icons.Default.Storefront,
                         containerColor = Color(0xFFFF9800),
                         modifier = Modifier.weight(1f)
                     ) { onNavigateToGestionTienda() }
 
                     ColorfulAdminButton(
-                        title = "Reportes Gráficos",
+                        title = stringResource(R.string.admin_panel_tool_reports),
                         icon = Icons.Default.BarChart,
                         containerColor = Color(0xFF673AB7),
                         modifier = Modifier.weight(1f)
@@ -158,14 +159,14 @@ fun EstadisticasScreen(
                 // Fila 2
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ColorfulAdminButton(
-                        title = "Historial Ventas",
+                        title = stringResource(R.string.admin_panel_tool_sales),
                         icon = Icons.Default.ReceiptLong,
                         containerColor = Color(0xFF0091EA),
                         modifier = Modifier.weight(1f)
                     ) { onNavigateToHistorialVentas() }
 
                     ColorfulAdminButton(
-                        title = "Gestión Refugios",
+                        title = stringResource(R.string.admin_panel_tool_shelters),
                         icon = Icons.Default.Apartment,
                         containerColor = Color(0xFF00ACC1),
                         modifier = Modifier.weight(1f)
@@ -177,14 +178,14 @@ fun EstadisticasScreen(
                 // Fila 3
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ColorfulAdminButton(
-                        title = "Moderar Chat",
+                        title = stringResource(R.string.admin_panel_tool_chat),
                         icon = Icons.AutoMirrored.Filled.Comment,
                         containerColor = Color(0xFF009688),
                         modifier = Modifier.weight(1f)
                     ) { onNavigateToGestionComentarios() }
 
                     ColorfulAdminButton(
-                        title = "Subir Mascota",
+                        title = stringResource(R.string.admin_panel_tool_add_pet),
                         icon = Icons.Default.AddCircle,
                         containerColor = NaranjaApp,
                         modifier = Modifier.weight(1f)
@@ -196,14 +197,14 @@ fun EstadisticasScreen(
                 // Fila 4
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ColorfulAdminButton(
-                        title = "Administrar Stories",
+                        title = stringResource(R.string.admin_panel_tool_stories),
                         icon = Icons.Default.AutoAwesome,
                         containerColor = Color(0xFFFFC107),
                         modifier = Modifier.weight(1f)
                     ) { onNavigateToGestionHistorias() }
                     
                     ColorfulAdminButton(
-                        title = "Ver Stories Feed",
+                        title = stringResource(R.string.admin_panel_tool_view_stories),
                         icon = Icons.Default.Collections,
                         containerColor = Color(0xFFE91E63),
                         modifier = Modifier.weight(1f)
