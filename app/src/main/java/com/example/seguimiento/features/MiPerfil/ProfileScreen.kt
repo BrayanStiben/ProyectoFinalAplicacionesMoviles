@@ -40,6 +40,7 @@ fun ProfileScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToMisAdopciones: () -> Unit = {},
     onNavigateToMisPublicaciones: () -> Unit = {},
+    onNavigateToPong: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -139,8 +140,8 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                         )
 
+                        // Primera Fila de Botones
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            // Botón: Mis Adopciones
                             ProfileActionButton(
                                 text = stringResource(id = R.string.profile_btn_adopted_pets), 
                                 icon = Icons.Default.Pets,
@@ -149,7 +150,6 @@ fun ProfileScreen(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            // Botón: Mis Publicaciones
                             ProfileActionButton(
                                 text = stringResource(id = R.string.profile_btn_my_posts), 
                                 icon = Icons.Default.FormatListBulleted,
@@ -157,6 +157,22 @@ fun ProfileScreen(
                                 backgroundColor = CafeApp,
                                 modifier = Modifier.weight(1f)
                             )
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        // Segunda Fila de Botones (Juego con mismo tamaño)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            ProfileActionButton(
+                                text = "Pet Pong (Gana Puntos)", 
+                                icon = Icons.Default.SportsEsports,
+                                onClick = onNavigateToPong,
+                                backgroundColor = VerdeApp,
+                                modifier = Modifier.weight(1f)
+                            )
+                            
+                            // Espaciador para mantener el tamaño igual a la fila de arriba
+                            Spacer(Modifier.weight(1f))
                         }
 
                         Spacer(Modifier.height(32.dp))

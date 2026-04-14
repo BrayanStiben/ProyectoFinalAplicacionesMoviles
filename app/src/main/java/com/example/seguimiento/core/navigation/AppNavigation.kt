@@ -49,6 +49,7 @@ import com.example.seguimiento.features.MisAdopciones.MisAdopcionesScreen
 import com.example.seguimiento.features.MisPublicaciones.MisPublicacionesScreen
 import com.example.seguimiento.features.Refugios.RefugiosScreen
 import com.example.seguimiento.features.Salud.SaludScreen
+import com.example.seguimiento.features.PongGame.ui.PongScreen
 
 @Composable
 fun AppNavigation() {
@@ -167,12 +168,17 @@ fun AppNavigation() {
                 onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
                 onNavigateToMisAdopciones = { navController.navigate(NavRoutes.MisAdopciones.route) },
                 onNavigateToMisPublicaciones = { navController.navigate(NavRoutes.MisPublicaciones.route) },
+                onNavigateToPong = { navController.navigate(NavRoutes.PongGame.route) },
                 onLogout = {
                     navController.navigate(NavRoutes.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             )
+        }
+
+        composable(NavRoutes.PongGame.route) {
+            PongScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         composable(NavRoutes.MisAdopciones.route) {

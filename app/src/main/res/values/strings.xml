@@ -463,6 +463,7 @@
     <string name="store_notif_redeem_success_msg_2">Has canjeado tus puntos por: %1$s. ¡Disfrútalo!</string>
     <string name="store_default_food_name">Alimento Premium</string>
     <string name="store_default_food_desc">Nutrición balanceada formulada para el bienestar de tu mascota.</string>
+    <string name="store_redeem_history">Historial de canje</string>
 
     <!-- Admin: Tienda -->
     <string name="admin_store_fab_add">Subir Producto</string>
@@ -539,6 +540,8 @@
     <string name="stories_btn_show_replies">Ver respuestas...</string>
     <string name="stories_label_replying_to">Respondiendo a %1$s</string>
     <string name="stories_placeholder_comment">Escribe un comentario...</string>
+    <string name="stories_feed_reels">Reels</string>
+    <string name="stories_feed_stories">Stories en PetAdopta</string>
 
     <!-- Necesidades (Calculadora) -->
     <string name="needs_calc_title">Calculadora de Calorías 🐾</string>
@@ -591,6 +594,8 @@
     <string name="reg_ally_btn_register">SOLICITAR REGISTRO</string>
     <string name="refugio_tipo_refugio">REFUGIO 🏠</string>
     <string name="refugio_tipo_veterinaria">VETERINARIA 🏥</string>
+    <string name="reg_ally_request_title">Solicitud de refugio</string>
+
     <!-- Admin: Reportes -->
     <string name="admin_reports_title">Análisis Estadístico 📊</string>
     <string name="admin_reports_subtitle">Dashboard de métricas visuales</string>
@@ -823,6 +828,7 @@
     <string name="nav_admin_pets">Mascotas</string>
     <string name="nav_admin_logout">Salir</string>
 
+    <!-- Admin Navigation -->
     <!-- Admin: Estadisticas (Panel Administrativo) -->
     <string name="admin_panel_title">Panel Administrativo 🛡️</string>
     <string name="admin_panel_subtitle">Centro de Control y Gestión</string>
@@ -839,6 +845,7 @@
     <string name="admin_panel_tool_add_pet">Subir Mascota</string>
     <string name="admin_panel_tool_stories">Administrar Stories</string>
     <string name="admin_panel_tool_view_stories">Ver Stories Feed</string>
+    <string name="admin_panel_chat_moderation_title">Ventana de moderación de chat</string>
 
     <!-- Refugios -->
     <string name="refugios_title">Refugios Aliados 🏠</string>
@@ -916,5 +923,13 @@
     <string name="nav_admin_solicitudes">Solicitudes</string>
     <string name="nav_admin_encontrar">Encontrar</string>
     <string name="nav_admin_salir">Salir</string>
+
+    <!-- Pong Game UI Strings -->
+    <string name="pong_game_over_title">¡Fin del Juego!</string>
+    <string name="pong_pongs_performed">Pongs realizados: %1$d</string>
+    <string name="pong_points_earned">Puntos ganados: %1$d</string>
+    <string name="pong_retry_btn">Reintentar</string>
+    <string name="pong_back_profile_btn">Salir al Perfil</string>
+    <string name="pong_catch_toy">¡Atrapa el Juguete!</string>
 
 </resources>

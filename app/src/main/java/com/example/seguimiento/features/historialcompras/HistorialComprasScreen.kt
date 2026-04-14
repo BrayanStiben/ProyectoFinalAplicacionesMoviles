@@ -15,12 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.Dominio.modelos.CompraTienda
 import com.example.seguimiento.core.navigation.AdminBottomBar
+import com.example.seguimiento.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,7 +77,7 @@ fun HistorialComprasScreen(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "Historial de Canjes 🧾",
+                            stringResource(id = R.string.store_redeem_history) + " 🧾",
                             color = Color.White,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold

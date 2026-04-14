@@ -56,7 +56,7 @@ fun RegistroRefugioScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.reg_ally_title), color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.reg_ally_request_title), color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.btn_back), tint = Color.White)

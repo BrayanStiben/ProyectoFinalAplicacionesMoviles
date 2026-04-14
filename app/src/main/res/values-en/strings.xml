@@ -904,7 +904,18 @@
     <string name="mock_shelter_plus_name">Vet Plus Villavicencio</string>
     <string name="mock_shelter_plus_desc">Specialized services in the Colombian plains.</string>
     <string name="mock_shelter_plus_addr">Avenida 40, Villavicencio</string>
-
+    <!-- Pong Game UI Strings -->
+    <string name="pong_game_over_title">Game Over!</string>
+    <string name="pong_pongs_performed">Pongs performed: %1$d</string>
+    <string name="pong_points_earned">Points earned: %1$d</string>
+    <string name="pong_retry_btn">Retry</string>
+    <string name="pong_back_profile_btn">Back to Profile</string>
+    <string name="pong_catch_toy">Catch the Toy!</string>
+    <string name="admin_panel_chat_moderation_title">Chat Moderation Window</string>
+    <string name="reg_ally_request_title">Shelter Request</string>
+    <string name="store_redeem_history">Redemption History</string>
+    <string name="stories_feed_reels">Reels</string>
+    <string name="stories_feed_stories">Stories on PetAdopta</string>
     <string name="refugios_title">Partner Shelters 🏠</string>
     <string name="refugios_subtitle">Find trusted places near you</string>
     <string name="refugios_empty">No verified shelters yet</string>
