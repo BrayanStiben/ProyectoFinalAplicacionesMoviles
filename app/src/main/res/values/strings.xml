@@ -324,6 +324,10 @@
     <string name="notif_pet_registered_msg">Has registrado a %1$s con éxito. Un administrador revisará la publicación pronto.</string>
     <string name="notif_pet_updated_title">¡Mascota actualizada! ✨</string>
     <string name="notif_pet_updated_msg">Los cambios en la información de %1$s se han guardado.</string>
+    <string name="notif_pet_approved_title">¡Publicación Aprobada! 🐾</string>
+    <string name="notif_pet_approved_msg">Tu publicación de %1$s ha sido aprobada y ya es visible para la comunidad.</string>
+    <string name="notif_pet_rejected_title">Publicación Rechazada ❌</string>
+    <string name="notif_pet_rejected_msg">Tu publicación de %1$s no ha sido aprobada. Motivo: %2$s</string>
     <string name="notif_empty_list">No tienes notificaciones pendientes.</string>
 
     <string name="notif_like_msg_detailed">A %1$s le gusta tu publicación de %2$s.</string>
@@ -896,7 +900,8 @@
     <string name="mock_pet_4_age">4 años</string>
     <string name="mock_pet_4_location">Cali, Valle</string>
     <string name="mock_pet_4_type">Gato</string>
-
+    <string name="notif_adoption_penalty_title">Cuenta suspendida temporalmente ⚠️</string>
+    <string name="notif_adoption_penalty_msg">Has alcanzado el límite de rechazos. Tu cuenta ha sido suspendida por 1 minuto.</string>
     <!-- Pet Detail Screen -->
     <string name="pet_detail_title">Detalles de Mascota</string>
     <string name="pet_detail_description">Descripción</string>
@@ -918,7 +923,8 @@
     <string name="pet_detail_penalty_msg">Estás penalizado. Tiempo restante: %1$s</string>
     <string name="pet_detail_request_review_msg">Tu solicitud está siendo revisada.</string>
     <string name="pet_detail_btn_retry">REINTENTAR CUESTIONARIO</string>
-
+    <string name="notif_comment_deleted_title">Comentario eliminado ⚠️</string>
+    <string name="notif_comment_deleted_msg">Uno de tus comentarios fue eliminado por no cumplir con las normas.</string>
     <!-- My Adoptions Screen -->
     <string name="my_adoptions_title">MIS ADOPCIONES 🐾</string>
     <string name="my_adoptions_empty">Aún no tienes mascotas adoptadas</string>

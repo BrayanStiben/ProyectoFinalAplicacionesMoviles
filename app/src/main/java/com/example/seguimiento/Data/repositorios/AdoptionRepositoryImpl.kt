@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.seguimiento.R
 
 @Singleton
 class AdoptionRepositoryImpl @Inject constructor(
@@ -21,8 +22,9 @@ class AdoptionRepositoryImpl @Inject constructor(
     override suspend fun submitRequest(request: AdoptionRequest) {
         _requests.update { it + request }
         notificacionRepository.addNotificacion(
-            tituloResId = com.example.seguimiento.R.string.notif_adoption_sent_title,
-            mensajeResId = com.example.seguimiento.R.string.notif_adoption_sent_msg,
+            tituloResId = R.string.notif_adoption_sent_title,
+            mensajeResId = R.string.notif_adoption_sent_msg,
+            mensajeArgs = listOf(request.petName),
             tipo = "INFO",
             userId = request.userId
         )
@@ -37,24 +39,25 @@ class AdoptionRepositoryImpl @Inject constructor(
         request?.let {
             val (titRes, msjRes, tipo) = when(status) {
                 AdoptionRequestStatus.APPROVED -> Triple(
-                    com.example.seguimiento.R.string.notif_adoption_approved_title, 
-                    com.example.seguimiento.R.string.notif_adoption_approved_msg, 
+                    R.string.notif_adoption_approved_title, 
+                    R.string.notif_adoption_approved_msg, 
                     "SUCCESS"
                 )
                 AdoptionRequestStatus.REJECTED -> Triple(
-                    com.example.seguimiento.R.string.notif_adoption_rejected_title, 
-                    com.example.seguimiento.R.string.notif_adoption_rejected_msg, 
+                    R.string.notif_adoption_rejected_title, 
+                    R.string.notif_adoption_rejected_msg, 
                     "ERROR"
                 )
                 else -> Triple(
-                    com.example.seguimiento.R.string.notif_adoption_update_title, 
-                    com.example.seguimiento.R.string.notif_adoption_update_msg, 
+                    R.string.notif_adoption_update_title, 
+                    R.string.notif_adoption_update_msg, 
                     "INFO"
                 )
             }
             notificacionRepository.addNotificacion(
                 tituloResId = titRes,
                 mensajeResId = msjRes,
+                mensajeArgs = listOf(it.petName),
                 tipo = tipo,
                 userId = it.userId
             )
@@ -78,8 +81,8 @@ class AdoptionRepositoryImpl @Inject constructor(
         }
         request?.let {
             notificacionRepository.addNotificacion(
-                tituloResId = com.example.seguimiento.R.string.notif_adoption_approved_title,
-                mensajeResId = com.example.seguimiento.R.string.notif_adoption_signed_msg,
+                tituloResId = R.string.notif_adoption_approved_title,
+                mensajeResId = R.string.notif_adoption_signed_msg,
                 tipo = "SUCCESS",
                 userId = it.userId
             )

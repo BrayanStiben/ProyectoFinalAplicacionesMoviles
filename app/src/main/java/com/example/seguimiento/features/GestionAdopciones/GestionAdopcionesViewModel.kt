@@ -10,6 +10,7 @@ import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,8 +38,9 @@ class GestionAdopcionesViewModel @Inject constructor(
 
             // NOTIFICACIÓN: Adopción aprobada
             notificacionRepository.addNotificacion(
-                titulo = "¡Adopción Aprobada! 🐾🎉",
-                mensaje = "¡Felicidades! Tu solicitud para adoptar a ${request.petName} ha sido aprobada. Revisa tu correo para los siguientes pasos.",
+                tituloResId = R.string.notif_adoption_approved_title,
+                mensajeResId = R.string.notif_adoption_approved_msg,
+                mensajeArgs = listOf(request.petName),
                 tipo = "INFO",
                 userId = request.userId
             )
@@ -59,8 +61,9 @@ class GestionAdopcionesViewModel @Inject constructor(
             if (user != null) {
                 // NOTIFICACIÓN: Adopción rechazada
                 notificacionRepository.addNotificacion(
-                    titulo = "Solicitud de Adopción ❌",
-                    mensaje = "Lo sentimos, tu solicitud para adoptar a ${request.petName} no ha sido aprobada en esta ocasión.",
+                    tituloResId = R.string.notif_adoption_rejected_title,
+                    mensajeResId = R.string.notif_adoption_rejected_msg,
+                    mensajeArgs = listOf(request.petName),
                     tipo = "INFO",
                     userId = request.userId
                 )
@@ -80,8 +83,8 @@ class GestionAdopcionesViewModel @Inject constructor(
 
                     // NOTIFICACIÓN: Penalización
                     notificacionRepository.addNotificacion(
-                        titulo = "Cuenta Suspendida Temporalmente ⚠️",
-                        mensaje = "Has alcanzado el límite de rechazos. Tu cuenta ha sido suspendida por 1 minuto.",
+                        tituloResId = R.string.notif_adoption_penalty_title,
+                        mensajeResId = R.string.notif_adoption_penalty_msg,
                         tipo = "INFO",
                         userId = request.userId
                     )

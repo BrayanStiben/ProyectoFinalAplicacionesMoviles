@@ -97,7 +97,7 @@ class EstaEsperandoViewModel @Inject constructor(
         
         mascotaRepository.toggleLike(currentMascotaId, user.id)
         
-        // NOTIFICACIÓN: Like - Usando recursos
+        // NOTIFICACIÓN: Like - Usando recursos para traducción
         if (m.autorId != user.id) {
             notificacionRepository.addNotificacion(
                 tituloResId = R.string.home_notif_like_title,
@@ -114,7 +114,7 @@ class EstaEsperandoViewModel @Inject constructor(
             val request = adoptionRepository.getById(requestId)
             adoptionRepository.deleteRequest(requestId)
             
-            // NOTIFICACIÓN: Cancelación - Usando recursos
+            // NOTIFICACIÓN: Cancelación - Usando recursos para traducción
             if (request != null) {
                 notificacionRepository.addNotificacion(
                     tituloResId = R.string.notif_adoption_cancelled_title,
@@ -142,7 +142,7 @@ class EstaEsperandoViewModel @Inject constructor(
             )
             comentarioRepository.agregarComentario(nuevoComentario)
 
-            // NOTIFICACIÓN: Comentario nuevo al dueño de la mascota - Usando recursos
+            // NOTIFICACIÓN: Comentario nuevo al dueño de la mascota - Usando recursos para traducción
             if (user != null && m.autorId != user.id) {
                 notificacionRepository.addNotificacion(
                     tituloResId = R.string.notif_comment_new_title,

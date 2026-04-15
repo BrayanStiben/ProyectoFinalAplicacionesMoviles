@@ -7,6 +7,7 @@ import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -40,8 +41,9 @@ class AdopcionViewModel @Inject constructor(
                 }
 
                 notificacionRepository.addNotificacion(
-                    titulo = "¡Publicación Aprobada! ✅",
-                    mensaje = "Tu publicación de ${mascota.nombre} ha sido aprobada y ya es visible para todos.",
+                    tituloResId = R.string.notif_pet_approved_title,
+                    mensajeResId = R.string.notif_pet_approved_msg,
+                    mensajeArgs = listOf(mascota.nombre),
                     tipo = "INFO",
                     userId = mascota.autorId
                 )
@@ -59,8 +61,9 @@ class AdopcionViewModel @Inject constructor(
                 logrosRepository.ganarLogro(mascota.autorId, "per_2")
 
                 notificacionRepository.addNotificacion(
-                    titulo = "Publicación Rechazada ❌",
-                    mensaje = "Tu publicación de ${mascota.nombre} no fue aprobada. Motivo: $motivo",
+                    tituloResId = R.string.notif_pet_rejected_title,
+                    mensajeResId = R.string.notif_pet_rejected_msg,
+                    mensajeArgs = listOf(mascota.nombre, motivo),
                     tipo = "INFO",
                     userId = mascota.autorId
                 )

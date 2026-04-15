@@ -9,6 +9,7 @@ import com.example.seguimiento.Dominio.repositorios.ComentarioRepository
 import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -50,10 +51,10 @@ class GestionComentariosViewModel @Inject constructor(
                 // LOGRO NEGATIVO: Comentario Imprudente
                 logrosRepository.ganarLogro(comentario.autorId, "sys_imprudente")
                 
-                // Notificación
+                // NOTIFICACIÓN: Comentario eliminado - Usando recursos para traducción
                 notificacionRepository.addNotificacion(
-                    titulo = "Comentario eliminado ⚠️",
-                    mensaje = "Uno de tus comentarios fue eliminado por no cumplir las normas.",
+                    tituloResId = R.string.notif_comment_deleted_title,
+                    mensajeResId = R.string.notif_comment_deleted_msg,
                     tipo = "INFO",
                     userId = comentario.autorId
                 )
@@ -84,7 +85,7 @@ class GestionComentariosViewModel @Inject constructor(
                 contenido = texto,
                 parentId = parentId
             )
-            comentarioRepository.agregarComentario(respuesta)
+            comentarioRepository.agregarComentario(comentario = respuesta)
         }
     }
 }

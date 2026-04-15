@@ -13,6 +13,7 @@ import com.example.seguimiento.Dominio.repositorios.AdoptionRepository
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -85,10 +86,11 @@ class AdoptionViewModel @Inject constructor(
             )
             adoptionRepository.submitRequest(request)
             
-            // NOTIFICACIÓN: Solicitud enviada
+            // NOTIFICACIÓN: Solicitud enviada - USANDO RECURSOS PARA TRADUCCIÓN
             notificacionRepository.addNotificacion(
-                titulo = "Solicitud enviada 📩",
-                mensaje = "Tu solicitud para adoptar a ${state.petName} ha sido recibida y está en proceso de revisión.",
+                tituloResId = R.string.notif_adoption_sent_title,
+                mensajeResId = R.string.notif_adoption_sent_msg,
+                mensajeArgs = listOf(state.petName),
                 tipo = "INFO",
                 userId = user?.id ?: ""
             )

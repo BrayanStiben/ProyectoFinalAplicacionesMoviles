@@ -46,7 +46,7 @@
     <string name="cert_rechazo_retry_msg">Your request does not meet all requirements at this time. You may try again with this or another pet when you are ready, provided you do not exceed the attempt limit (%1$d of 3 used).</string>
     <string name="cert_rechazo_signature_label">ADMINISTRATOR SIGNATURE:</string>
     <string name="cert_rechazo_system_validated">Signature validated by the system</string>
-    <string name="cert_rechazo_btn_confirm">CONFIRM AND NOTIFY REJECTION</string>
+    <string name="cert_rechazo_btn_confirm">CONFIRMAR Y NOTIFICAR RECHAZO</string>
     <string name="cert_rechazo_user_penalized">USER PENALIZED</string>
     <string name="cert_rechazo_notified">REJECTION NOTIFIED</string>
     <string name="cert_rechazo_signature_hint">Administrator signature (Admin)</string>
@@ -276,7 +276,7 @@
 
     <!-- Status and Others -->
     <string name="status_rejected">REJECTED</string>
-    <string name="status_adopted">ADOPTED</string>
+    <string name="status_adopted">ADOPTADO</string>
     <string name="status_approved">APPROVED</string>
     <string name="status_pending">PENDING</string>
     <string name="status_verified">VERIFIED</string>
@@ -310,10 +310,12 @@
     <!-- Adoption Notifications -->
     <string name="notif_adoption_sent_title">Request Sent</string>
     <string name="notif_adoption_sent_msg">Your request to adopt a pet has been sent successfully.</string>
-    <string name="notif_adoption_approved_title">Adoption Approved!</string>
-    <string name="notif_adoption_approved_msg">Congratulations, your adoption request has been approved.</string>
-    <string name="notif_adoption_rejected_title">Request Rejected</string>
-    <string name="notif_adoption_rejected_msg">Sorry, your adoption request has not been approved at this time.</string>
+    <string name="notif_adoption_approved_title">Adoption Approved! 🐾🎉</string>
+    <string name="notif_adoption_approved_msg">Congratulations! Your request to adopt %1$s has been approved. Check your email for next steps.</string>
+    <string name="notif_adoption_rejected_title">Adoption Request ❌</string>
+    <string name="notif_adoption_rejected_msg">Sorry, your request to adopt %1$s has not been approved at this time.</string>
+    <string name="notif_adoption_penalty_title">Account Temporarily Suspended ⚠️</string>
+    <string name="notif_adoption_penalty_msg">You have reached the limit of rejections. Your account has been suspended for 1 minute.</string>
     <string name="notif_adoption_update_title">Request Update</string>
     <string name="notif_adoption_update_msg">The status of your request has changed.</string>
     <string name="notif_adoption_signed_msg">Congratulations, your request has been signed and approved.</string>
@@ -325,6 +327,10 @@
     <string name="notif_pet_registered_msg">You have registered %1$s successfully. An administrator will review the post soon.</string>
     <string name="notif_pet_updated_title">Pet updated! ✨</string>
     <string name="notif_pet_updated_msg">The changes to %1$s\'s information have been saved.</string>
+    <string name="notif_pet_approved_title">Post Approved! 🐾</string>
+    <string name="notif_pet_approved_msg">Your post of %1$s has been approved and is now visible to the community.</string>
+    <string name="notif_pet_rejected_title">Post Rejected ❌</string>
+    <string name="notif_pet_rejected_msg">Your post of %1$s has not been approved. Reason: %2$s</string>
     <string name="notif_empty_list">You have no pending notifications.</string>
 
     <string name="notif_like_msg_detailed">%1$s likes your post of %2$s.</string>
@@ -442,7 +448,7 @@
     <string name="admin_list_requests_btn_verify">Verify</string>
 
     <!-- Tienda (User) -->
-    <string name="store_market_title">PetAdopt Market 🦴</string>
+    <string name="store_market_title">PetAdopt Market Bone  Bone 🦴</string>
     <string name="store_market_subtitle">Redeem your points for prizes</string>
     <string name="store_cat_all">All</string>
     <string name="store_cat_food">Food</string>
@@ -707,7 +713,7 @@
 
     <string name="mock_pet_3_name">Toby</string>
     <string name="mock_pet_3_age">3 months</string>
-    <string name="mock_pet_3_location">Medellin, Ant.</string>
+    <string name="mock_pet_3_location">Medellín, Ant.</string>
     <string name="mock_pet_3_type">Dog</string>
 
     <!-- Admin Panel -->
@@ -843,7 +849,7 @@
 
     <string name="mock_shelter_agrocampo_name">Agrocampo Vet Center</string>
     <string name="mock_shelter_agrocampo_desc">The largest veterinary center in the city with a 24/7 pharmacy.</string>
-    <string name="mock_shelter_agrocampo_addr">Caracas Avenue #73-10, Bogotá</string>
+    <string name="mock_shelter_agrocampo_addr">Avenida Caracas #73-10, Bogotá</string>
 
     <string name="mock_shelter_razas_name">Unique Breeds Foundation</string>
     <string name="mock_shelter_razas_desc">Promoting the adoption of mixed-breed dogs ("unique breeds").</string>
@@ -875,11 +881,11 @@
 
     <string name="mock_shelter_luis_name">San Luis Veterinary Clinic</string>
     <string name="mock_shelter_luis_desc">Cutting-edge veterinary medicine in Valle del Cauca.</string>
-    <string name="mock_shelter_luis_addr">6N Avenue, Cali</string>
+    <string name="mock_shelter_luis_addr">Avenida 6N, Cali</string>
 
     <string name="mock_shelter_villa_name">Villa Canina Shelter</string>
     <string name="mock_shelter_villa_desc">Countryside sanctuary with physical rehabilitation programs.</string>
-    <string name="mock_shelter_villa_addr">Jamundí Road, Cali</string>
+    <string name="mock_shelter_villa_addr">Vía Jamundí, Cali</string>
 
     <string name="mock_shelter_petcenter_name">Pet Center Veterinary Cali</string>
     <string name="mock_shelter_petcenter_desc">Five-star clinic, grooming, and dog hotel.</string>
@@ -887,7 +893,7 @@
 
     <string name="mock_shelter_pereira_name">Pereira Express Veterinary</string>
     <string name="mock_shelter_pereira_desc">Fast and reliable medical care in the capital of Risaralda.</string>
-    <string name="mock_shelter_pereira_addr">Circunvalar Avenue, Pereira</string>
+    <string name="mock_shelter_pereira_addr">Avenida Circunvalar, Pereira</string>
 
     <string name="mock_shelter_nombre_name">Nameless Dogs Foundation</string>
     <string name="mock_shelter_nombre_desc">Rescue work in the streets of the "beautiful city" and Santander.</string>
@@ -911,7 +917,7 @@
 
     <string name="mock_shelter_plus_name">Vet Plus Villavicencio</string>
     <string name="mock_shelter_plus_desc">Specialized services in the Colombian plains.</string>
-    <string name="mock_shelter_plus_addr">40th Avenue, Villavicencio</string>
+    <string name="mock_shelter_plus_addr">Avenida 40, Villavicencio</string>
     <!-- Mock Shelter Data -->
     <string name="mock_shelter_ada_name">ADA Quindío</string>
     <string name="mock_shelter_ada_desc">Animal Defense Association of Quindío. Over 20 years rescuing animals.</string>
@@ -942,7 +948,7 @@
      <string name="mock_shelter_huellas_name">Huellas del Quindío</string>
     <string name="mock_shelter_huellitas_desc">Countryside shelter with large green areas for recreation.</string>
     <string name="mock_shelter_huellitas_addr">Montenegro Road km 1</string>
-    <string name="pong_score_label">puntuacion</string>
+    <string name="pong_score_label">score</string>
     <!-- Admin -->
     <string name="nav_admin_panel">Control Panel</string>
     <string name="nav_admin_requests">Requests</string>
@@ -964,4 +970,6 @@
     <string name="pong_retry_btn">Retry</string>
     <string name="pong_back_profile_btn">Back to Profile</string>
     <string name="pong_catch_toy">Catch the Toy!</string>
+    <string name="notif_comment_deleted_title">Comment deleted ⚠️</string>
+    <string name="notif_comment_deleted_msg">One of your comments was deleted for not meeting the rules.</string>
 </resources>

@@ -6,6 +6,7 @@ import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
+import com.example.seguimiento.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,9 +28,11 @@ class AdopcionViewModel @Inject constructor(
             mascotaRepository.delete(id)
             
             if (mascota != null) {
+                // NOTIFICACIÓN: Publicación Eliminada - Usando recursos
                 notificacionRepository.addNotificacion(
-                    titulo = "Publicación Eliminada 🗑️",
-                    mensaje = "Tu publicación de ${mascota.nombre} ha sido eliminada por un administrador.",
+                    tituloResId = R.string.pet_mgmt_delete_title,
+                    mensajeResId = R.string.pet_mgmt_delete_confirm,
+                    mensajeArgs = listOf(mascota.nombre),
                     tipo = "INFO",
                     userId = mascota.autorId
                 )
