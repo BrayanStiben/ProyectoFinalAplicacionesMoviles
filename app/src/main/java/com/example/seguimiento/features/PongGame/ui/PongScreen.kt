@@ -210,7 +210,7 @@ fun PongScreen(
                 .padding(horizontal = 24.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Pongs", color = Color.White.copy(alpha = 0.8f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(id = R.string.pong_score_label), color = Color.White.copy(alpha = 0.8f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Text(text = "${uiState.score}", color = Color.White, fontSize = 48.sp, fontWeight = FontWeight.Black)
         }
 

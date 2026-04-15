@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +46,7 @@ fun MisPublicacionesScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("MIS PUBLICACIONES 🐾", fontWeight = FontWeight.Black, color = Color.White) },
+                title = { Text(stringResource(id = R.string.profile_btn_my_posts).uppercase() + " 🐾", fontWeight = FontWeight.Black, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
@@ -75,7 +76,7 @@ fun MisPublicacionesScreen(
 
             if (uiState.publicaciones.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No has publicado ninguna mascota aún", color = cafeApp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(id = R.string.pet_mgmt_no_pets), color = cafeApp, fontWeight = FontWeight.Bold)
                 }
             } else {
                 LazyColumn(

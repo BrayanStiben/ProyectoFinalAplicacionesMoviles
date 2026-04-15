@@ -51,7 +51,7 @@ fun GestionComentariosScreen(
                     IconButton(onClick = { expandirTodo = !expandirTodo }) {
                         Icon(
                             if (expandirTodo) Icons.Default.UnfoldLess else Icons.Default.UnfoldMore,
-                            contentDescription = "Expandir/Contraer Todo",
+                            contentDescription = stringResource(R.string.admin_panel_chat_expand_all),
                             tint = Color(0xFFE67E22)
                         )
                     }
@@ -76,7 +76,7 @@ fun GestionComentariosScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.CommentsDisabled, null, modifier = Modifier.size(80.dp), tint = Color.Gray)
                         Spacer(Modifier.height(16.dp))
-                        Text("No hay mensajes nuevos", color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.admin_panel_chat_no_messages), color = Color.Gray, fontWeight = FontWeight.Bold)
                     }
                 }
             } else {
@@ -135,7 +135,7 @@ fun ExpandableMascotaCard(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(item.mascota.nombre, fontWeight = FontWeight.Black, fontSize = 18.sp, color = Color(0xFF5D2E17))
-                    Text("${item.comentarios.size} mensajes", fontSize = 13.sp, color = Color(0xFFFF6D00), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.admin_panel_chat_messages_count, item.comentarios.size), fontSize = 13.sp, color = Color(0xFFFF6D00), fontWeight = FontWeight.Bold)
                 }
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
@@ -182,7 +182,7 @@ fun ExpandableMascotaCard(
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Respuesta a ${respondientoA?.autorNombre}", fontSize = 11.sp, modifier = Modifier.weight(1f))
+                            Text(stringResource(R.string.admin_panel_chat_reply_to, respondientoA?.autorNombre ?: ""), fontSize = 11.sp, modifier = Modifier.weight(1f))
                             IconButton(onClick = { respondientoA = null }, modifier = Modifier.size(16.dp)) { 
                                 Icon(Icons.Default.Close, null) 
                             }
@@ -192,7 +192,7 @@ fun ExpandableMascotaCard(
                     OutlinedTextField(
                         value = respuestaTexto,
                         onValueChange = { respuestaTexto = it },
-                        placeholder = { Text(if(respondientoA != null) "Responder..." else "Mensaje al chat...") },
+                        placeholder = { Text(if(respondientoA != null) stringResource(R.string.admin_panel_chat_reply_placeholder) else stringResource(R.string.admin_panel_chat_message_placeholder)) },
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         shape = RoundedCornerShape(12.dp),
                         trailingIcon = {
@@ -245,14 +245,14 @@ fun ItemComentarioModeracion(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             if (onReply != null && !isReply) {
                 IconButton(onClick = onReply) {
-                    Icon(Icons.AutoMirrored.Filled.Reply, "Responder", tint = Color.Gray, modifier = Modifier.size(18.dp))
+                    Icon(Icons.AutoMirrored.Filled.Reply, stringResource(R.string.admin_panel_chat_action_reply), tint = Color.Gray, modifier = Modifier.size(18.dp))
                 }
             }
             IconButton(onClick = onCensurar) {
-                Icon(Icons.Default.Block, "Censurar", tint = Color(0xFFFF6D00), modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Block, stringResource(R.string.admin_panel_chat_action_censor), tint = Color(0xFFFF6D00), modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onEliminar) {
-                Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Delete, stringResource(R.string.admin_panel_chat_action_delete), tint = Color.Red, modifier = Modifier.size(18.dp))
             }
         }
     }

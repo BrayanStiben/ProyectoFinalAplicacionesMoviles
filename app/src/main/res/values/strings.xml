@@ -89,6 +89,7 @@
     <string name="profile_level_3">Protector</string>
     <string name="profile_level_4">Héroe</string>
     <string name="profile_level_5">Leyenda</string>
+    <string name="profile_btn_pong">Pet Pong (Gana Puntos)</string>
 
     <!-- Recuperación de Contraseña -->
     <string name="forgot_password_title">Recuperar Contraseña</string>
@@ -464,6 +465,8 @@
     <string name="store_default_food_name">Alimento Premium</string>
     <string name="store_default_food_desc">Nutrición balanceada formulada para el bienestar de tu mascota.</string>
     <string name="store_redeem_history">Historial de canje</string>
+    <string name="store_redeem_history_subtitle">Registro de compras por usuario</string>
+    <string name="store_redeem_history_empty">No hay registros de compras aún</string>
 
     <!-- Admin: Tienda -->
     <string name="admin_store_fab_add">Subir Producto</string>
@@ -846,6 +849,15 @@
     <string name="admin_panel_tool_stories">Administrar Stories</string>
     <string name="admin_panel_tool_view_stories">Ver Stories Feed</string>
     <string name="admin_panel_chat_moderation_title">Ventana de moderación de chat</string>
+    <string name="admin_panel_chat_no_messages">No hay mensajes nuevos</string>
+    <string name="admin_panel_chat_expand_all">Expandir/Contraer Todo</string>
+    <string name="admin_panel_chat_messages_count">%1$d mensajes</string>
+    <string name="admin_panel_chat_reply_to">Respuesta a %1$s</string>
+    <string name="admin_panel_chat_reply_placeholder">Responder...</string>
+    <string name="admin_panel_chat_message_placeholder">Mensaje al chat...</string>
+    <string name="admin_panel_chat_action_reply">Responder</string>
+    <string name="admin_panel_chat_action_censor">Censurar</string>
+    <string name="admin_panel_chat_action_delete">Eliminar</string>
 
     <!-- Refugios -->
     <string name="refugios_title">Refugios Aliados 🏠</string>
@@ -923,6 +935,7 @@
     <string name="nav_admin_solicitudes">Solicitudes</string>
     <string name="nav_admin_encontrar">Encontrar</string>
     <string name="nav_admin_salir">Salir</string>
+    <string name="pong_score_label">score</string>
 
     <!-- Pong Game UI Strings -->
     <string name="pong_game_over_title">¡Fin del Juego!</string>

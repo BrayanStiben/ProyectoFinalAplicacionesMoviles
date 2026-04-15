@@ -89,6 +89,7 @@
     <string name="profile_level_3">Protector</string>
     <string name="profile_level_4">Hero</string>
     <string name="profile_level_5">Legend</string>
+    <string name="profile_btn_pong">Pet Pong (Earn Points)</string>
 
     <!-- Recuperación de Contraseña -->
     <string name="forgot_password_title">Recover Password</string>
@@ -463,6 +464,9 @@
     <string name="store_notif_redeem_success_msg">You have redeemed your points for: %1$s. Enjoy!</string>
     <string name="store_default_food_name">Premium Food</string>
     <string name="store_default_food_desc">Balanced nutrition formulated for your pet\'s well-being.</string>
+    <string name="store_redeem_history">Redemption History</string>
+    <string name="store_redeem_history_subtitle">Redemption record by user</string>
+    <string name="store_redeem_history_empty">No redemption records yet</string>
 
     <!-- Admin: Tienda -->
     <string name="admin_store_fab_add">Upload Product</string>
@@ -539,6 +543,8 @@
     <string name="stories_btn_show_replies">See replies...</string>
     <string name="stories_label_replying_to">Replying to %1$s</string>
     <string name="stories_placeholder_comment">Write a comment...</string>
+    <string name="stories_feed_reels">Reels</string>
+    <string name="stories_feed_stories">Stories on PetAdopta</string>
 
     <!-- Necesidades (Calculadora) -->
     <string name="needs_calc_title">Calorie Calculator 🐾</string>
@@ -592,6 +598,7 @@
     <string name="reg_ally_btn_register">REQUEST REGISTRATION</string>
     <string name="refugio_tipo_refugio">SHELTER 🏠</string>
     <string name="refugio_tipo_veterinaria">VETERINARY 🏥</string>
+    <string name="reg_ally_request_title">Shelter Request</string>
 
     <!-- Admin: Reportes -->
     <string name="admin_reports_title">Statistical Analysis 📊</string>
@@ -677,8 +684,8 @@
     <string name="req_card_home_title">Happy home?</string>
     <string name="req_card_home_subtitle">Ideal living conditions</string>
     <string name="req_btn_form">GO TO FORM</string>
-    <string name="req_btn_calculator">CALCULADORA</string>
-    <string name="req_btn_buy">COMPRAR</string>
+    <string name="req_btn_calculator">CALCULATOR</string>
+    <string name="req_btn_buy">BUY</string>
     <string name="req_btn_understood">UNDERSTOOD</string>
     <string name="req_popup_title_food">FEEDING</string>
     <string name="req_popup_title_data">YOUR DATA</string>
@@ -703,75 +710,6 @@
     <string name="mock_pet_3_location">Medellin, Ant.</string>
     <string name="mock_pet_3_type">Dog</string>
 
-    <string name="mock_pet_4_name">Bella</string>
-    <string name="mock_pet_4_age">4 years</string>
-    <string name="mock_pet_4_location">Cali, Valle</string>
-    <string name="mock_pet_4_type">Cat</string>
-
-    <string name="mock_story_1_text">It was the best day of my life when I found them.</string>
-    <string name="mock_story_2_text">Luna brought joy to our home.</string>
-
-    <string name="mock_pet_desc_template">Hi! I am a rescued %1$s looking for a home full of love. I am very playful and friendly. Come meet me!</string>
-    <string name="mock_pet_desc_placeholder">I am looking for a home full of love. I am a very affectionate and playful %1$s. Give me a chance to be your best friend!</string>
-    <string name="mock_pet_breed_dog">Rescued (Canine)</string>
-    <string name="mock_pet_breed_cat">Rescued (Feline)</string>
-    <string name="mock_pet_age_years">%1$d years</string>
-    <string name="mock_pet_type_dog">Dog</string>
-    <string name="mock_pet_type_cat">Cat</string>
-    <string name="mock_pet_breed_init_dog">German Shepherd Mix</string>
-    <string name="mock_pet_breed_init_cat">Domestic Shorthair</string>
-
-    <!-- Pet Detail Screen -->
-    <string name="pet_detail_title">Pet Details</string>
-    <string name="pet_detail_description">Description</string>
-    <string name="pet_detail_comments">Comments (%1$d)</string>
-    <string name="pet_detail_fav_removed">Removed from favorites</string>
-    <string name="pet_detail_fav_added">Added to favorites!</string>
-    <string name="pet_detail_comment_placeholder">Write a comment...</string>
-    <string name="pet_detail_reply_placeholder">Write your response...</string>
-    <string name="pet_detail_replying_to">Replying to %1$s</string>
-    <string name="pet_detail_penalty_active">Active penalty. Time remaining: %1$s</string>
-    <string name="pet_detail_btn_cancel_request">CANCEL REQUEST / RELEASE</string>
-    <string name="pet_detail_request_cancelled">Request cancelled. Pet released.</string>
-    <string name="pet_detail_btn_back_home">BACK TO HOME</string>
-    <string name="pet_detail_btn_view_cert">VIEW MY CERTIFICATE 🎉</string>
-    <string name="pet_detail_btn_view_rejection">VIEW REJECTION REASON ❌</string>
-    <string name="pet_detail_already_adopted">THIS PET ALREADY HAS A HOME ❤️</string>
-    <string name="pet_detail_request_pending">REQUEST PENDING ⏳</string>
-    <string name="pet_detail_btn_adopt">I\'M INTERESTED IN ADOPTING 🐾</string>
-    <string name="pet_detail_penalty_msg">You are penalized. Time remaining: %1$s</string>
-    <string name="pet_detail_request_review_msg">Your request is being reviewed.</string>
-    <string name="pet_detail_btn_retry">RETRY QUESTIONNAIRE</string>
-
-    <!-- My Adoptions Screen -->
-    <string name="my_adoptions_title">MY ADOPTIONS 🐾</string>
-    <string name="my_adoptions_empty">You don\'t have adopted pets yet</string>
-    <string name="my_adoptions_btn_health">VIEW HEALTH CARD</string>
-
-    <!-- Adoption Confirmation Screen -->
-    <string name="adoption_success_title">SUCCESSFUL ADOPTION!</string>
-    <string name="adoption_success_subtitle">They are now part of your life!</string>
-    <string name="adoption_success_label_date">Date</string>
-    <string name="adoption_success_label_adopter">Adopter</string>
-    <string name="adoption_success_section_summary">Request Summary:</string>
-    <string name="adoption_success_btn_back">BACK TO HOME</string>
-    <string name="adoption_summary_motivation">Motivation: %1$s</string>
-    <string name="adoption_summary_housing">Housing: %1$s</string>
-    <string name="adoption_summary_hours">Hours alone: %1$s</string>
-    <string name="adoption_summary_reference">Reference: %1$s (%2$s)</string>
-    <string name="adoption_admin_comment_template">The adoption of the pet %1$s, of type %2$s, has been successfully registered in the name of %3$s. The information has been correctly stored in the system and the pet\'s status has been updated as adopted. Thank you for completing the adoption process at PetAdopt.</string>
-
-    <!-- Admin Bottom Nav -->
-    <string name="nav_admin_panel">Panel</string>
-    <string name="nav_admin_requests">Requests</string>
-    <string name="nav_admin_pets">Pets</string>
-    <string name="nav_admin_logout">Logout</string>
-
-    <string name="nav_admin_stats">Stats</string>
-    <string name="nav_admin_solicitudes">Requests</string>
-    <string name="nav_admin_encontrar">Find</string>
-    <string name="nav_admin_salir">Logout</string>
-
     <!-- Admin Panel -->
     <string name="admin_panel_title">Administrative Panel 🛡️</string>
     <string name="admin_panel_subtitle">Control and Management Center</string>
@@ -788,11 +726,93 @@
     <string name="admin_panel_tool_add_pet">Upload Pet</string>
     <string name="admin_panel_tool_stories">Manage Stories</string>
     <string name="admin_panel_tool_view_stories">View Stories Feed</string>
+    <string name="admin_panel_chat_moderation_title">Chat Moderation Window</string>
+    <string name="admin_panel_chat_no_messages">No new messages</string>
+    <string name="admin_panel_chat_expand_all">Expand/Collapse All</string>
+    <string name="admin_panel_chat_messages_count">%1$d messages</string>
+    <string name="admin_panel_chat_reply_to">Reply to %1$s</string>
+    <string name="admin_panel_chat_reply_placeholder">Reply...</string>
+    <string name="admin_panel_chat_message_placeholder">Message to chat...</string>
+    <string name="admin_panel_chat_action_reply">Reply</string>
+    <string name="admin_panel_chat_action_censor">Censor</string>
+    <string name="admin_panel_chat_action_delete">Delete</string>
 
-    <string name="mock_user_colaborador">Charles Contributor</string>
+    <string name="refugios_title">Partner Shelters 🏠</string>
+    <string name="refugios_subtitle">Find trusted places near you</string>
+    <string name="refugios_empty">No verified shelters yet</string>
+    <string name="refugios_verified">Verified</string>
+    <string name="refugios_btn_contact">CONTACT SHELTER</string>
+    <string name="refugios_fab_add">Register Shelter</string>
+    <string name="refugios_common_like">Like</string>
+
+
+    <string name="mock_pet_4_name">Bella</string>
+    <string name="mock_pet_4_age">4 years</string>
+    <string name="mock_pet_4_location">Cali, Valle</string>
+    <string name="mock_pet_4_type">Cat</string>
+
+    <!-- Pet Detail Screen -->
+    <string name="pet_detail_title">Pet Details</string>
+    <string name="pet_detail_description">Description</string>
+    <string name="pet_detail_comments">Comments (%1$d)</string>
+    <string name="pet_detail_fav_removed">Removed from favorites</string>
+    <string name="pet_detail_fav_added">Added to favorites!</string>
+    <string name="pet_detail_comment_placeholder">Write a comment...</string>
+    <string name="pet_detail_reply_placeholder">Write your reply...</string>
+    <string name="pet_detail_replying_to">Replying to %1$s</string>
+    <string name="pet_detail_penalty_active">Penalty active. Remaining time: %1$s</string>
+    <string name="pet_detail_btn_cancel_request">CANCEL REQUEST / RELEASE</string>
+    <string name="pet_detail_request_cancelled">Request cancelled. Pet released.</string>
+    <string name="pet_detail_btn_back_home">BACK TO HOME</string>
+    <string name="pet_detail_btn_view_cert">VIEW MY CERTIFICATE 🎉</string>
+    <string name="pet_detail_btn_view_rejection">VIEW REJECTION REASON ❌</string>
+    <string name="pet_detail_already_adopted">THIS PET ALREADY HAS A HOME ❤️</string>
+    <string name="pet_detail_request_pending">REQUEST PENDING ⏳</string>
+    <string name="pet_detail_btn_adopt">I WANT TO ADOPT 🐾</string>
+    <string name="pet_detail_penalty_msg">You are penalized. Remaining time: %1$s</string>
+    <string name="pet_detail_request_review_msg">Your request is being reviewed.</string>
+    <string name="pet_detail_btn_retry">RETRY QUESTIONNAIRE</string>
+
+    <!-- My Adoptions Screen -->
+    <string name="my_adoptions_title">MY ADOPTIONS 🐾</string>
+    <string name="my_adoptions_empty">"You don't have any adopted pets yet"</string>
+    <string name="my_adoptions_btn_health">VIEW HEALTH RECORD</string>
+
+    <!-- Adoption Confirmation Screen -->
+    <string name="adoption_summary_motivation">Motivation: %1$s</string>
+    <string name="adoption_summary_housing">Housing: %1$s</string>
+    <string name="adoption_summary_hours">Hours alone: %1$s</string>
+    <string name="adoption_summary_reference">Reference: %1$s (%2$s)</string>
+    <string name="adoption_admin_comment_template">
+    "The adoption of the pet %1$s, of type %2$s, has been successfully registered under the name of %3$s. The information has been correctly stored in the system and the pet's status has been updated to adopted. Thank you for completing the adoption process on PetAdopt."
+</string>
+    <string name="nav_admin_stats">Statistics</string>
+    <string name="nav_admin_solicitudes">Requests</string>
+    <string name="nav_admin_encontrar">Find</string>
+    <string name="nav_admin_salir">Log out</string>
+
+    <string name="store_notif_redeem_success_msg_2">You have redeemed your points for: %1$s. Enjoy!</string>
+
+    <string name="mock_story_1_text">It was the best day of my life when I found him.</string>
+    <string name="mock_story_2_text">Luna brought joy to our home.</string>
+     <string name="mock_shelter_caninos_addr">Carrera 14 #2-50, Armenia</string>
+    <string name="mock_pet_desc_template">Hi! I\'m a rescued %1$s looking for a loving home. I\'m playful, friendly, and can\'t wait to meet you!</string>
+
+    <string name="mock_pet_desc_placeholder">I\'m looking for a loving home. I\'m a sweet and playful %1$s ready to become your best friend. Give me a chance!</string>
+     <string name="mock_pet_breed_dog">Rescued (Dog)</string>
+    <string name="mock_pet_breed_cat">Rescued (Cat)</string>
+    <string name="mock_pet_age_years">%1$d years</string>
+    <string name="mock_pet_type_dog">Dog</string>
+    <string name="mock_pet_type_cat">Cat</string>
+    <string name="mock_pet_breed_init_dog">German Shepherd Mix</string>
+    <string name="mock_pet_breed_init_cat">European Shorthair</string>
+
+    <!-- Admin Navigation -->
+    <!-- Mock Data Names and Labels -->
+    <string name="mock_user_colaborador">Carlos Contributor</string>
     <string name="mock_user_protector">Patricia Protector</string>
-    <string name="mock_user_heroe">Herbert Hero</string>
-    <string name="mock_user_leyenda">Lewis Legend</string>
+    <string name="mock_user_heroe">Humberto Hero</string>
+    <string name="mock_user_leyenda">Luis Legend</string>
     <string name="mock_user_admin">Administrator</string>
     <string name="mock_location_bogota">Bogotá</string>
     <string name="mock_location_medellin">Medellín</string>
@@ -804,106 +824,139 @@
     <string name="mock_dept_valle">Valle del Cauca</string>
     <string name="mock_dept_atlantico">Atlántico</string>
     <string name="mock_dept_quindio">Quindío</string>
-    <string name="mock_address_central">Headquarters</string>
+    <string name="mock_address_central">Head Office</string>
     <string name="mock_address_1">10th Street</string>
     <string name="mock_address_2">20th Avenue</string>
-    <string name="mock_address_3">30th Boulevard</string>
+    <string name="mock_address_3">30th Avenue</string>
     <string name="mock_address_4">40th Street</string>
-
-    <string name="mock_shelter_ada_name">ADA Quindío</string>
-    <string name="mock_shelter_ada_desc">Quindío Animal Defense Association. Over 20 years of rescue work.</string>
-    <string name="mock_shelter_ada_addr">Carrera 19 #30-40, Armenia</string>
-    <string name="mock_shelter_cafe_name">Coffee Region Veterinary Clinic</string>
-    <string name="mock_shelter_cafe_desc">Specialized 24/7 care in the heart of Armenia.</string>
-    <string name="mock_shelter_cafe_addr">Calle 15 #14-25, Armenia</string>
-    <string name="mock_shelter_tebaida_name">La Tebaida Shelter</string>
-    <string name="mock_shelter_tebaida_desc">Halfway home for rescued dogs and cats in southern Quindío.</string>
-    <string name="mock_shelter_tebaida_addr">Pan-American Highway km 2, La Tebaida</string>
-    <string name="mock_shelter_armenia_name">Armenia Pets Veterinary</string>
-    <string name="mock_shelter_armenia_desc">General consultation, surgery, and professional grooming.</string>
-    <string name="mock_shelter_armenia_addr">Avenida Bolívar #10-15, Armenia</string>
-    <string name="mock_shelter_roque_name">San Roque Shelter</string>
-    <string name="mock_shelter_roque_desc">Sanctuary dedicated to the care of abandoned senior pets.</string>
-    <string name="mock_shelter_roque_addr">Vereda La Julia, Circasia</string>
-    <string name="mock_shelter_uniquindio_name">Uniquindío Veterinary Hospital</string>
-    <string name="mock_shelter_uniquindio_desc">Teaching hospital of the University of Quindío with comprehensive services.</string>
-    <string name="mock_shelter_uniquindio_addr">Calle 12 Norte, Armenia</string>
-    <string name="mock_shelter_arca_name">The Ark Veterinary</string>
-    <string name="mock_shelter_arca_desc">Medical care for pets in the municipality of Calarcá.</string>
-    <string name="mock_shelter_arca_addr">Carrera 24 #18-30, Calarcá</string>
-    <string name="mock_shelter_eco_name">Eco-Huellas Foundation</string>
-    <string name="mock_shelter_eco_desc">Animal protection and environmental education in Salento.</string>
-    <string name="mock_shelter_eco_addr">Vía al Valle, Salento</string>
-    <string name="mock_shelter_caninos_name">Canine and Feline Vet Clinic</string>
-    <string name="mock_shelter_caninos_desc">Internal medicine and specialized clinical laboratory.</string>
-    <string name="mock_shelter_caninos_addr">Carrera 14 #2-50, Armenia</string>
-    <string name="mock_shelter_huellas_name">Quindío Footprints</string>
-    <string name="mock_shelter_huellitas_desc">Country shelter with large green areas for recreation.</string>
-    <string name="mock_shelter_huellitas_addr">Montenegro Highway km 1</string>
-
-    <string name="mock_shelter_voz_name">Animal Voice Foundation</string>
-    <string name="mock_shelter_voz_desc">Mass rescue and sterilization throughout the Bogotá savanna.</string>
+    <string name="mock_shelter_voz_name">Voz Animal Foundation</string>
+    <string name="mock_shelter_voz_desc">Mass rescue and sterilization across the Bogotá savanna.</string>
     <string name="mock_shelter_voz_addr">Chía, Cundinamarca</string>
+
     <string name="mock_shelter_dover_name">Dover Veterinary Clinic</string>
     <string name="mock_shelter_dover_desc">Pioneers in high-complexity veterinary medicine in Colombia.</string>
-    <string name="mock_shelter_dover_addr">Calle 127 #15-36, Bogotá</string>
+    <string name="mock_shelter_dover_addr">127th Street #15-36, Bogotá</string>
+
     <string name="mock_shelter_milagrinos_name">Milagrinos Shelter</string>
-    <string name="mock_shelter_milagrinos_desc">Specialized in the rescue and rehabilitation of abandoned cats.</string>
+    <string name="mock_shelter_milagrinos_desc">Specialized in rescuing and rehabilitating abandoned cats.</string>
     <string name="mock_shelter_milagrinos_addr">Usaquén, Bogotá</string>
+
     <string name="mock_shelter_agrocampo_name">Agrocampo Vet Center</string>
-    <string name="mock_shelter_agrocampo_desc">The city\'s largest veterinary center with a 24h pharmacy.</string>
-    <string name="mock_shelter_agrocampo_addr">Avenida Caracas #73-10, Bogotá</string>
+    <string name="mock_shelter_agrocampo_desc">The largest veterinary center in the city with a 24/7 pharmacy.</string>
+    <string name="mock_shelter_agrocampo_addr">Caracas Avenue #73-10, Bogotá</string>
+
     <string name="mock_shelter_razas_name">Unique Breeds Foundation</string>
-    <string name="mock_shelter_razas_desc">Promoting the adoption of mixed-breed dogs (\'unique breeds\').</string>
+    <string name="mock_shelter_razas_desc">Promoting the adoption of mixed-breed dogs ("unique breeds").</string>
     <string name="mock_shelter_razas_addr">Suba, Bogotá</string>
+
     <string name="mock_shelter_orca_name">Orca Foundation</string>
     <string name="mock_shelter_orca_desc">Tireless defenders of animal life in Antioquia.</string>
     <string name="mock_shelter_orca_addr">El Poblado, Medellín</string>
+
     <string name="mock_shelter_jeronimo_name">San Jerónimo Vet Center</string>
     <string name="mock_shelter_jeronimo_desc">Experts in animal behavior and feline medicine.</string>
     <string name="mock_shelter_jeronimo_addr">Laureles, Medellín</string>
+
     <string name="mock_shelter_perla_name">La Perla Shelter</string>
-    <string name="mock_shelter_perla_desc">Official animal welfare center of the Medellín Mayor\'s Office.</string>
+    <string name="mock_shelter_perla_desc">Official animal welfare center of the Medellín City Hall.</string>
     <string name="mock_shelter_perla_addr">Altavista District, Medellín</string>
-    <string name="mock_shelter_establo_name">The Stable Vet Clinic</string>
+
+    <string name="mock_shelter_establo_name">El Establo Veterinary Clinic</string>
     <string name="mock_shelter_establo_desc">Comprehensive medical services for pets and farm animals.</string>
     <string name="mock_shelter_establo_addr">Envigado, Antioquia</string>
+
     <string name="mock_shelter_animalnat_name">Animalnat Foundation</string>
-    <string name="mock_shelter_animalnat_desc">Rescue and education on urban and domestic wildlife.</string>
+    <string name="mock_shelter_animalnat_desc">Rescue and education about urban and domestic wildlife.</string>
     <string name="mock_shelter_animalnat_addr">Bello, Antioquia</string>
-    <string name="mock_shelter_salvando_name">Saving Footprints Cali</string>
-    <string name="mock_shelter_salvando_desc">Protective association dedicated to rescuing animals from abuse.</string>
+
+    <string name="mock_shelter_salvando_name">Saving Paws Cali</string>
+    <string name="mock_shelter_salvando_desc">Animal protection organization dedicated to rescuing abused animals.</string>
     <string name="mock_shelter_salvando_addr">Pance, Cali</string>
-    <string name="mock_shelter_luis_name">San Luis Vet Clinic</string>
-    <string name="mock_shelter_luis_desc">Cutting-edge medicine for pets in Valle del Cauca.</string>
-    <string name="mock_shelter_luis_addr">Avenida 6N, Cali</string>
-    <string name="mock_shelter_villa_name">Canine Villa Shelter</string>
-    <string name="mock_shelter_villa_desc">Country sanctuary with physical rehabilitation programs.</string>
-    <string name="mock_shelter_villa_addr">Jamundí Highway, Cali</string>
-    <string name="mock_shelter_petcenter_name">Pet Center Cali Veterinary</string>
-    <string name="mock_shelter_petcenter_desc">Clinic, grooming, and five-star canine hotel.</string>
+
+    <string name="mock_shelter_luis_name">San Luis Veterinary Clinic</string>
+    <string name="mock_shelter_luis_desc">Cutting-edge veterinary medicine in Valle del Cauca.</string>
+    <string name="mock_shelter_luis_addr">6N Avenue, Cali</string>
+
+    <string name="mock_shelter_villa_name">Villa Canina Shelter</string>
+    <string name="mock_shelter_villa_desc">Countryside sanctuary with physical rehabilitation programs.</string>
+    <string name="mock_shelter_villa_addr">Jamundí Road, Cali</string>
+
+    <string name="mock_shelter_petcenter_name">Pet Center Veterinary Cali</string>
+    <string name="mock_shelter_petcenter_desc">Five-star clinic, grooming, and dog hotel.</string>
     <string name="mock_shelter_petcenter_addr">Granada Neighborhood, Cali</string>
+
     <string name="mock_shelter_pereira_name">Pereira Express Veterinary</string>
     <string name="mock_shelter_pereira_desc">Fast and reliable medical care in the capital of Risaralda.</string>
-    <string name="mock_shelter_pereira_addr">Avenida Circunvalar, Pereira</string>
+    <string name="mock_shelter_pereira_addr">Circunvalar Avenue, Pereira</string>
+
     <string name="mock_shelter_nombre_name">Nameless Dogs Foundation</string>
-    <string name="mock_shelter_nombre_desc">Rescue in the streets of the "City of Parks" and Santander.</string>
+    <string name="mock_shelter_nombre_desc">Rescue work in the streets of the "beautiful city" and Santander.</string>
     <string name="mock_shelter_nombre_addr">Bucaramanga, Santander</string>
+
     <string name="mock_shelter_country_name">Country Veterinary Clinic</string>
-    <string name="mock_shelter_country_desc">Leaders in animal health on the Colombian Caribbean coast.</string>
+    <string name="mock_shelter_country_desc">Leaders in animal health on Colombia’s Caribbean coast.</string>
     <string name="mock_shelter_country_addr">El Prado Neighborhood, Barranquilla</string>
+
     <string name="mock_shelter_paraiso_name">Animal Paradise Shelter</string>
-    <string name="mock_shelter_paraiso_desc">A paradise among the mountains for rescued animals.</string>
+    <string name="mock_shelter_paraiso_desc">A paradise in the mountains for rescued animals.</string>
     <string name="mock_shelter_paraiso_addr">Manizales, Caldas</string>
+
     <string name="mock_shelter_peludos_name">Peludos Veterinary Clinic</string>
-    <string name="mock_shelter_peludos_desc">Comprehensive care for the pets of the Walled City.</string>
+    <string name="mock_shelter_peludos_desc">Comprehensive care for pets in the walled city.</string>
     <string name="mock_shelter_peludos_addr">Manga Neighborhood, Cartagena</string>
-    <string name="mock_shelter_huellitas_name">Happy Footprints Foundation</string>
+
+    <string name="mock_shelter_huellitas_name">Happy Paws Foundation</string>
     <string name="mock_shelter_huellitas_desc_ibague">Protection and responsible adoption in central Colombia.</string>
     <string name="mock_shelter_huellitas_addr_ibague">Ibagué, Tolima</string>
+
     <string name="mock_shelter_plus_name">Vet Plus Villavicencio</string>
     <string name="mock_shelter_plus_desc">Specialized services in the Colombian plains.</string>
-    <string name="mock_shelter_plus_addr">Avenida 40, Villavicencio</string>
+    <string name="mock_shelter_plus_addr">40th Avenue, Villavicencio</string>
+    <!-- Mock Shelter Data -->
+    <string name="mock_shelter_ada_name">ADA Quindío</string>
+    <string name="mock_shelter_ada_desc">Animal Defense Association of Quindío. Over 20 years rescuing animals.</string>
+    <string name="mock_shelter_ada_addr">19th Avenue #30-40, Armenia</string>
+    <string name="mock_shelter_cafe_name">Coffee Veterinary Clinic</string>
+    <string name="mock_shelter_cafe_desc">24/7 specialized care in the heart of Armenia.</string>
+    <string name="mock_shelter_cafe_addr">15th Street #14-25, Armenia</string>
+    <string name="mock_shelter_tebaida_name">La Tebaida Shelter</string>
+    <string name="mock_shelter_tebaida_desc">Temporary home for rescued dogs and cats in southern Quindío.</string>
+    <string name="mock_shelter_tebaida_addr">Panamericana Road km 2, La Tebaida</string>
+    <string name="mock_shelter_armenia_name">Mascotas Armenia Veterinary</string>
+    <string name="mock_shelter_armenia_desc">General consultation, surgery, and professional grooming.</string>
+    <string name="mock_shelter_armenia_addr">Bolívar Avenue #10-15, Armenia</string>
+    <string name="mock_shelter_roque_name">San Roque Shelter</string>
+    <string name="mock_shelter_roque_desc">Sanctuary dedicated to caring for abandoned senior pets.</string>
+    <string name="mock_shelter_roque_addr">La Julia Village, Circasia</string>
+    <string name="mock_shelter_uniquindio_name">Uniquindío Veterinary Hospital</string>
+    <string name="mock_shelter_uniquindio_desc">Teaching hospital of the University of Quindío with comprehensive services.</string>
+    <string name="mock_shelter_uniquindio_addr">12th North Street, Armenia</string>
+    <string name="mock_shelter_arca_name">El Arca Veterinary</string>
+    <string name="mock_shelter_arca_desc">Pet medical care in Calarcá municipality.</string>
+    <string name="mock_shelter_arca_addr">24th Avenue #18-30, Calarcá</string>
+    <string name="mock_shelter_eco_name">Eco-Huellas Foundation</string>
+    <string name="mock_shelter_eco_desc">Animal protection and environmental education in Salento.</string>
+    <string name="mock_shelter_eco_addr">Road to Valle, Salento</string>
+    <string name="mock_shelter_caninos_name">Canines &amp; Felines Vet Clinic</string>
+    <string name="mock_shelter_caninos_desc">Specialized internal medicine and clinical laboratory.</string>
+     <string name="mock_shelter_huellas_name">Huellas del Quindío</string>
+    <string name="mock_shelter_huellitas_desc">Countryside shelter with large green areas for recreation.</string>
+    <string name="mock_shelter_huellitas_addr">Montenegro Road km 1</string>
+    <string name="pong_score_label">puntuacion</string>
+    <!-- Admin -->
+    <string name="nav_admin_panel">Control Panel</string>
+    <string name="nav_admin_requests">Requests</string>
+    <string name="nav_admin_pets">Pets</string>
+    <string name="nav_admin_logout">Log out</string>
+
+    <!-- Successful Adoption -->
+    <string name="adoption_success_title">SUCCESSFUL ADOPTION!</string>
+    <string name="adoption_success_subtitle">Now part of your life!</string>
+    <string name="adoption_success_label_date">Date</string>
+    <string name="adoption_success_label_adopter">Adopter</string>
+    <string name="adoption_success_section_summary">Request Summary:</string>
+    <string name="adoption_success_btn_back">BACK TO HOME</string>
+
     <!-- Pong Game UI Strings -->
     <string name="pong_game_over_title">Game Over!</string>
     <string name="pong_pongs_performed">Pongs performed: %1$d</string>
@@ -911,17 +964,4 @@
     <string name="pong_retry_btn">Retry</string>
     <string name="pong_back_profile_btn">Back to Profile</string>
     <string name="pong_catch_toy">Catch the Toy!</string>
-    <string name="admin_panel_chat_moderation_title">Chat Moderation Window</string>
-    <string name="reg_ally_request_title">Shelter Request</string>
-    <string name="store_redeem_history">Redemption History</string>
-    <string name="stories_feed_reels">Reels</string>
-    <string name="stories_feed_stories">Stories on PetAdopta</string>
-    <string name="refugios_title">Partner Shelters 🏠</string>
-    <string name="refugios_subtitle">Find trusted places near you</string>
-    <string name="refugios_empty">No verified shelters yet</string>
-    <string name="refugios_verified">Verified</string>
-    <string name="refugios_btn_contact">CONTACT SHELTER</string>
-    <string name="refugios_fab_add">Register Shelter</string>
-    <string name="refugios_common_like">Like</string>
-    <string name="store_notif_redeem_success_msg_2">You have redeemed your points for: %1$s. Enjoy!</string>
 </resources>

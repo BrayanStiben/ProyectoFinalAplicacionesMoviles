@@ -57,7 +57,6 @@ fun HistorialComprasScreen(
                 .padding(padding)
                 .background(Color(0xFFFDFBFA))
         ) {
-            // --- HEADER ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,7 +82,7 @@ fun HistorialComprasScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Registro de compras por usuario",
+                            stringResource(R.string.store_redeem_history_subtitle),
                             color = Color.White.copy(0.9f),
                             fontSize = 14.sp
                         )
@@ -93,7 +92,7 @@ fun HistorialComprasScreen(
 
             if (compras.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay registros de compras aún", color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.store_redeem_history_empty), color = Color.Gray, fontWeight = FontWeight.Bold)
                 }
             } else {
                 LazyColumn(
@@ -134,9 +133,7 @@ fun TarjetaRegistroCompra(compra: CompraTienda) {
                 }
                 Text(sdf.format(Date(compra.fecha)), fontSize = 11.sp, color = Color.Gray)
             }
-            
             HorizontalDivider(Modifier.padding(vertical = 12.dp), color = Color.LightGray.copy(alpha = 0.3f))
-            
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.ShoppingBag, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(8.dp))

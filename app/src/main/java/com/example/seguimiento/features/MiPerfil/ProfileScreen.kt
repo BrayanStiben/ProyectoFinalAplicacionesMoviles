@@ -164,7 +164,7 @@ fun ProfileScreen(
                         // Segunda Fila de Botones (Juego con mismo tamaño)
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             ProfileActionButton(
-                                text = "Pet Pong (Gana Puntos)", 
+                                text = stringResource(id = R.string.profile_btn_pong), 
                                 icon = Icons.Default.SportsEsports,
                                 onClick = onNavigateToPong,
                                 backgroundColor = VerdeApp,
