@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.seguimiento.R
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -47,25 +48,25 @@ fun LoginScreen(
     val context = LocalContext.current
 
     LaunchedEffect(loginState) {
-        when (val state = loginState) {
-            is LoginResult.Success -> {
-                onLoginSuccess(state.isAdmin)
-                viewModel.resetLoginState()
-            }
-            is LoginResult.Error -> {
-                val errorMessage = context.getString(state.messageResId)
-                val prefix = context.getString(com.example.seguimiento.R.string.login_error_prefix, errorMessage)
-                scope.launch {
-                    snackbarHostState.showSnackbar(prefix)
+        loginState?.let { state ->
+            when (state) {
+                is LoginResult.Success -> {
+                    onLoginSuccess(state.isAdmin)
+                    viewModel.resetLoginState()
                 }
-                viewModel.resetLoginState()
+                is LoginResult.Error -> {
+                    val errorMessage = context.resources.getString(state.messageResId)
+                    val prefix = context.resources.getString(R.string.login_error_prefix, errorMessage)
+                    snackbarHostState.showSnackbar(prefix)
+                    viewModel.resetLoginState()
+                }
             }
-            null -> {}
         }
     }
 
     val imageResourceId = remember(context) {
-        context.resources.getIdentifier("login", "drawable", context.packageName)
+        val id = context.resources.getIdentifier("login", "drawable", context.packageName)
+        if (id != 0) id else R.drawable.petadopticono
     }
 
     Scaffold(
@@ -76,16 +77,13 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (imageResourceId != 0) {
-                Image(
-                    painter = painterResource(id = imageResourceId),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
+            Image(
+                painter = painterResource(id = imageResourceId),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
+            )
 
-            // Selector de Idioma Mejorado
             LanguageSelector(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -104,7 +102,7 @@ fun LoginScreen(
                 CustomInputField(
                     value = viewModel.email.value,
                     onValueChange = { viewModel.email.onChange(it) },
-                    placeholder = stringResource(id = com.example.seguimiento.R.string.login_user_placeholder),
+                    placeholder = stringResource(id = R.string.login_user_placeholder),
                     icon = Icons.Default.Person,
                     errorResId = viewModel.email.errorResId
                 )
@@ -114,14 +112,14 @@ fun LoginScreen(
                 CustomInputField(
                     value = viewModel.password.value,
                     onValueChange = { viewModel.password.onChange(it) },
-                    placeholder = stringResource(id = com.example.seguimiento.R.string.login_password_placeholder),
+                    placeholder = stringResource(id = R.string.login_password_placeholder),
                     icon = Icons.Default.Lock,
                     isPassword = true,
                     errorResId = viewModel.password.errorResId
                 )
 
                 Text(
-                    text = stringResource(id = com.example.seguimiento.R.string.login_forgot_password),
+                    text = stringResource(id = R.string.login_forgot_password),
                     color = Color(0xFFD37506), 
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -139,7 +137,7 @@ fun LoginScreen(
                         if (viewModel.isFormValid) {
                             viewModel.login()
                         } else {
-                            val msg = context.getString(com.example.seguimiento.R.string.login_form_invalid)
+                            val msg = context.resources.getString(R.string.login_form_invalid)
                             scope.launch {
                                 snackbarHostState.showSnackbar(msg)
                             }
@@ -153,7 +151,7 @@ fun LoginScreen(
                         containerColor = Color(0xFFD37506)
                     )
                 ) {
-                    Text(text = stringResource(id = com.example.seguimiento.R.string.login_button), fontSize = 18.sp, color = Color.White)
+                    Text(text = stringResource(id = R.string.login_button), fontSize = 18.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -162,9 +160,9 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(id = com.example.seguimiento.R.string.login_no_account), color = Color.White, fontSize = 14.sp)
+                    Text(text = stringResource(id = R.string.login_no_account), color = Color.White, fontSize = 14.sp)
                     Text(
-                        text = stringResource(id = com.example.seguimiento.R.string.login_register_link),
+                        text = stringResource(id = R.string.login_register_link),
                         color = Color(0xFFD37506),
                         fontWeight = FontWeight.ExtraBold,
                         textDecoration = TextDecoration.Underline,

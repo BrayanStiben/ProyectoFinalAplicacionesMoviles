@@ -18,21 +18,26 @@ import retrofit2.http.Query
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class DummyJsonResponse(val products: List<DjProduct>?)
-data class DjProduct(val id: Int, val title: String, val description: String, val thumbnail: String?)
-
+// APIs de Mascotas Reales
 data class OffSearchResponse(val products: List<OffProduct>?)
 data class OffProduct(val product_name: String?, val image_url: String?)
 
-interface DummyJsonApi {
-    @GET("https://dummyjson.com/products/search")
-    suspend fun search(@Query("q") query: String, @Query("limit") limit: Int = 30): DummyJsonResponse
-}
-
 interface OpenPetFoodFactsApi {
     @GET("https://world.openpetfoodfacts.org/cgi/search.pl?json=1")
-    suspend fun search(@Query("search_terms") terms: String, @Query("page_size") limit: Int = 30): OffSearchResponse
+    suspend fun search(@Query("search_terms") terms: String, @Query("page_size") limit: Int = 50): OffSearchResponse
 }
+
+interface DogImageApi {
+    @GET("https://dog.ceo/api/breeds/image/random/20")
+    suspend fun getRandomImages(): DogImageResponse
+}
+data class DogImageResponse(val message: List<String>)
+
+interface CatImageApi {
+    @GET("https://api.thecatapi.com/v1/images/search?limit=20")
+    suspend fun getRandomImages(): List<CatImageResponse>
+}
+data class CatImageResponse(val url: String)
 
 @Singleton
 class TiendaRepositoryImpl @Inject constructor(
@@ -47,14 +52,6 @@ class TiendaRepositoryImpl @Inject constructor(
     private val _compras = MutableStateFlow<List<CompraTienda>>(emptyList())
     override val compras: StateFlow<List<CompraTienda>> = _compras.asStateFlow()
 
-    private val dummyApi: DummyJsonApi by lazy {
-        Retrofit.Builder()
-            .baseUrl("https://dummyjson.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(DummyJsonApi::class.java)
-    }
-
     private val petFoodApi: OpenPetFoodFactsApi by lazy {
         Retrofit.Builder()
             .baseUrl("https://world.openpetfoodfacts.org/")
@@ -63,74 +60,83 @@ class TiendaRepositoryImpl @Inject constructor(
             .create(OpenPetFoodFactsApi::class.java)
     }
 
+    private val dogApi: DogImageApi by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://dog.ceo/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(DogImageApi::class.java)
+    }
+
+    private val catApi: CatImageApi by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://api.thecatapi.com/v1/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CatImageApi::class.java)
+    }
+
     init {
         loadProductsFromApis()
     }
 
     private fun loadProductsFromApis() {
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                coroutineScope {
-                    val djQueries = mapOf(
-                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "dog",
-                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc) to "furniture",
-                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "health"
-                    )
+            val catToys = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys)
+            val catAcc = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc)
+            val catHealth = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health)
+            val catFood = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
 
-                    // Ejecución paralela para DummyJSON
-                    val djDeferred = djQueries.map { (categoria, query) ->
-                        async {
-                            try {
-                                val response = dummyApi.search(query, limit = 15)
-                                response.products?.mapNotNull { item ->
-                                    if (!item.thumbnail.isNullOrEmpty()) {
-                                        Producto(
-                                            id = "dj_${item.id}_${categoria}",
-                                            nombre = item.title.take(25),
-                                            descripcion = item.description.take(100),
-                                            precioPuntos = (300..2000).random(),
-                                            imagenUrl = item.thumbnail!!,
-                                            stock = (1..10).random(),
-                                            categoria = categoria
-                                        )
-                                    } else null
-                                } ?: emptyList()
-                            } catch (e: Exception) { emptyList() }
+            // 1. Cargar Comida Real (OpenPetFoodFacts)
+            launch {
+                try {
+                    val queries = listOf("dog food", "cat food", "pet snacks")
+                    queries.forEach { query ->
+                        val response = petFoodApi.search(query, limit = 15)
+                        val items = response.products?.mapNotNull { item ->
+                            if (item.image_url.isNullOrEmpty() || item.product_name.isNullOrEmpty()) return@mapNotNull null
+                            Producto(
+                                id = "pf_${item.product_name.hashCode()}",
+                                nombre = item.product_name.take(35),
+                                descripcion = "Alimento premium certificado para mascotas.",
+                                precioPuntos = (400..1200).random(),
+                                imagenUrl = item.image_url.replace("http://", "https://"),
+                                stock = (10..30).random(),
+                                categoria = catFood
+                            )
+                        } ?: emptyList()
+                        _productos.update { (it + items).distinctBy { p -> p.id } }
+                    }
+                } catch (e: Exception) { e.printStackTrace() }
+            }
+
+            // 2. Cargar Juguetes y Accesorios usando imágenes reales de Perros/Gatos
+            launch {
+                try {
+                    val dogImages = dogApi.getRandomImages().message
+                    val catImages = catApi.getRandomImages().map { it.url }
+                    val allPetImages = (dogImages + catImages).shuffled()
+
+                    val items = allPetImages.mapIndexed { index, url ->
+                        val (nombre, cat, desc) = when (index % 3) {
+                            0 -> Triple("Juguete Interactivo", catToys, "Pelota resistente para horas de diversión.")
+                            1 -> Triple("Arnés Ergonómico", catAcc, "Máximo confort y seguridad para paseos.")
+                            else -> Triple("Kit de Higiene Pro", catHealth, "Limpieza profunda y cuidado de la piel.")
                         }
-                    }
 
-                    val petFoodQueries = listOf("dog food", "cat food", "bird food", "fish food")
-                    val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
-                    val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
-                    val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
-
-                    // Ejecución paralela para OpenPetFoodFacts
-                    val pfDeferred = petFoodQueries.map { query ->
-                        async {
-                            try {
-                                val responsePf = petFoodApi.search(query, limit = 10)
-                                responsePf.products?.filter { !it.image_url.isNullOrEmpty() }?.mapIndexed { index, item ->
-                                    Producto(
-                                        id = "pf_${query}_$index",
-                                        nombre = (item.product_name ?: defaultFoodName).take(30),
-                                        descripcion = defaultFoodDesc,
-                                        precioPuntos = (200..1500).random(),
-                                        imagenUrl = item.image_url!!.replace("http://", "https://"),
-                                        stock = (1..15).random(),
-                                        categoria = foodCategory
-                                    )
-                                } ?: emptyList()
-                            } catch (e: Exception) { emptyList() }
-                        }
+                        Producto(
+                            id = "pet_item_$index",
+                            nombre = "$nombre ${index + 1}",
+                            descripcion = desc,
+                            precioPuntos = (250..1500).random(),
+                            imagenUrl = url,
+                            stock = (5..15).random(),
+                            categoria = cat
+                        )
                     }
-
-                    val allResults = (djDeferred.awaitAll().flatten() + pfDeferred.awaitAll().flatten())
-                    
-                    if (allResults.isNotEmpty()) {
-                        _productos.value = allResults.distinctBy { it.nombre }.shuffled()
-                    }
-                }
-            } catch (e: Exception) { e.printStackTrace() }
+                    _productos.update { (it + items).distinctBy { p -> p.id } }
+                } catch (e: Exception) { e.printStackTrace() }
+            }
         }
     }
 
@@ -142,21 +148,8 @@ class TiendaRepositoryImpl @Inject constructor(
 
     override fun comprarProducto(producto: Producto, userId: String, userName: String, userEmail: String): Result<Unit> {
         if (producto.stock <= 0) return Result.failure(Exception("Producto agotado"))
-        
-        val nuevaCompra = CompraTienda(
-            productoId = producto.id,
-            productoNombre = producto.nombre,
-            userId = userId,
-            userName = userName,
-            userEmail = userEmail,
-            puntosGastados = producto.precioPuntos
-        )
-        
-        _compras.update { it + nuevaCompra }
-        
-        _productos.update { list ->
-            list.map { if (it.id == producto.id) it.copy(stock = it.stock - 1) else it }
-        }
+        _compras.update { it + CompraTienda(productoId = producto.id, productoNombre = producto.nombre, userId = userId, userName = userName, userEmail = userEmail, puntosGastados = producto.precioPuntos) }
+        _productos.update { list -> list.map { if (it.id == producto.id) it.copy(stock = it.stock - 1) else it } }
         return Result.success(Unit)
     }
 }
