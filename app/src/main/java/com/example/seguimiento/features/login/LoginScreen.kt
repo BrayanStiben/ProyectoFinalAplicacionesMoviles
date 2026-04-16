@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -84,11 +85,11 @@ fun LoginScreen(
                 )
             }
 
-            // Selector de Idioma con Banderas
+            // Selector de Idioma Mejorado
             LanguageSelector(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(16.dp),
+                    .padding(20.dp),
                 context = context
             )
 
@@ -180,52 +181,95 @@ fun LoginScreen(
 fun LanguageSelector(modifier: Modifier = Modifier, context: Context) {
     var expanded by remember { mutableStateOf(false) }
     val currentLocale = context.resources.configuration.locales[0]
-    
-    // Texto y Bandera según idioma actual
-    val (label, flagEmoji) = if (currentLocale.language == "en") {
-        "English" to "🇺🇸"
-    } else {
-        "Español" to "🇪🇸"
-    }
+    val isEnglish = currentLocale.language == "en"
 
     Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier.clickable { expanded = true },
-            shape = RoundedCornerShape(12.dp),
-            color = Color.White.copy(alpha = 0.9f),
-            shadowElevation = 6.dp,
-            border = BorderStroke(1.dp, Color.LightGray)
+        Card(
+            onClick = { expanded = true },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = flagEmoji, fontSize = 20.sp)
-                Spacer(Modifier.width(8.dp))
-                Text(text = label, color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.Gray)
+                Text(
+                    text = if (isEnglish) "🇺🇸" else "🇪🇸",
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = if (isEnglish) "EN" else "ES",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF333333)
+                    )
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = Color(0xFFD37506),
+                    modifier = Modifier.size(22.dp)
+                )
             }
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White)
+            modifier = Modifier
+                .background(Color.White)
+                .width(160.dp)
         ) {
             DropdownMenuItem(
-                leadingIcon = { Text("🇪🇸", fontSize = 18.sp) },
-                text = { Text("Español") },
+                text = { 
+                    Text(
+                        text = "Español", 
+                        fontWeight = if (!isEnglish) FontWeight.Bold else FontWeight.Normal,
+                        color = if (!isEnglish) Color(0xFFD37506) else Color.Black
+                    ) 
+                },
+                leadingIcon = { Text("🇪🇸", fontSize = 22.sp) },
+                trailingIcon = {
+                    if (!isEnglish) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color(0xFFD37506),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                },
                 onClick = {
                     expanded = false
-                    updateLocale(context, "es")
+                    if (isEnglish) updateLocale(context, "es")
                 }
             )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 10.dp), color = Color.LightGray.copy(alpha = 0.5f))
             DropdownMenuItem(
-                leadingIcon = { Text("🇺🇸", fontSize = 18.sp) },
-                text = { Text("English") },
+                text = { 
+                    Text(
+                        text = "English", 
+                        fontWeight = if (isEnglish) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isEnglish) Color(0xFFD37506) else Color.Black
+                    ) 
+                },
+                leadingIcon = { Text("🇺🇸", fontSize = 22.sp) },
+                trailingIcon = {
+                    if (isEnglish) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color(0xFFD37506),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                },
                 onClick = {
                     expanded = false
-                    updateLocale(context, "en")
+                    if (!isEnglish) updateLocale(context, "en")
                 }
             )
         }
@@ -271,7 +315,7 @@ fun CustomInputField(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = if (error != null) Color.Red else Color(0xFF7B61FF)
+                    tint = if (error != null) Color.Red else Color(0xFFD37506)
                 )
             },
             modifier = Modifier

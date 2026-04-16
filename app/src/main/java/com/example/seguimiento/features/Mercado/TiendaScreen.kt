@@ -44,7 +44,6 @@ fun TiendaScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val naranjaApp = Color(0xFFE67E22)
-    val cafeApp = Color(0xFF5D2E17)
 
     Scaffold(
         bottomBar = {
@@ -94,7 +93,6 @@ fun TiendaScreen(
                             fontSize = 14.sp
                         )
                     }
-                    // PUNTOS ACTUALES
                     Surface(
                         color = Color.White.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(16.dp),
@@ -138,17 +136,31 @@ fun TiendaScreen(
                 }
             }
 
-            // --- GRID DE PRODUCTOS ---
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(uiState.productos) { producto ->
-                    TarjetaProducto(producto) {
-                        viewModel.comprarProducto(producto)
+            // --- ESTADOS DE CARGA Y CONTENIDO ---
+            if (uiState.isLoading) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = naranjaApp)
+                }
+            } else if (uiState.productos.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.Storefront, null, modifier = Modifier.size(64.dp), tint = Color.LightGray)
+                        Spacer(Modifier.height(16.dp))
+                        Text(stringResource(R.string.admin_store_empty), color = Color.Gray)
+                    }
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(uiState.productos) { producto ->
+                        TarjetaProducto(producto) {
+                            viewModel.comprarProducto(producto)
+                        }
                     }
                 }
             }
@@ -198,7 +210,7 @@ fun TarjetaProducto(producto: Producto, onBuy: () -> Unit) {
                         maxLines = 2, 
                         lineHeight = 14.sp,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.height(28.dp) // Altura fija para 2 líneas
+                        modifier = Modifier.height(28.dp)
                     )
                     
                     Spacer(Modifier.height(8.dp))
@@ -233,7 +245,6 @@ fun TarjetaProducto(producto: Producto, onBuy: () -> Unit) {
                 }
             }
 
-            // LETRERO AGOTADO (Overlay Centrado en toda la tarjeta)
             if (estaAgotado) {
                 Box(
                     modifier = Modifier

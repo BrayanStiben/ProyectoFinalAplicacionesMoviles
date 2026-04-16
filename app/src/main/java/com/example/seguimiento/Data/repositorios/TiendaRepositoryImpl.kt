@@ -19,24 +19,21 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import javax.inject.Inject
 import javax.inject.Singleton
-import java.util.Locale
 
-// --- DATA CLASSES PARA APIS ---
 data class DummyJsonResponse(val products: List<DjProduct>?)
 data class DjProduct(val id: Int, val title: String, val description: String, val thumbnail: String?)
 
 data class OffSearchResponse(val products: List<OffProduct>?)
 data class OffProduct(val product_name: String?, val image_url: String?)
 
-// --- INTERFACES DE API ---
 interface DummyJsonApi {
     @GET("https://dummyjson.com/products/search")
-    suspend fun search(@Query("q") query: String, @Query("limit") limit: Int = 20): DummyJsonResponse
+    suspend fun search(@Query("q") query: String, @Query("limit") limit: Int = 30): DummyJsonResponse
 }
 
 interface OpenPetFoodFactsApi {
     @GET("https://world.openpetfoodfacts.org/cgi/search.pl?json=1")
-    suspend fun search(@Query("search_terms") terms: String, @Query("page_size") limit: Int = 20): OffSearchResponse
+    suspend fun search(@Query("search_terms") terms: String, @Query("page_size") limit: Int = 30): OffSearchResponse
 }
 
 @Singleton
@@ -77,20 +74,21 @@ class TiendaRepositoryImpl @Inject constructor(
             try {
                 val allFetched = mutableListOf<Producto>()
 
+                // 1. DummyJSON - Buscamos con términos más amplios para obtener más variedad
                 val djQueries = mapOf(
-                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "pet",
+                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "dog",
                     resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc) to "furniture",
-                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "care"
+                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "health"
                 )
                 
                 djQueries.forEach { (categoria, query) ->
                     try {
-                        val response = dummyApi.search(query, limit = 10)
+                        val response = dummyApi.search(query, limit = 20)
                         response.products?.forEach { item ->
                             if (!item.thumbnail.isNullOrEmpty()) {
                                 allFetched.add(
                                     Producto(
-                                        id = "dj_${item.id}",
+                                        id = "dj_${item.id}_${categoria}",
                                         nombre = item.title.take(25),
                                         descripcion = item.description.take(100),
                                         precioPuntos = (300..2000).random(),
@@ -104,66 +102,44 @@ class TiendaRepositoryImpl @Inject constructor(
                     } catch (e: Exception) { e.printStackTrace() }
                 }
 
-                try {
-                    val petFoodQueries = listOf("dog food", "cat food", "pet treat")
-                    val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
-                    val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
-                    val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
+                // 2. OpenPetFoodFacts - Alimento real para mascotas
+                val petFoodQueries = listOf("dog food", "cat food", "bird food", "fish food")
+                val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
+                val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
+                val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
 
-                    petFoodQueries.forEach { query ->
-                        try {
-                            val responsePf = petFoodApi.search(query, limit = 10)
-                            responsePf.products?.filter { !it.image_url.isNullOrEmpty() }?.forEachIndexed { index, item ->
-                                allFetched.add(
-                                    Producto(
-                                        id = "pf_${query}_$index",
-                                        nombre = (item.product_name ?: defaultFoodName).take(30),
-                                        descripcion = defaultFoodDesc,
-                                        precioPuntos = (200..1500).random(),
-                                        imagenUrl = item.image_url!!.replace("http://", "https://"),
-                                        stock = (1..15).random(),
-                                        categoria = foodCategory
-                                    )
+                petFoodQueries.forEach { query ->
+                    try {
+                        val responsePf = petFoodApi.search(query, limit = 15)
+                        responsePf.products?.filter { !it.image_url.isNullOrEmpty() }?.forEachIndexed { index, item ->
+                            allFetched.add(
+                                Producto(
+                                    id = "pf_${query}_$index",
+                                    nombre = (item.product_name ?: defaultFoodName).take(30),
+                                    descripcion = defaultFoodDesc,
+                                    precioPuntos = (200..1500).random(),
+                                    imagenUrl = item.image_url!!.replace("http://", "https://"),
+                                    stock = (1..15).random(),
+                                    categoria = foodCategory
                                 )
-                            }
-                        } catch (e: Exception) { e.printStackTrace() }
-                    }
-                } catch (e: Exception) { e.printStackTrace() }
+                            )
+                        }
+                    } catch (e: Exception) { e.printStackTrace() }
+                }
 
                 if (allFetched.isNotEmpty()) {
                     _productos.value = allFetched.distinctBy { it.nombre }.shuffled()
                 }
 
-            } catch (e: Exception) {
-                // Silently fail or use minimal fallback if absolutely necessary
-            }
+            } catch (e: Exception) { e.printStackTrace() }
         }
     }
 
     override fun getAll(): List<Producto> = _productos.value
-
     override fun getById(id: String): Producto? = _productos.value.find { it.id == id }
-
-    override fun save(producto: Producto) {
-        _productos.update { currentList ->
-            val index = currentList.indexOfFirst { it.id == producto.id }
-            if (index != -1) {
-                currentList.toMutableList().apply { set(index, producto) }
-            } else {
-                currentList + producto
-            }
-        }
-    }
-
-    override fun update(producto: Producto) {
-        _productos.update { list ->
-            list.map { if (it.id == producto.id) producto else it }
-        }
-    }
-
-    override fun delete(id: String) {
-        _productos.update { it.filter { p -> p.id != id } }
-    }
+    override fun save(producto: Producto) { _productos.update { it + producto } }
+    override fun update(producto: Producto) { _productos.update { list -> list.map { if (it.id == producto.id) producto else it } } }
+    override fun delete(id: String) { _productos.update { it.filter { p -> p.id != id } } }
 
     override fun comprarProducto(producto: Producto, userId: String, userName: String, userEmail: String): Result<Unit> {
         if (producto.stock <= 0) return Result.failure(Exception("Producto agotado"))
@@ -178,32 +154,10 @@ class TiendaRepositoryImpl @Inject constructor(
         )
         
         _compras.update { it + nuevaCompra }
-
+        
         _productos.update { list ->
-            list.map { 
-                if (it.id == producto.id) {
-                    val newStock = it.stock - 1
-                    if (newStock == 0) {
-                        notificacionRepository.addNotificacion(
-                            tituloResId = com.example.seguimiento.R.string.store_notif_out_of_stock_title,
-                            mensajeResId = com.example.seguimiento.R.string.store_notif_out_of_stock_msg,
-                            mensajeArgs = listOf(it.nombre),
-                            tipo = "WARNING"
-                        )
-                    }
-                    it.copy(stock = newStock)
-                } else it
-            }
+            list.map { if (it.id == producto.id) it.copy(stock = it.stock - 1) else it }
         }
-
-        notificacionRepository.addNotificacion(
-            tituloResId = com.example.seguimiento.R.string.store_notif_success_title,
-            mensajeResId = com.example.seguimiento.R.string.store_notif_success_msg,
-            mensajeArgs = listOf(producto.nombre, producto.precioPuntos.toString()),
-            tipo = "SUCCESS",
-            userId = userId
-        )
-
         return Result.success(Unit)
     }
 }
