@@ -6,13 +6,11 @@ import com.example.seguimiento.Dominio.repositorios.TiendaRepository
 import com.example.seguimiento.Dominio.repositorios.UserRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.core.utils.ResourceProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -72,65 +70,66 @@ class TiendaRepositoryImpl @Inject constructor(
     private fun loadProductsFromApis() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val allFetched = mutableListOf<Producto>()
+                coroutineScope {
+                    val djQueries = mapOf(
+                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "dog",
+                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc) to "furniture",
+                        resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "health"
+                    )
 
-                // 1. DummyJSON - Buscamos con términos más amplios para obtener más variedad
-                val djQueries = mapOf(
-                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_toys) to "dog",
-                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_acc) to "furniture",
-                    resourceProvider.getString(com.example.seguimiento.R.string.store_cat_health) to "health"
-                )
-                
-                djQueries.forEach { (categoria, query) ->
-                    try {
-                        val response = dummyApi.search(query, limit = 20)
-                        response.products?.forEach { item ->
-                            if (!item.thumbnail.isNullOrEmpty()) {
-                                allFetched.add(
+                    // Ejecución paralela para DummyJSON
+                    val djDeferred = djQueries.map { (categoria, query) ->
+                        async {
+                            try {
+                                val response = dummyApi.search(query, limit = 15)
+                                response.products?.mapNotNull { item ->
+                                    if (!item.thumbnail.isNullOrEmpty()) {
+                                        Producto(
+                                            id = "dj_${item.id}_${categoria}",
+                                            nombre = item.title.take(25),
+                                            descripcion = item.description.take(100),
+                                            precioPuntos = (300..2000).random(),
+                                            imagenUrl = item.thumbnail!!,
+                                            stock = (1..10).random(),
+                                            categoria = categoria
+                                        )
+                                    } else null
+                                } ?: emptyList()
+                            } catch (e: Exception) { emptyList() }
+                        }
+                    }
+
+                    val petFoodQueries = listOf("dog food", "cat food", "bird food", "fish food")
+                    val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
+                    val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
+                    val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
+
+                    // Ejecución paralela para OpenPetFoodFacts
+                    val pfDeferred = petFoodQueries.map { query ->
+                        async {
+                            try {
+                                val responsePf = petFoodApi.search(query, limit = 10)
+                                responsePf.products?.filter { !it.image_url.isNullOrEmpty() }?.mapIndexed { index, item ->
                                     Producto(
-                                        id = "dj_${item.id}_${categoria}",
-                                        nombre = item.title.take(25),
-                                        descripcion = item.description.take(100),
-                                        precioPuntos = (300..2000).random(),
-                                        imagenUrl = item.thumbnail!!,
-                                        stock = (1..10).random(),
-                                        categoria = categoria
+                                        id = "pf_${query}_$index",
+                                        nombre = (item.product_name ?: defaultFoodName).take(30),
+                                        descripcion = defaultFoodDesc,
+                                        precioPuntos = (200..1500).random(),
+                                        imagenUrl = item.image_url!!.replace("http://", "https://"),
+                                        stock = (1..15).random(),
+                                        categoria = foodCategory
                                     )
-                                )
-                            }
+                                } ?: emptyList()
+                            } catch (e: Exception) { emptyList() }
                         }
-                    } catch (e: Exception) { e.printStackTrace() }
+                    }
+
+                    val allResults = (djDeferred.awaitAll().flatten() + pfDeferred.awaitAll().flatten())
+                    
+                    if (allResults.isNotEmpty()) {
+                        _productos.value = allResults.distinctBy { it.nombre }.shuffled()
+                    }
                 }
-
-                // 2. OpenPetFoodFacts - Alimento real para mascotas
-                val petFoodQueries = listOf("dog food", "cat food", "bird food", "fish food")
-                val foodCategory = resourceProvider.getString(com.example.seguimiento.R.string.store_cat_food)
-                val defaultFoodName = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_name)
-                val defaultFoodDesc = resourceProvider.getString(com.example.seguimiento.R.string.store_default_food_desc)
-
-                petFoodQueries.forEach { query ->
-                    try {
-                        val responsePf = petFoodApi.search(query, limit = 15)
-                        responsePf.products?.filter { !it.image_url.isNullOrEmpty() }?.forEachIndexed { index, item ->
-                            allFetched.add(
-                                Producto(
-                                    id = "pf_${query}_$index",
-                                    nombre = (item.product_name ?: defaultFoodName).take(30),
-                                    descripcion = defaultFoodDesc,
-                                    precioPuntos = (200..1500).random(),
-                                    imagenUrl = item.image_url!!.replace("http://", "https://"),
-                                    stock = (1..15).random(),
-                                    categoria = foodCategory
-                                )
-                            )
-                        }
-                    } catch (e: Exception) { e.printStackTrace() }
-                }
-
-                if (allFetched.isNotEmpty()) {
-                    _productos.value = allFetched.distinctBy { it.nombre }.shuffled()
-                }
-
             } catch (e: Exception) { e.printStackTrace() }
         }
     }
