@@ -26,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- API KEY para Google Maps (Requerido para evitar crash) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA_TU_API_KEY_AQUI" />
     </application>
 
 </manifest>

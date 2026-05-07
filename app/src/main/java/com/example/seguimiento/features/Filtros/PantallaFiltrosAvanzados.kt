@@ -26,7 +26,6 @@ import com.example.seguimiento.R
 import com.example.seguimiento.features.Favoritos.FavoritePetCard
 import com.example.seguimiento.features.home.BottomNav
 
-// Paleta de colores original
 val NaranjaPrincipal = Color(0xFFE67E22)
 val FondoCrema = Color(0xFFFEF9E7)
 val GrisChip = Color(0xFFE5D3B3)
@@ -40,6 +39,7 @@ fun PantallaFiltrosAvanzado(
     onNavigateToFiltros: () -> Unit = {},
     onNavigateToFavoritos: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {},
+    onNavigateToMapa: () -> Unit = {},
     onNavigateToDetail: (String, String, String, String, String) -> Unit = { _, _, _, _, _ -> }
 ) {
     val resultados by modelo.resultados.collectAsState()
@@ -53,6 +53,18 @@ fun PantallaFiltrosAvanzado(
                 onNavigateToFavoritos = onNavigateToFavoritos,
                 onNavigateToProfile = onNavigateToProfile
             )
+        },
+        floatingActionButton = {
+            // BOTÓN AZUL ESTILO NAVEGACIÓN
+            FloatingActionButton(
+                onClick = { onNavigateToMapa() },
+                containerColor = Color(0xFF2196F3),
+                contentColor = Color.White,
+                shape = CircleShape,
+                modifier = Modifier.padding(bottom = 80.dp).size(65.dp)
+            ) {
+                Icon(Icons.Default.Navigation, "Ver Mapa", modifier = Modifier.size(35.dp))
+            }
         }
     ) { padding ->
         Column(
@@ -61,7 +73,6 @@ fun PantallaFiltrosAvanzado(
                 .background(NaranjaPrincipal)
                 .padding(padding)
         ) {
-            // --- ENCABEZADO NARANJA ---
             Row(
                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -76,14 +87,12 @@ fun PantallaFiltrosAvanzado(
                 Text(stringResource(R.string.filters_title), color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
             }
 
-            // --- CUERPO CREMA ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                     .background(FondoCrema)
             ) {
-                // PANEL DE FILTROS (Scrollable)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -91,7 +100,6 @@ fun PantallaFiltrosAvanzado(
                         .padding(24.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // FILTRO NOMBRE
                     FiltroCheckboxRow(
                         label = stringResource(R.string.filters_label_name),
                         isEnabled = modelo.habilitarNombre,
@@ -106,7 +114,6 @@ fun PantallaFiltrosAvanzado(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // FILTRO TIPO
                     FiltroCheckboxRow(
                         label = stringResource(R.string.filters_label_type),
                         isEnabled = modelo.habilitarTipo,
@@ -137,22 +144,35 @@ fun PantallaFiltrosAvanzado(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // FILTRO UBICACIÓN (Municipio o Departamento)
                     FiltroCheckboxRow(
                         label = stringResource(R.string.filters_label_location),
                         isEnabled = modelo.habilitarUbicacion,
                         onToggle = { modelo.habilitarUbicacion = it }
                     )
-                    CustomInputField(
-                        value = modelo.ubicacionFiltro,
-                        onValueChange = { modelo.ubicacionFiltro = it },
-                        placeholder = stringResource(R.string.filters_placeholder_location),
-                        isEnabled = modelo.habilitarUbicacion
-                    )
+                    
+                    Column(
+                        modifier = Modifier.alphaIfDisabled(!modelo.habilitarUbicacion),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SelectorFiltro(
+                            label = stringResource(R.string.reg_pet_label_dept),
+                            seleccionado = modelo.departamentoSeleccionado,
+                            opciones = modelo.listaDepartamentos,
+                            isEnabled = modelo.habilitarUbicacion,
+                            onSeleccion = { modelo.cambiarDepartamento(it) }
+                        )
+                        
+                        SelectorFiltro(
+                            label = stringResource(R.string.reg_pet_label_city),
+                            seleccionado = modelo.ciudadSeleccionada,
+                            opciones = modelo.listaCiudades,
+                            isEnabled = modelo.habilitarUbicacion && modelo.departamentoSeleccionado.isNotEmpty(),
+                            onSeleccion = { modelo.ciudadSeleccionada = it }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // FILTRO EDAD
                     FiltroCheckboxRow(
                         label = stringResource(R.string.filters_label_age),
                         isEnabled = modelo.habilitarEdad,
@@ -167,11 +187,10 @@ fun PantallaFiltrosAvanzado(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // BOTONES DE ACCIÓN
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(
                             onClick = { modelo.aplicarFiltros() },
-                            modifier = Modifier.weight(1f).height(55.dp),
+                            modifier = Modifier.fillMaxWidth().height(55.dp),
                             shape = RoundedCornerShape(28.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = NaranjaPrincipal)
                         ) {
@@ -189,7 +208,6 @@ fun PantallaFiltrosAvanzado(
                     }
                 }
 
-                // RESULTADOS (GRID)
                 if (resultados.isNotEmpty()) {
                     HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
                     Text(
@@ -276,6 +294,56 @@ fun ChipFiltro(texto: String, seleccionado: Boolean, alClick: () -> Unit) {
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 20.dp)) {
             Text(texto, color = if (seleccionado) Color.White else TextoMarron, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectorFiltro(
+    label: String,
+    seleccionado: String,
+    opciones: List<String>,
+    isEnabled: Boolean,
+    onSeleccion: (String) -> Unit
+) {
+    var expandido by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expandido && isEnabled,
+        onExpandedChange = { if (isEnabled) expandido = !expandido },
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+    ) {
+        OutlinedTextField(
+            value = seleccionado,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
+            enabled = isEnabled,
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = NaranjaPrincipal,
+                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.5f),
+                disabledBorderColor = Color.LightGray.copy(alpha = 0.2f),
+                disabledPlaceholderColor = Color.Gray.copy(alpha = 0.5f)
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expandido && isEnabled,
+            onDismissRequest = { expandido = false }
+        ) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(
+                    text = { Text(opcion) },
+                    onClick = {
+                        onSeleccion(opcion)
+                        expandido = false
+                    }
+                )
+            }
         }
     }
 }

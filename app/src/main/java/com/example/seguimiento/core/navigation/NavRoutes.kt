@@ -14,11 +14,8 @@ sealed class NavRoutes(val route: String) {
     object Profile : NavRoutes("profile")
     object MisAdopciones : NavRoutes("mis_adopciones")
     object MisPublicaciones : NavRoutes("mis_publicaciones")
-    object MascotaDestacada : NavRoutes("mascota_destacada/{id}/{nombre}/{edad}/{ubicacion}/{url}") {
-        fun createRoute(id: String, nombre: String, edad: String, ubicacion: String, url: String): String {
-            val encodedUrl = java.net.URLEncoder.encode(url, "UTF-8")
-            return "mascota_destacada/$id/$nombre/$edad/$ubicacion/$encodedUrl"
-        }
+    object MascotaDestacada : NavRoutes("mascota_destacada/{id}") {
+        fun createRoute(id: String) = "mascota_destacada/$id"
     }
     object Nutricion : NavRoutes("nutricion")
     object RequisitosAdopcion : NavRoutes("requisitos_adopcion")
@@ -48,7 +45,12 @@ sealed class NavRoutes(val route: String) {
     }
 
     // Gestión
-    object RegistroMascota : NavRoutes("register_mascota")
+    object RegistroMascota : NavRoutes("register_mascota?lat={lat}&lng={lng}") {
+        fun createRoute(lat: Double? = null, lng: Double? = null): String {
+            return if (lat != null && lng != null) "register_mascota?lat=$lat&lng=$lng"
+            else "register_mascota"
+        }
+    }
     object EditarMascota : NavRoutes("editar_mascota/{id}") {
         fun createRoute(id: String) = "editar_mascota/$id"
     }

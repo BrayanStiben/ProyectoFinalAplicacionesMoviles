@@ -33,7 +33,8 @@ class MascotaRepositoryImpl @Inject constructor(
                 ubicacion = resourceProvider.getString(R.string.mock_pet_1_location),
                 descripcion = "Linda mascota buscando hogar.",
                 imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA,
+                estado = PublicacionEstado.VERIFICADA, // Antes: ADOPTADA
+                lat = 4.5339, lng = -75.6811,
                 autorId = "admin"
             ),
             Mascota(
@@ -45,7 +46,8 @@ class MascotaRepositoryImpl @Inject constructor(
                 ubicacion = resourceProvider.getString(R.string.mock_pet_2_location),
                 descripcion = "Compañero fiel.",
                 imagenUrl = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA,
+                estado = PublicacionEstado.VERIFICADA, 
+                lat = 4.7110, lng = -74.0721,
                 autorId = "admin"
             ),
             Mascota(
@@ -57,10 +59,23 @@ class MascotaRepositoryImpl @Inject constructor(
                 ubicacion = resourceProvider.getString(R.string.mock_pet_3_location),
                 descripcion = "Pequeño Toby.",
                 imagenUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA,
+                estado = PublicacionEstado.VERIFICADA, // Antes: RECHAZADA
+                lat = 6.2442, lng = -75.5812,
                 autorId = "admin"
             ),
-
+            Mascota(
+                id = "mock4",
+                nombre = resourceProvider.getString(R.string.mock_pet_4_name),
+                edad = "4 años",
+                tipo = "Gato",
+                raza = "Persa",
+                ubicacion = "Cali, Valle",
+                descripcion = "Bella y elegante.",
+                imagenUrl = "https://images.unsplash.com/photo-1513245543132-31f507417b26?q=80&w=500",
+                estado = PublicacionEstado.VERIFICADA, // Antes: PENDIENTE
+                lat = 3.4516, lng = -76.5320,
+                autorId = "admin"
+            )
         )
     }
 

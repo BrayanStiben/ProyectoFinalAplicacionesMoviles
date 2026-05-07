@@ -103,8 +103,8 @@ fun AppNavigation() {
         composable(NavRoutes.Home.route) {
             HomeScreen(
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
-                onNavigateToMascotaDestacada = { id, nombre, edad, ubicacion, url ->
-                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
+                onNavigateToMascotaDestacada = { id, _, _, _, _ ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id))
                 },
                 onNavigateToNutricion = { navController.navigate(NavRoutes.Nutricion.route) },
                 onNavigateToRequisitos = { navController.navigate(NavRoutes.RequisitosAdopcion.route) },
@@ -114,7 +114,7 @@ fun AppNavigation() {
                 onNavigateToHistorias = { navController.navigate(NavRoutes.HistoriasExito.route) },
                 onNavigateToNotificaciones = { navController.navigate(NavRoutes.Notificaciones.route) },
                 onNavigateToMapa = { navController.navigate(NavRoutes.MapaFeed.route) },
-                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) },
+                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.createRoute()) },
                 onNavigateToLogros = { navController.navigate(NavRoutes.Logros.route) },
                 onNavigateToTienda = { navController.navigate(NavRoutes.Tienda.route) },
                 onNavigateToMisAdopciones = { navController.navigate(NavRoutes.MisAdopciones.route) }
@@ -144,8 +144,11 @@ fun AppNavigation() {
         composable(NavRoutes.MapaFeed.route) {
             MapaFeedScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToDetail = { id, nombre, edad, ubicacion, url ->
-                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
+                onNavigateToDetail = { id, _, _, _, _ ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id))
+                },
+                onNavigateToCreateWithCoords = { lat, lng ->
+                    navController.navigate(NavRoutes.RegistroMascota.createRoute(lat, lng))
                 }
             )
         }
@@ -188,8 +191,8 @@ fun AppNavigation() {
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
-                onNavigateToDetail = { id, nombre, edad, ubicacion, url ->
-                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
+                onNavigateToDetail = { id, _, _, _, _ ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id))
                 },
                 onNavigateToSalud = { id -> navController.navigate(NavRoutes.SaludMascota.createRoute(id)) }
             )
@@ -221,34 +224,24 @@ fun AppNavigation() {
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
-                onNavigateToDetail = { id, nombre, edad, ubicacion, url ->
-                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id, nombre, edad, ubicacion, url))
+                onNavigateToDetail = { id, _, _, _, _ ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id))
                 }
             )
         }
 
         composable(
             route = NavRoutes.MascotaDestacada.route,
-            arguments = listOf(
-                navArgument("id") { type = NavType.StringType },
-                navArgument("nombre") { type = NavType.StringType },
-                navArgument("edad") { type = NavType.StringType },
-                navArgument("ubicacion") { type = NavType.StringType },
-                navArgument("url") { type = NavType.StringType }
-            )
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
-            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-            val edad = backStackEntry.arguments?.getString("edad") ?: ""
-            val ubicacion = backStackEntry.arguments?.getString("ubicacion") ?: ""
-            val url = backStackEntry.arguments?.getString("url") ?: ""
 
             EstaEsperandoPorTiScreen(
                 id = id,
-                nombre = nombre,
-                edad = edad,
-                ubicacion = ubicacion,
-                url = url,
+                nombre = "",
+                edad = "",
+                ubicacion = "",
+                url = "",
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
                 onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
@@ -280,8 +273,19 @@ fun AppNavigation() {
             )
         }
 
-        composable(NavRoutes.RegistroMascota.route) {
+        composable(
+            route = NavRoutes.RegistroMascota.route,
+            arguments = listOf(
+                navArgument("lat") { type = NavType.StringType; nullable = true },
+                navArgument("lng") { type = NavType.StringType; nullable = true }
+            )
+        ) { backStackEntry ->
+            val lat = backStackEntry.arguments?.getString("lat")?.toDoubleOrNull()
+            val lng = backStackEntry.arguments?.getString("lng")?.toDoubleOrNull()
+
             PantallaRegistroMascota(
+                lat = lat,
+                lng = lng,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { navController.navigate(NavRoutes.FiltrosAvanzados.route) },
@@ -332,7 +336,7 @@ fun AppNavigation() {
                 onNavigateToReportesDetallados = { navController.navigate(NavRoutes.ReportesDetallados.route) },
                 onNavigateToGestionTienda = { navController.navigate(NavRoutes.GestionTienda.route) },
                 onNavigateToHistorialVentas = { navController.navigate(NavRoutes.HistorialVentas.route) },
-                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.route) },
+                onNavigateToRegistroMascota = { navController.navigate(NavRoutes.RegistroMascota.createRoute()) },
                 onNavigateToHistorias = { navController.navigate(NavRoutes.HistoriasExito.route) },
                 onLogout = {
                     navController.navigate(NavRoutes.Login.route) {
@@ -566,7 +570,11 @@ fun AppNavigation() {
                 onNavigateToHome = { navController.navigate(NavRoutes.Home.route) },
                 onNavigateToFiltros = { /* ya aqui */ },
                 onNavigateToFavoritos = { navController.navigate(NavRoutes.Favoritos.route) },
-                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) }
+                onNavigateToProfile = { navController.navigate(NavRoutes.Profile.route) },
+                onNavigateToMapa = { navController.navigate(NavRoutes.MapaFeed.route) },
+                onNavigateToDetail = { id, _, _, _, _ ->
+                    navController.navigate(NavRoutes.MascotaDestacada.createRoute(id))
+                }
             )
         }
     }

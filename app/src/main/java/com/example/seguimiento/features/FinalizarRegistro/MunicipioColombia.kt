@@ -5,10 +5,16 @@ import retrofit2.http.GET
 
 // Modelo para ciudades
 data class CityResponse(
+    @SerializedName("id")
+    val id: Int? = null,
     @SerializedName("name")
     val municipio: String? = null,
     @SerializedName("departmentId")
-    val departmentId: Int? = null
+    val departmentId: Int? = null,
+    @SerializedName("latitude")
+    val latitude: Double? = null,
+    @SerializedName("longitude")
+    val longitude: Double? = null
 )
 
 // Modelo para departamentos

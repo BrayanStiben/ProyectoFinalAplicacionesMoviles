@@ -7,8 +7,14 @@ import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
+import com.example.seguimiento.features.FinalizarRegistro.CityResponse
+import com.example.seguimiento.features.FinalizarRegistro.ColombiaApiService
+import com.example.seguimiento.features.FinalizarRegistro.DepartmentResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.Normalizer
 import javax.inject.Inject
 
@@ -20,7 +26,19 @@ class FiltroViewModel @Inject constructor(
     
     val currentUser = authRepository.currentUser
 
-    // Estados de habilitación (Inician en false por solicitud del usuario)
+    // --- API COLOMBIA ---
+    private val retrofitColombia = Retrofit.Builder()
+        .baseUrl("https://api-colombia.com/api/v1/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val apiColombia = retrofitColombia.create(ColombiaApiService::class.java)
+
+    var listaDepartamentos by mutableStateOf<List<String>>(emptyList())
+    var listaCiudades by mutableStateOf<List<String>>(emptyList())
+    private var allDepartments = listOf<DepartmentResponse>()
+    private var allCities = listOf<CityResponse>()
+
+    // Estados de habilitación
     var habilitarNombre by mutableStateOf(false)
     var habilitarTipo by mutableStateOf(false)
     var habilitarUbicacion by mutableStateOf(false)
@@ -29,11 +47,33 @@ class FiltroViewModel @Inject constructor(
     // Valores de los filtros
     var nombreFiltro by mutableStateOf("")
     var tipoSeleccionado by mutableStateOf("Perro")
-    var ubicacionFiltro by mutableStateOf("")
+    var departamentoSeleccionado by mutableStateOf("")
+    var ciudadSeleccionada by mutableStateOf("")
     var edadFiltro by mutableStateOf("")
 
     private val _resultados = MutableStateFlow<List<Mascota>>(emptyList())
     val resultados: StateFlow<List<Mascota>> = _resultados.asStateFlow()
+
+    init {
+        cargarUbicaciones()
+    }
+
+    private fun cargarUbicaciones() {
+        viewModelScope.launch {
+            try {
+                allDepartments = apiColombia.getDepartamentos()
+                allCities = apiColombia.getMunicipios()
+                listaDepartamentos = allDepartments.map { it.name ?: "" }.sorted()
+            } catch (e: Exception) { e.printStackTrace() }
+        }
+    }
+
+    fun cambiarDepartamento(depto: String) {
+        departamentoSeleccionado = depto
+        ciudadSeleccionada = ""
+        val deptoId = allDepartments.find { it.name == depto }?.id
+        listaCiudades = allCities.filter { it.departmentId == deptoId }.map { it.municipio ?: "" }.sorted()
+    }
 
     fun aplicarFiltros() {
         val todas = mascotaRepository.getAll()
@@ -61,8 +101,10 @@ class FiltroViewModel @Inject constructor(
                 }
             }
 
-            val cumpleUbicacion = !habilitarUbicacion || 
-                normalizar(mascota.ubicacion).contains(normalizar(ubicacionFiltro), ignoreCase = true)
+            val cumpleUbicacion = !habilitarUbicacion || (
+                (departamentoSeleccionado.isEmpty() || mascota.ubicacion.contains(departamentoSeleccionado, ignoreCase = true)) &&
+                (ciudadSeleccionada.isEmpty() || mascota.ubicacion.contains(ciudadSeleccionada, ignoreCase = true))
+            )
             
             val cumpleEdad = !habilitarEdad || 
                 normalizar(mascota.edad).contains(normalizar(edadFiltro), ignoreCase = true)
@@ -84,7 +126,8 @@ class FiltroViewModel @Inject constructor(
         habilitarEdad = false
         nombreFiltro = ""
         tipoSeleccionado = "Perro"
-        ubicacionFiltro = ""
+        departamentoSeleccionado = ""
+        ciudadSeleccionada = ""
         edadFiltro = ""
         _resultados.value = emptyList()
     }

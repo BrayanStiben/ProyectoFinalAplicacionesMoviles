@@ -34,6 +34,8 @@ import com.example.seguimiento.features.FormularioDeAdopction.StepOneScreen.Bott
 @Composable
 fun PantallaRegistroMascota(
     mascotaId: String? = null,
+    lat: Double? = null, // NUEVO
+    lng: Double? = null, // NUEVO
     viewModel: MascotaViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
@@ -50,9 +52,12 @@ fun PantallaRegistroMascota(
         viewModel.alSeleccionarFoto(it)
     }
 
-    LaunchedEffect(mascotaId) {
+    // NUEVO: Inicializar con coordenadas del mapa si existen
+    LaunchedEffect(mascotaId, lat, lng) {
         if (mascotaId != null) {
             viewModel.cargarMascotaParaEdicion(mascotaId)
+        } else if (lat != null && lng != null) {
+            viewModel.inicializarConCoordenadas(lat, lng)
         }
     }
 
@@ -119,7 +124,7 @@ fun PantallaRegistroMascota(
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red)
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.reg_pet_warning_ai, estado.aiWarning!!), color = Color.Red, fontSize = 14.sp)
+                                Text(estado.aiWarning!!, color = Color.Red, fontSize = 14.sp)
                             }
                         }
                     }

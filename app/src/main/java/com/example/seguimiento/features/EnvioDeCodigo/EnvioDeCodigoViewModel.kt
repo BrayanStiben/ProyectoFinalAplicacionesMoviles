@@ -50,7 +50,7 @@ class EnvioDeCodigoViewModel @Inject constructor(
         val codigoCompleto = codigo.joinToString("")
         val codigoCorrecto = authRepository.getVerificationCode()
 
-        if (codigoCompleto == codigoCorrecto && codigoCorrecto != null) {
+        if (codigoCorrecto != null && codigoCompleto == codigoCorrecto) {
             mostrarDialogo = true
             errorCodigo = false
         } else {

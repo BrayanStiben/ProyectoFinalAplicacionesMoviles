@@ -1,5 +1,7 @@
 package com.example.seguimiento.features.IngresarMascota
 
+import android.content.Context
+import android.location.Geocoder
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,14 +16,18 @@ import com.example.seguimiento.features.FinalizarRegistro.CityResponse
 import com.example.seguimiento.features.FinalizarRegistro.ColombiaApiService
 import com.example.seguimiento.features.FinalizarRegistro.DepartmentResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import java.util.UUID
 import javax.inject.Inject
 import com.example.seguimiento.R
+import java.util.Locale
 
 // --- API DE MASCOTAS ---
 interface DogApiService {
@@ -41,17 +47,16 @@ class MascotaViewModel @Inject constructor(
     private val mascotaRepository: MascotaRepository,
     private val authRepository: AuthRepository,
     private val notificacionRepository: NotificacionRepository,
-    private val aiService: AIService
+    private val aiService: AIService,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoFormularioMascota())
     val estado: StateFlow<EstadoFormularioMascota> = _estado.asStateFlow()
 
     val currentUser = authRepository.currentUser
-
     private var idEdicion: String? = null
 
-    // --- RETROFITS ---
     private val retrofitColombia = Retrofit.Builder()
         .baseUrl("https://api-colombia.com/api/v1/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -96,7 +101,6 @@ class MascotaViewModel @Inject constructor(
                 val ciudad = partesUbi.getOrNull(0) ?: ""
                 val depto = partesUbi.getOrNull(1) ?: ""
                 
-                // Cargar razas para el tipo actual
                 cargarRazas(mascota.tipo)
                 
                 _estado.update { it.copy(
@@ -109,6 +113,8 @@ class MascotaViewModel @Inject constructor(
                     departamento = depto,
                     ciudad = ciudad,
                     fotoUri = if (mascota.imagenUrl.startsWith("http")) null else Uri.parse(mascota.imagenUrl),
+                    lat = mascota.lat,
+                    lng = mascota.lng
                 ) }
                 
                 if (depto.isNotEmpty()) {
@@ -119,14 +125,50 @@ class MascotaViewModel @Inject constructor(
         }
     }
 
+    // NUEVO: Método para inicializar coordenadas desde el Mapa
+    fun inicializarConCoordenadas(lat: Double, lng: Double) {
+        viewModelScope.launch {
+            _estado.update { it.copy(lat = lat, lng = lng, isLoading = true) }
+            
+            val infoUbi = obtenerInfoDesdeCoords(lat, lng)
+            
+            // Si Geocoder encuentra el lugar, intentamos pre-seleccionar los dropdowns
+            if (infoUbi != null) {
+                val ciudad = infoUbi.first
+                val depto = infoUbi.second
+                
+                _estado.update { it.copy(
+                    departamento = depto,
+                    ciudad = ciudad,
+                    isLoading = false
+                ) }
+            } else {
+                _estado.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    private suspend fun obtenerInfoDesdeCoords(lat: Double, lng: Double): Pair<String, String>? = withContext(Dispatchers.IO) {
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            val resultados = geocoder.getFromLocation(lat, lng, 1)
+            if (!resultados.isNullOrEmpty()) {
+                val loc = resultados[0]
+                val ciudad = loc.locality ?: loc.subAdminArea ?: "Desconocido"
+                val depto = loc.adminArea ?: "Desconocido"
+                return@withContext Pair(ciudad, depto)
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+        return@withContext null
+    }
+
     fun cambiarDepartamento(depto: String) {
         val deptoId = allDepartments.find { it.name == depto }?.id
         val ciudadesFiltradas = allCities.filter { it.departmentId == deptoId }.map { it.municipio ?: "" }.sorted()
-        _estado.update { it.copy(departamento = depto, ciudad = "", listaCiudades = ciudadesFiltradas) }
+        _estado.update { it.copy(departamento = depto, ciudad = "", lat = 0.0, lng = 0.0, listaCiudades = ciudadesFiltradas) }
     }
 
     fun cambiarNombre(nuevoNombre: String) = _estado.update { it.copy(nombre = nuevoNombre) }
-    
     fun cambiarTipo(nuevoTipo: String) {
         _estado.update { it.copy(tipo = nuevoTipo, raza = "", listaRazas = emptyList()) }
         cargarRazas(nuevoTipo)
@@ -164,19 +206,63 @@ class MascotaViewModel @Inject constructor(
     fun cambiarEdad(nuevaEdad: String) = _estado.update { it.copy(edad = nuevaEdad) }
     fun cambiarUnidadEdad(nuevaUnidad: String) = _estado.update { it.copy(unidadEdad = nuevaUnidad) }
     fun cambiarSexo(nuevoSexo: String) = _estado.update { it.copy(sexo = nuevoSexo) }
-    fun cambiarCiudad(nuevaCiudad: String) = _estado.update { it.copy(ciudad = nuevaCiudad) }
-    fun cambiarDescripcion(nuevaDesc: String) = _estado.update { it.copy(descripcion = nuevaDesc) }
+    
+    fun cambiarCiudad(nuevaCiudad: String) {
+        val depto = _estado.value.departamento
+        val deptoId = allDepartments.find { it.name.equals(depto, ignoreCase = true) }?.id
+        
+        val ciudadObj = allCities.find { 
+            it.municipio?.trim()?.equals(nuevaCiudad.trim(), ignoreCase = true) == true && 
+            it.departmentId == deptoId 
+        }
+        
+        var apiLat = ciudadObj?.latitude ?: 0.0
+        var apiLng = ciudadObj?.longitude ?: 0.0
 
+        viewModelScope.launch {
+            _estado.update { it.copy(ciudad = nuevaCiudad, isLoading = true) }
+            
+            if (apiLat == 0.0 || apiLng == 0.0) {
+                val coords = obtenerCoordenadasDeRespaldo(nuevaCiudad, depto)
+                apiLat = coords.first
+                apiLng = coords.second
+            }
+
+            _estado.update { it.copy(
+                lat = apiLat,
+                lng = apiLng,
+                isLoading = false,
+                aiWarning = if (apiLat == 0.0) "No se pudieron obtener coordenadas. Prueba con otra ciudad." else null
+            ) }
+        }
+    }
+
+    private suspend fun obtenerCoordenadasDeRespaldo(ciudad: String, depto: String): Pair<Double, Double> = withContext(Dispatchers.IO) {
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            val direccion = "$ciudad, $depto, Colombia"
+            val resultados = geocoder.getFromLocationName(direccion, 1)
+            if (!resultados.isNullOrEmpty()) {
+                val loc = resultados[0]
+                return@withContext Pair(loc.latitude, loc.longitude)
+            }
+        } catch (e: Exception) { e.printStackTrace() }
+        return@withContext Pair(0.0, 0.0)
+    }
+
+    fun cambiarDescripcion(nuevaDesc: String) = _estado.update { it.copy(descripcion = nuevaDesc) }
     fun alSeleccionarFoto(uri: Uri?) = _estado.update { it.copy(fotoUri = uri) }
 
     fun guardarMascota(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            val datos = _estado.value
-            _estado.update { it.copy(isLoading = true, aiWarning = null) }
+        val datos = _estado.value
+        
+        if (datos.lat == 0.0 || datos.lng == 0.0) {
+            _estado.update { it.copy(aiWarning = "Error: Ubicación sin coordenadas GPS.") }
+            return
+        }
 
-            val currentUser = authRepository.currentUser.value
-            val userId = currentUser?.id ?: "1"
-            val esAdmin = currentUser?.role == UserRole.ADMIN
+        viewModelScope.launch {
+            _estado.update { it.copy(isLoading = true, aiWarning = null) }
 
             val advertenciaNombre = aiService.analizarContenido(datos.nombre)
             val advertenciaDesc = aiService.analizarContenido(datos.descripcion)
@@ -188,8 +274,12 @@ class MascotaViewModel @Inject constructor(
 
             val resumen = aiService.generarResumen(datos.descripcion, datos.tipo)
 
+            val currentUser = authRepository.currentUser.value
+            val userId = currentUser?.id ?: "1"
+            val esAdmin = currentUser?.role == UserRole.ADMIN
+
             val mascotaExistente = idEdicion?.let { mascotaRepository.getById(it) }
-            
+
             val mascotaParaGuardar = Mascota(
                 id = idEdicion ?: UUID.randomUUID().toString(),
                 nombre = datos.nombre,
@@ -208,27 +298,6 @@ class MascotaViewModel @Inject constructor(
             )
 
             mascotaRepository.save(mascotaParaGuardar)
-
-            // NOTIFICACIÓN DE CREACIÓN/EDICIÓN - USANDO RECURSOS
-            if (idEdicion == null) {
-                notificacionRepository.addNotificacion(
-                    tituloResId = R.string.notif_pet_registered_title,
-                    mensajeResId = R.string.notif_pet_registered_msg,
-                    mensajeArgs = listOf(datos.nombre),
-                    tipo = "INFO",
-                    userId = userId
-                )
-            } else {
-                notificacionRepository.addNotificacion(
-                    tituloResId = R.string.notif_pet_updated_title,
-                    mensajeResId = R.string.notif_pet_updated_msg,
-                    mensajeArgs = listOf(datos.nombre),
-                    tipo = "INFO",
-                    userId = userId
-                )
-            }
-
-            _estado.update { it.copy(isLoading = false) }
             onSuccess()
         }
     }

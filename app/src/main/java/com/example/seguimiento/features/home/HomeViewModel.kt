@@ -11,10 +11,15 @@ import com.example.seguimiento.Dominio.repositorios.LogrosRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
 import com.example.seguimiento.R
+import com.example.seguimiento.features.FinalizarRegistro.CityResponse
+import com.example.seguimiento.features.FinalizarRegistro.ColombiaApiService
+import com.example.seguimiento.features.FinalizarRegistro.DepartmentResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,6 +30,21 @@ class HomeViewModel @Inject constructor(
     private val notificacionRepository: NotificacionRepository,
     private val logrosRepository: LogrosRepository
 ) : ViewModel() {
+
+    private val retrofitColombia = Retrofit.Builder()
+        .baseUrl("https://api-colombia.com/api/v1/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val apiColombia = retrofitColombia.create(ColombiaApiService::class.java)
+
+    private val _listaDepartamentos = MutableStateFlow<List<String>>(emptyList())
+    val listaDepartamentos = _listaDepartamentos.asStateFlow()
+
+    private val _listaCiudades = MutableStateFlow<List<String>>(emptyList())
+    val listaCiudades = _listaCiudades.asStateFlow()
+
+    private var allDepartments = listOf<DepartmentResponse>()
+    private var allCities = listOf<CityResponse>()
 
     val currentUser = authRepository.currentUser
 
@@ -50,18 +70,36 @@ class HomeViewModel @Inject constructor(
     private val _filtroCategoria = MutableStateFlow<String?>(null)
     val filtroCategoria = _filtroCategoria.asStateFlow()
 
+    private val _filtroDepartamento = MutableStateFlow("")
+    val filtroDepartamento = _filtroDepartamento.asStateFlow()
+
+    private val _filtroCiudad = MutableStateFlow("")
+    val filtroCiudad = _filtroCiudad.asStateFlow()
+
     val mascotasFeed: StateFlow<List<Mascota>> = combine(
         mascotaRepository.mascotas,
-        _filtroCategoria
-    ) { lista, categoria ->
+        _filtroCategoria,
+        _filtroDepartamento,
+        _filtroCiudad,
+        authRepository.currentUser
+    ) { lista, categoria, depto, ciudad, user ->
         lista.filter { mascota ->
-            val esVisible = mascota.estado == PublicacionEstado.VERIFICADA || 
+            val esPropia = user != null && mascota.autorId == user.id
+            val esVisible = esPropia || 
+                          mascota.estado == PublicacionEstado.VERIFICADA || 
                           mascota.estado == PublicacionEstado.RESUELTA ||
                           mascota.estado == PublicacionEstado.ADOPTADA
+            
             val coincideCategoria = categoria == null || mascota.tipo.equals(categoria, ignoreCase = true)
-            esVisible && coincideCategoria
+            val coincideDepto = depto.isEmpty() || mascota.ubicacion.contains(depto, ignoreCase = true)
+            val coincideCiudad = ciudad.isEmpty() || mascota.ubicacion.contains(ciudad, ignoreCase = true)
+            
+            esVisible && coincideCategoria && coincideDepto && coincideCiudad
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // MASCOTAS MAPA: Ahora sigue los mismos filtros que el Feed para ser consistente
+    val mascotasMapa: StateFlow<List<Mascota>> = mascotasFeed
 
     val mascotasRecomendadas: StateFlow<List<Mascota>> = mascotaRepository.mascotas
         .map { lista -> lista.filter { it.esDestacada } }
@@ -69,6 +107,30 @@ class HomeViewModel @Inject constructor(
 
     private val _selectedNavItem = MutableStateFlow(0)
     val selectedNavItem = _selectedNavItem.asStateFlow()
+
+    init {
+        cargarUbicaciones()
+    }
+
+    private fun cargarUbicaciones() {
+        viewModelScope.launch {
+            try {
+                allDepartments = apiColombia.getDepartamentos()
+                allCities = apiColombia.getMunicipios()
+                _listaDepartamentos.value = allDepartments.map { it.name ?: "" }.sorted()
+            } catch (e: Exception) { e.printStackTrace() }
+        }
+    }
+
+    fun cargarCiudades(depto: String) {
+        val deptoId = allDepartments.find { it.name == depto }?.id
+        _listaCiudades.value = allCities.filter { it.departmentId == deptoId }.map { it.municipio ?: "" }.sorted()
+    }
+
+    fun setFiltroUbicacion(depto: String, ciudad: String) {
+        _filtroDepartamento.value = depto
+        _filtroCiudad.value = ciudad
+    }
 
     fun onNavItemClicked(index: Int) {
         _selectedNavItem.value = index
@@ -90,7 +152,6 @@ class HomeViewModel @Inject constructor(
         
         mascotaRepository.toggleLike(id, userId)
         
-        // Notificar al autor de la mascota (si no es el mismo usuario)
         if (mascota != null && mascota.autorId != userId && mascota.autorId.isNotEmpty()) {
             notificacionRepository.addNotificacion(
                 tituloResId = R.string.home_notif_like_title,
@@ -101,7 +162,6 @@ class HomeViewModel @Inject constructor(
             )
         }
         
-        // Lógica de logro: 10 likes
         viewModelScope.launch {
             val allMascotas = mascotaRepository.mascotas.value
             val misLikes = allMascotas.count { it.likerIds.contains(userId) }
