@@ -1,105 +1,107 @@
 package com.example.seguimiento.Data.repositorios
 
+import android.net.Uri
 import com.example.seguimiento.Dominio.modelos.HistoriaEstado
 import com.example.seguimiento.Dominio.modelos.HistoriaFeliz
 import com.example.seguimiento.Dominio.repositorios.HistoriaFelizRepository
-import com.example.seguimiento.R
-import com.example.seguimiento.core.utils.ResourceProvider
+import com.example.seguimiento.Dominio.repositorios.ImageStorageRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class HistoriaFelizRepositoryImpl @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    private val firestore: FirebaseFirestore,
+    private val imageStorageRepository: ImageStorageRepository
 ) : HistoriaFelizRepository {
-    private val _historias = MutableStateFlow<List<HistoriaFeliz>>(
-        listOf(
+
+    private val collection = firestore.collection("historias_felices")
+    private val _historias = MutableStateFlow<List<HistoriaFeliz>>(emptyList())
+    override val historias: StateFlow<List<HistoriaFeliz>> = _historias.asStateFlow()
+
+    init {
+        collection.orderBy("fechaPublicacion", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    val list = snapshot.toObjects(HistoriaFeliz::class.java)
+                    _historias.value = list
+                    
+                    if (list.isEmpty()) {
+                        seedInitialStories()
+                    }
+                }
+            }
+    }
+
+    private fun seedInitialStories() {
+        val initialStories = listOf(
             HistoriaFeliz(
-                autorId = "1",
+                id = "story_001",
+                autorId = "admin_id",
                 autorNombre = "Admin",
                 mascotaNombre = "Firulais",
-                texto = resourceProvider.getString(R.string.mock_story_1_text),
+                texto = "Una historia de superación y amor.",
                 imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500",
-                estado = HistoriaEstado.APROBADA
-            ),
-            HistoriaFeliz(
-                autorId = "2",
-                autorNombre = "Maria",
-                mascotaNombre = "Luna",
-                texto = resourceProvider.getString(R.string.mock_story_2_text),
-                imagenUrl = "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=500",
                 estado = HistoriaEstado.APROBADA
             )
         )
-    )
-    override val historias: StateFlow<List<HistoriaFeliz>> = _historias.asStateFlow()
+        val batch = firestore.batch()
+        initialStories.forEach { story ->
+            batch.set(collection.document(story.id), story)
+        }
+        batch.commit()
+    }
 
     override fun getAll(): List<HistoriaFeliz> = _historias.value
 
     override fun getById(id: String): HistoriaFeliz? = _historias.value.find { it.id == id }
 
-    override fun save(historia: HistoriaFeliz) {
-        _historias.update { list ->
-            val index = list.indexOfFirst { it.id == historia.id }
-            if (index != -1) {
-                list.toMutableList().apply { set(index, historia) }
-            } else {
-                list + historia
+    override suspend fun save(historia: HistoriaFeliz, imageUri: Uri?) {
+        val id = if (historia.id.isEmpty()) collection.document().id else historia.id
+        
+        var finalUrl = historia.imagenUrl
+        imageUri?.let { uri ->
+            val imageUrl = imageStorageRepository.uploadImage(uri, "historias", "${id}_${historia.mascotaNombre}.jpg")
+            if (imageUrl != null) {
+                finalUrl = imageUrl
             }
         }
+
+        collection.document(id).set(historia.copy(id = id, imagenUrl = finalUrl)).await()
     }
 
-    override fun delete(id: String) {
-        _historias.update { it.filter { it.id != id } }
+    override suspend fun delete(id: String) {
+        collection.document(id).delete().await()
     }
 
-    override fun actualizarEstado(id: String, estado: HistoriaEstado) {
-        _historias.update { list ->
-            list.map { if (it.id == id) it.copy(estado = estado) else it }
-        }
+    override suspend fun actualizarEstado(id: String, estado: HistoriaEstado) {
+        collection.document(id).update("estado", estado).await()
     }
 
-    override fun getAprobadas(): List<HistoriaFeliz> {
-        return _historias.value.filter { it.estado == HistoriaEstado.APROBADA }
+    override fun getAprobadas(): List<HistoriaFeliz> = 
+        _historias.value.filter { it.estado == HistoriaEstado.APROBADA }
+
+    override fun getPendientes(): List<HistoriaFeliz> = 
+        _historias.value.filter { it.estado == HistoriaEstado.PENDIENTE }
+
+    override suspend fun toggleFollow(historiaId: String, userId: String) {
+        val historia = getById(historiaId) ?: return
+        val currentFollowers = historia.followersIds.toMutableList()
+        if (currentFollowers.contains(userId)) currentFollowers.remove(userId) 
+        else currentFollowers.add(userId)
+        collection.document(historiaId).update("followersIds", currentFollowers).await()
     }
 
-    override fun getPendientes(): List<HistoriaFeliz> {
-        return _historias.value.filter { it.estado == HistoriaEstado.PENDIENTE }
-    }
-
-    override fun toggleFollow(historiaId: String, userId: String) {
-        _historias.update { list ->
-            list.map { historia ->
-                if (historia.id == historiaId) {
-                    val currentFollowers = historia.followersIds.toMutableList()
-                    if (currentFollowers.contains(userId)) {
-                        currentFollowers.remove(userId)
-                    } else {
-                        currentFollowers.add(userId)
-                    }
-                    historia.copy(followersIds = currentFollowers)
-                } else historia
-            }
-        }
-    }
-
-    override fun toggleLike(historiaId: String, userId: String) {
-        _historias.update { list ->
-            list.map { historia ->
-                if (historia.id == historiaId) {
-                    val currentLikers = historia.likerIds.toMutableList()
-                    if (currentLikers.contains(userId)) {
-                        currentLikers.remove(userId)
-                    } else {
-                        currentLikers.add(userId)
-                    }
-                    historia.copy(likerIds = currentLikers)
-                } else historia
-            }
-        }
+    override suspend fun toggleLike(historiaId: String, userId: String) {
+        val historia = getById(historiaId) ?: return
+        val currentLikers = historia.likerIds.toMutableList()
+        if (currentLikers.contains(userId)) currentLikers.remove(userId) 
+        else currentLikers.add(userId)
+        collection.document(historiaId).update("likerIds", currentLikers).await()
     }
 }

@@ -47,6 +47,13 @@ android {
     buildFeatures {
         compose = true
     }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -84,6 +91,14 @@ dependencies {
     implementation(libs.firebase.firestore)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Google Drive API & Auth
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.auth.library.oauth2.http)
+    implementation(libs.google.http.client.gson)
+    implementation(libs.google.http.client.android)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Compose (BOM)
     implementation(platform(libs.androidx.compose.bom))

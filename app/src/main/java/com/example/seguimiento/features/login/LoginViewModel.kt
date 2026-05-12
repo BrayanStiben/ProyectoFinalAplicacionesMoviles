@@ -52,13 +52,13 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     val user = result.getOrNull()
                     
-                    // --- REQUISITO: NOTIFICACIÓN Y LOGRO SOLO AL LOGUEARSE ---
                     user?.let {
+                        // REQUISITO: NOTIFICACIÓN Y LOGRO - Se ejecutan en la corrutina de login
                         logrosRepository.ganarLogro(it.id, "sys_1")
                         notificacionRepository.addNotificacion(
                             tituloResId = com.example.seguimiento.R.string.login_welcome_back_title,
-                            tituloArgs = listOf(it.name),
                             mensajeResId = com.example.seguimiento.R.string.login_welcome_back_message,
+                            mensajeArgs = listOf(it.name),
                             tipo = "INFO",
                             userId = it.id
                         )

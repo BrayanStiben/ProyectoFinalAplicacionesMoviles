@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -137,7 +138,10 @@ fun FinalizarRegistroScreen(
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = { vm.finalizarRegistro { onRegistrationFinished() } },
+                        onClick = { 
+                            android.util.Log.d("UI_DEBUG", "Botón Finalizar clickeado. Foto: $fotoSeleccionada")
+                            vm.finalizarRegistro { onRegistrationFinished() } 
+                        },
                         modifier = Modifier.fillMaxWidth().height(58.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CafeApp),
                         shape = RoundedCornerShape(18.dp),

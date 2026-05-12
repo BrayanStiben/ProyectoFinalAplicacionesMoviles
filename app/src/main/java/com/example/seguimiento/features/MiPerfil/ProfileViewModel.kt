@@ -49,11 +49,15 @@ class ProfileViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ProfileUiState())
 
     fun resolvePost(postId: String) {
-        mascotaRepository.actualizarEstado(postId, PublicacionEstado.RESUELTA)
+        viewModelScope.launch {
+            mascotaRepository.actualizarEstado(postId, PublicacionEstado.RESUELTA)
+        }
     }
 
     fun deletePost(postId: String) {
-        mascotaRepository.delete(postId)
+        viewModelScope.launch {
+            mascotaRepository.delete(postId)
+        }
     }
 
     fun logout() {

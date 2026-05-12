@@ -12,12 +12,13 @@ enum class RefugioTipo(val resId: Int) {
 }
 
 data class Refugio(
-    val id: String,
-    val nombre: String,
-    val direccion: String,
-    val telefono: String,
-    val descripcion: String,
-    val imagenUrl: String,
+    val id: String = "",
+    val nombre: String = "",
+    val direccion: String = "",
+    val ciudad: String = "",
+    val telefono: String = "",
+    val descripcion: String = "",
+    val imagenUrl: String = "",
     val latitud: Double = 0.0,
     val longitud: Double = 0.0,
     val estado: RefugioEstado = RefugioEstado.PENDIENTE,

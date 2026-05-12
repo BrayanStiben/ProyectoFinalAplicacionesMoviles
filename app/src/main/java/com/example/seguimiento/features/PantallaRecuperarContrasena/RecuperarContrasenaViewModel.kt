@@ -37,7 +37,7 @@ class RecuperarContrasenaViewModel @Inject constructor(
         _confirmPassword.value = nuevaPass
     }
 
-    fun actualizarContrasena(): Boolean {
+    suspend fun actualizarContrasena(): Boolean {
         if (_password.value.isNotEmpty() && _password.value == _confirmPassword.value) {
             val resultado = userRepository.updatePassword(_email.value, _password.value)
             if (resultado) {

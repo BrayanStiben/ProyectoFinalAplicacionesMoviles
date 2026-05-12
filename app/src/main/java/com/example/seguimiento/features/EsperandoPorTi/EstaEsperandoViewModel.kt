@@ -95,17 +95,19 @@ class EstaEsperandoViewModel @Inject constructor(
         val user = currentUser.value ?: return
         val m = mascota.value ?: return
         
-        mascotaRepository.toggleLike(currentMascotaId, user.id)
-        
-        // NOTIFICACIÓN: Like - Usando recursos para traducción
-        if (m.autorId != user.id) {
-            notificacionRepository.addNotificacion(
-                tituloResId = R.string.home_notif_like_title,
-                mensajeResId = R.string.notif_like_msg_detailed,
-                mensajeArgs = listOf(user.name, m.nombre),
-                tipo = "POST_VOTADO",
-                userId = m.autorId
-            )
+        viewModelScope.launch {
+            mascotaRepository.toggleLike(currentMascotaId, user.id)
+            
+            // NOTIFICACIÓN: Like - Usando recursos para traducción
+            if (m.autorId != user.id) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.home_notif_like_title,
+                    mensajeResId = R.string.notif_like_msg_detailed,
+                    mensajeArgs = listOf(user.name, m.nombre),
+                    tipo = "POST_VOTADO",
+                    userId = m.autorId
+                )
+            }
         }
     }
 

@@ -46,11 +46,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun register(user: User): Result<Unit> {
-        userRepository.save(user)
-        _loggedUserId.value = user.id
-        sessionManager.saveSession(user.id)
-        return Result.success(Unit)
+    override suspend fun register(user: User, imageUri: android.net.Uri?): Result<Unit> {
+        return try {
+            userRepository.save(user, imageUri)
+            _loggedUserId.value = user.id
+            sessionManager.saveSession(user.id)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
     }
 
     override suspend fun logout() {

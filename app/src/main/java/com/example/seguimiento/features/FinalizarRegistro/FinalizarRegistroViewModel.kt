@@ -96,17 +96,21 @@ class FinalizarRegistroViewModel @Inject constructor(
         viewModelScope.launch {
             _estaCargando.value = true
             try {
-                // Forzamos la espera al usuario actual. 
-                // filterNotNull().first() se suscribe al StateFlow y espera el primer valor no nulo.
+                // Obtenemos el usuario actual
                 val user = authRepository.currentUser.filterNotNull().first()
+                
+                // Convertimos el String a Uri si no está vacío
+                val uri = if (_fotoPerfil.value.isNotEmpty()) android.net.Uri.parse(_fotoPerfil.value) else null
+                
+                android.util.Log.d("FinalizarRegistro", "Iniciando registro con URI: $uri")
                 
                 val updatedUser = user.copy(
                     departamento = _deptoSeleccionado.value,
-                    city = _municipioSeleccionado.value,
-                    profilePictureUrl = _fotoPerfil.value
+                    city = _municipioSeleccionado.value
+                    // No seteamos profilePictureUrl aquí, lo hará el repositorio tras subir a Drive
                 )
                 
-                val result = authRepository.register(updatedUser)
+                val result = authRepository.register(updatedUser, uri)
                 if (result.isSuccess) {
                     onSuccess()
                 }

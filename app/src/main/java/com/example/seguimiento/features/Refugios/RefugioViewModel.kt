@@ -35,10 +35,10 @@ class RefugioViewModel @Inject constructor(
         direccion: String,
         telefono: String,
         descripcion: String,
-        fotoUrl: String,
+        fotoUri: android.net.Uri?,
         onSuccess: () -> Unit
     ) {
-        registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUrl, RefugioTipo.REFUGIO, onSuccess)
+        registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUri, RefugioTipo.REFUGIO, onSuccess)
     }
 
     fun registrarRefugioConTipo(
@@ -46,7 +46,7 @@ class RefugioViewModel @Inject constructor(
         direccion: String,
         telefono: String,
         descripcion: String,
-        fotoUrl: String,
+        fotoUri: android.net.Uri?,
         tipo: RefugioTipo,
         onSuccess: () -> Unit
     ) {
@@ -58,12 +58,12 @@ class RefugioViewModel @Inject constructor(
                 direccion = direccion,
                 telefono = telefono,
                 descripcion = descripcion,
-                imagenUrl = fotoUrl,
+                imagenUrl = "", 
                 estado = RefugioEstado.PENDIENTE,
                 autorId = userId,
                 tipo = tipo
             )
-            refugioRepository.save(nuevo)
+            refugioRepository.save(nuevo, fotoUri)
             
             val etiqueta = if (tipo == RefugioTipo.VETERINARIA) "veterinaria" else "refugio"
             notificacionRepository.addNotificacion(

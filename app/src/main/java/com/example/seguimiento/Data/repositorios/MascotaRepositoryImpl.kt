@@ -1,133 +1,121 @@
 package com.example.seguimiento.Data.repositorios
 
+import android.net.Uri
 import com.example.seguimiento.Dominio.modelos.Mascota
 import com.example.seguimiento.Dominio.modelos.PublicacionEstado
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
-import com.example.seguimiento.Dominio.repositorios.NotificacionRepository
-import com.example.seguimiento.R
-import com.example.seguimiento.core.utils.ResourceProvider
+import com.example.seguimiento.Dominio.repositorios.ImageStorageRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MascotaRepositoryImpl @Inject constructor(
-    private val notificacionRepository: NotificacionRepository,
-    private val resourceProvider: ResourceProvider
+    private val firestore: FirebaseFirestore,
+    private val imageStorageRepository: ImageStorageRepository
 ) : MascotaRepository {
 
-    private val _mascotas = MutableStateFlow<List<Mascota>>(getMockData())
+    private val _mascotas = MutableStateFlow<List<Mascota>>(emptyList())
     override val mascotas: StateFlow<List<Mascota>> = _mascotas.asStateFlow()
 
-    private fun getMockData(): List<Mascota> {
-        return listOf(
+    init {
+        firestore.collection("mascotas")
+            .addSnapshotListener { snapshot, error ->
+                if (snapshot != null) {
+                    val list = snapshot.toObjects(Mascota::class.java)
+                    _mascotas.value = list
+                    if (list.isEmpty()) {
+                        seedInitialMascotas()
+                    }
+                }
+            }
+    }
+
+    private fun seedInitialMascotas() {
+        val initialData = listOf(
             Mascota(
-                id = "mock1",
-                nombre = resourceProvider.getString(R.string.mock_pet_1_name),
-                edad = resourceProvider.getString(R.string.mock_pet_1_age),
+                id = "pet_001",
+                nombre = "Firulais",
+                tipo = "Perro",
+                raza = "Labrador",
+                ubicacion = "Bogotá, DC",
+                estado = PublicacionEstado.VERIFICADA,
+                lat = 4.6097, lng = -74.0817,
+                imagenUrl = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500"
+            ),
+            Mascota(
+                id = "pet_002",
+                nombre = "Misi",
                 tipo = "Gato",
-                raza = "Mix",
-                ubicacion = resourceProvider.getString(R.string.mock_pet_1_location),
-                descripcion = "Linda mascota buscando hogar.",
-                imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA, // Antes: ADOPTADA
-                lat = 4.5339, lng = -75.6811,
-                autorId = "admin"
-            ),
-            Mascota(
-                id = "mock2",
-                nombre = resourceProvider.getString(R.string.mock_pet_2_name),
-                edad = resourceProvider.getString(R.string.mock_pet_2_age),
-                tipo = "Perro",
-                raza = "Mix",
-                ubicacion = resourceProvider.getString(R.string.mock_pet_2_location),
-                descripcion = "Compañero fiel.",
-                imagenUrl = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA, 
-                lat = 4.7110, lng = -74.0721,
-                autorId = "admin"
-            ),
-            Mascota(
-                id = "mock3",
-                nombre = resourceProvider.getString(R.string.mock_pet_3_name),
-                edad = resourceProvider.getString(R.string.mock_pet_3_age),
-                tipo = "Perro",
-                raza = "Mix",
-                ubicacion = resourceProvider.getString(R.string.mock_pet_3_location),
-                descripcion = "Pequeño Toby.",
-                imagenUrl = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA, // Antes: RECHAZADA
+                raza = "Común",
+                ubicacion = "Medellín, ANT",
+                estado = PublicacionEstado.VERIFICADA,
                 lat = 6.2442, lng = -75.5812,
-                autorId = "admin"
-            ),
-            Mascota(
-                id = "mock4",
-                nombre = resourceProvider.getString(R.string.mock_pet_4_name),
-                edad = "4 años",
-                tipo = "Gato",
-                raza = "Persa",
-                ubicacion = "Cali, Valle",
-                descripcion = "Bella y elegante.",
-                imagenUrl = "https://images.unsplash.com/photo-1513245543132-31f507417b26?q=80&w=500",
-                estado = PublicacionEstado.VERIFICADA, // Antes: PENDIENTE
-                lat = 3.4516, lng = -76.5320,
-                autorId = "admin"
+                imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500"
             )
         )
+        
+        val batch = firestore.batch()
+        initialData.forEach { mascota ->
+            val docRef = firestore.collection("mascotas").document(mascota.id)
+            batch.set(docRef, mascota)
+        }
+        batch.commit().addOnFailureListener { it.printStackTrace() }
     }
 
     override fun getAll(): List<Mascota> = _mascotas.value
+
     override fun getById(id: String): Mascota? = _mascotas.value.find { it.id == id }
 
-    override fun save(mascota: Mascota) {
-        _mascotas.update { currentList ->
-            val index = currentList.indexOfFirst { it.id == mascota.id }
-            if (index != -1) {
-                currentList.toMutableList().apply { set(index, mascota) }
-            } else {
-                currentList + mascota
+    override suspend fun save(mascota: Mascota, imageUri: Uri?) {
+        val id = if (mascota.id.isEmpty()) firestore.collection("mascotas").document().id else mascota.id
+        
+        var finalUrl = mascota.imagenUrl
+        android.util.Log.d("MascotaRepository", "Guardando mascota $id. Uri: $imageUri")
+        
+        imageUri?.let { uri ->
+            val imageUrl = imageStorageRepository.uploadImage(uri, "mascotas", "${id}_${mascota.nombre}.jpg")
+            if (imageUrl != null) {
+                finalUrl = imageUrl
+                android.util.Log.d("MascotaRepository", "URL Imagen: $finalUrl")
             }
         }
+
+        val mascotaToSave = mascota.copy(id = id, imagenUrl = finalUrl)
+        firestore.collection("mascotas").document(id).set(mascotaToSave).await()
     }
 
-    override fun delete(id: String) {
-        _mascotas.update { it.filter { m -> m.id != id } }
+    override suspend fun delete(id: String) {
+        firestore.collection("mascotas").document(id).delete().await()
     }
 
     override fun getDestacadas(): List<Mascota> = _mascotas.value.filter { it.esDestacada }
 
     override fun getVerificadas(categoria: String?, lat: Double?, lng: Double?, radioKm: Double?): List<Mascota> {
         return _mascotas.value.filter { mascota ->
-            val matchesEstado = mascota.estado == PublicacionEstado.VERIFICADA || mascota.estado == PublicacionEstado.RESUELTA || mascota.estado == PublicacionEstado.ADOPTADA
+            val matchesEstado = mascota.estado == PublicacionEstado.VERIFICADA || 
+                               mascota.estado == PublicacionEstado.RESUELTA || 
+                               mascota.estado == PublicacionEstado.ADOPTADA
             val matchesCategoria = categoria == null || mascota.tipo.equals(categoria, ignoreCase = true)
             matchesEstado && matchesCategoria
         }
     }
 
-    override fun getPendientesModeracion(): List<Mascota> = _mascotas.value.filter { it.estado == PublicacionEstado.PENDIENTE }
+    override fun getPendientesModeracion(): List<Mascota> = 
+        _mascotas.value.filter { it.estado == PublicacionEstado.PENDIENTE }
 
-    override fun actualizarEstado(id: String, estado: PublicacionEstado, motivo: String) {
-        _mascotas.update { currentList ->
-            currentList.map { if (it.id == id) it.copy(estado = estado, motivoRechazo = motivo) else it }
-        }
+    override suspend fun actualizarEstado(id: String, estado: PublicacionEstado, motivo: String) {
+        firestore.collection("mascotas").document(id).update("estado", estado, "motivoRechazo", motivo).await()
     }
 
-    override fun toggleLike(mascotaId: String, userId: String) {
-        _mascotas.update { currentList ->
-            currentList.map { mascota ->
-                if (mascota.id == mascotaId) {
-                    val currentLikers = mascota.likerIds.toMutableList()
-                    if (currentLikers.contains(userId)) {
-                        currentLikers.remove(userId)
-                    } else {
-                        currentLikers.add(userId)
-                    }
-                    mascota.copy(likerIds = currentLikers)
-                } else mascota
-            }
-        }
+    override suspend fun toggleLike(mascotaId: String, userId: String) {
+        val mascota = getById(mascotaId) ?: return
+        val currentLikers = mascota.likerIds.toMutableList()
+        if (currentLikers.contains(userId)) currentLikers.remove(userId) else currentLikers.add(userId)
+        firestore.collection("mascotas").document(mascotaId).update("likerIds", currentLikers).await()
     }
 }

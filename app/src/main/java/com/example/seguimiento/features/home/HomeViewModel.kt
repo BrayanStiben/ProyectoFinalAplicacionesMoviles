@@ -98,7 +98,6 @@ class HomeViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // MASCOTAS MAPA: Ahora sigue los mismos filtros que el Feed para ser consistente
     val mascotasMapa: StateFlow<List<Mascota>> = mascotasFeed
 
     val mascotasRecomendadas: StateFlow<List<Mascota>> = mascotaRepository.mascotas
@@ -141,8 +140,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun asegurarMascotaEnRepo(mascota: Mascota) {
-        if (mascotaRepository.getById(mascota.id) == null) {
-            mascotaRepository.save(mascota)
+        viewModelScope.launch {
+            if (mascotaRepository.getById(mascota.id) == null) {
+                mascotaRepository.save(mascota)
+            }
         }
     }
 
@@ -150,19 +151,19 @@ class HomeViewModel @Inject constructor(
         val userId = currentUser.value?.id ?: return
         val mascota = mascotaRepository.getById(id)
         
-        mascotaRepository.toggleLike(id, userId)
-        
-        if (mascota != null && mascota.autorId != userId && mascota.autorId.isNotEmpty()) {
-            notificacionRepository.addNotificacion(
-                tituloResId = R.string.home_notif_like_title,
-                mensajeResId = R.string.home_notif_like_msg,
-                mensajeArgs = listOf(mascota.nombre),
-                tipo = "POST_VOTADO",
-                userId = mascota.autorId
-            )
-        }
-        
         viewModelScope.launch {
+            mascotaRepository.toggleLike(id, userId)
+            
+            if (mascota != null && mascota.autorId != userId && mascota.autorId.isNotEmpty()) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.home_notif_like_title,
+                    mensajeResId = R.string.home_notif_like_msg,
+                    mensajeArgs = listOf(mascota.nombre),
+                    tipo = "POST_VOTADO",
+                    userId = mascota.autorId
+                )
+            }
+            
             val allMascotas = mascotaRepository.mascotas.value
             val misLikes = allMascotas.count { it.likerIds.contains(userId) }
             if (misLikes >= 10) {

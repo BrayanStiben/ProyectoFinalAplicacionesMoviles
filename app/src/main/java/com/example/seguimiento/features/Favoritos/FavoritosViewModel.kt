@@ -7,6 +7,7 @@ import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.Dominio.repositorios.MascotaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +28,8 @@ class FavoritosViewModel @Inject constructor(
 
     fun toggleLike(mascotaId: String) {
         val userId = currentUser.value?.id ?: return
-        mascotaRepository.toggleLike(mascotaId, userId)
+        viewModelScope.launch {
+            mascotaRepository.toggleLike(mascotaId, userId)
+        }
     }
 }

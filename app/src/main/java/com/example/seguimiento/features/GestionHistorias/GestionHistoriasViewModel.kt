@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,10 +23,14 @@ class GestionHistoriasViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun aprobarHistoria(id: String) {
-        repository.actualizarEstado(id, HistoriaEstado.APROBADA)
+        viewModelScope.launch {
+            repository.actualizarEstado(id, HistoriaEstado.APROBADA)
+        }
     }
 
     fun rechazarHistoria(id: String) {
-        repository.actualizarEstado(id, HistoriaEstado.RECHAZADA)
+        viewModelScope.launch {
+            repository.actualizarEstado(id, HistoriaEstado.RECHAZADA)
+        }
     }
 }

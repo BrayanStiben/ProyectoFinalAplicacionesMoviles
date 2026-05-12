@@ -181,7 +181,7 @@ fun RegistroRefugioScreen(
                         Button(
                             onClick = {
                                 estaCargando = true
-                                viewModel.registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUri?.toString() ?: "", tipoSeleccionado) {
+                                viewModel.registrarRefugioConTipo(nombre, direccion, telefono, descripcion, fotoUri, tipoSeleccionado) {
                                     estaCargando = false
                                     onNavigateBack()
                                 }

@@ -288,7 +288,7 @@ class MascotaViewModel @Inject constructor(
                 raza = datos.raza,
                 ubicacion = "${datos.ciudad}, ${datos.departamento}",
                 descripcion = datos.descripcion,
-                imagenUrl = datos.fotoUri?.toString() ?: mascotaExistente?.imagenUrl ?: "",
+                imagenUrl = mascotaExistente?.imagenUrl ?: "", // El repo se encargará de actualizar esto si hay Uri
                 lat = datos.lat,
                 lng = datos.lng,
                 autorId = mascotaExistente?.autorId ?: userId,
@@ -297,7 +297,7 @@ class MascotaViewModel @Inject constructor(
                 likerIds = mascotaExistente?.likerIds ?: emptyList()
             )
 
-            mascotaRepository.save(mascotaParaGuardar)
+            mascotaRepository.save(mascotaParaGuardar, datos.fotoUri)
             onSuccess()
         }
     }

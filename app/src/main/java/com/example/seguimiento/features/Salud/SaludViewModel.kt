@@ -31,7 +31,6 @@ class SaludViewModel @Inject constructor(
         id?.let { mascotaRepository.getById(it) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    // Observa el Flow del repositorio y lo convierte en StateFlow para la UI
     val carnet = _mascotaId.flatMapLatest { id ->
         if (id == null) flowOf(CarnetSalud(""))
         else saludRepository.getCarnetPorMascota(id)
@@ -55,21 +54,45 @@ class SaludViewModel @Inject constructor(
     fun registrarVacuna(nombre: String, fecha: String, proxima: String) {
         val id = _mascotaId.value ?: return
         viewModelScope.launch {
-            saludRepository.agregarVacuna(id, Vacuna(UUID.randomUUID().toString(), nombre, fecha, proxima))
+            saludRepository.agregarVacuna(
+                id, 
+                Vacuna(
+                    id = UUID.randomUUID().toString(),
+                    nombre = nombre,
+                    fecha = fecha,
+                    proximaDosis = proxima
+                )
+            )
         }
     }
 
     fun registrarDesparasitacion(producto: String, fecha: String) {
         val id = _mascotaId.value ?: return
         viewModelScope.launch {
-            saludRepository.agregarDesparasitacion(id, Desparasitacion(UUID.randomUUID().toString(), producto, fecha))
+            saludRepository.agregarDesparasitacion(
+                id, 
+                Desparasitacion(
+                    id = UUID.randomUUID().toString(),
+                    producto = producto,
+                    fecha = fecha
+                )
+            )
         }
     }
 
     fun agendarCita(motivo: String, fecha: String, hora: String, clinica: String) {
         val id = _mascotaId.value ?: return
         viewModelScope.launch {
-            saludRepository.agendarCita(id, CitaVeterinaria(UUID.randomUUID().toString(), motivo, fecha, hora, clinica))
+            saludRepository.agendarCita(
+                id, 
+                CitaVeterinaria(
+                    id = UUID.randomUUID().toString(),
+                    motivo = motivo,
+                    fecha = fecha,
+                    hora = hora,
+                    clinica = clinica
+                )
+            )
         }
     }
 }

@@ -1,185 +1,136 @@
 package com.example.seguimiento.Data.repositorios
 
+import android.net.Uri
 import com.example.seguimiento.Dominio.modelos.User
 import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.Dominio.modelos.UsuarioEstadisticas
 import com.example.seguimiento.Dominio.repositorios.UserRepository
-import com.example.seguimiento.R
-import com.example.seguimiento.core.utils.ResourceProvider
+import com.example.seguimiento.Dominio.repositorios.ImageStorageRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    private val firestore: FirebaseFirestore,
+    private val imageStorageRepository: ImageStorageRepository
 ) : UserRepository {
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
     override val users: StateFlow<List<User>> = _users.asStateFlow()
 
     init {
-        _users.value = fetchUsers()
+        // Escucha en tiempo real
+        firestore.collection("usuarios")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    error.printStackTrace()
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val userList = snapshot.toObjects(User::class.java)
+                    _users.value = userList
+                    
+                    // Si la colección está vacía en Firebase, subimos los datos iniciales
+                    if (userList.isEmpty()) {
+                        seedInitialData()
+                    }
+                }
+            }
     }
 
-    override fun save(user: User) {
-        _users.update { currentList ->
-            val index = currentList.indexOfFirst { it.id == user.id || it.email == user.email }
-            if (index != -1) {
-                currentList.toMutableList().apply { set(index, user) }
+    private fun seedInitialData() {
+        val initialUsers = listOf(
+            User(id = "admin_id", name = "Admin Sistema", email = "admin@gmail.com", password = "admin", role = UserRole.ADMIN, points = 5000),
+            User(id = "user_test", name = "Usuario Prueba", email = "test@gmail.com", password = "123", role = UserRole.USER, points = 100)
+        )
+        val batch = firestore.batch()
+        initialUsers.forEach { user ->
+            val docRef = firestore.collection("usuarios").document(user.id)
+            batch.set(docRef, user)
+        }
+        batch.commit().addOnFailureListener { it.printStackTrace() }
+    }
+
+    override suspend fun save(user: User, imageUri: Uri?) {
+        val id = if (user.id.isEmpty()) firestore.collection("usuarios").document().id else user.id
+        
+        var finalUrl = user.profilePictureUrl
+        android.util.Log.d("UserRepository", "Iniciando save para usuario $id. Uri recibida: $imageUri")
+        
+        imageUri?.let { uri ->
+            android.util.Log.d("UserRepository", "Subiendo imagen a ImgBB...")
+            val imageUrl = imageStorageRepository.uploadImage(uri, "usuarios", "${id}_profile.jpg")
+            if (imageUrl != null) {
+                finalUrl = imageUrl
+                android.util.Log.d("UserRepository", "URL de imagen obtenida: $finalUrl")
             } else {
-                currentList + user
+                android.util.Log.e("UserRepository", "Error: No se pudo subir la imagen a ImgBB.")
             }
+        } ?: run {
+            android.util.Log.w("UserRepository", "No se recibió Uri de imagen para subir.")
         }
+
+        val userToSave = user.copy(id = id, profilePictureUrl = finalUrl)
+        android.util.Log.d("UserRepository", "Guardando en Firestore: $userToSave")
+        
+        firestore.collection("usuarios").document(id).set(userToSave).await()
+        android.util.Log.d("UserRepository", "Guardado exitoso en Firestore.")
     }
 
-    override fun findById(id: String): User? {
-        return _users.value.firstOrNull { it.id == id }
-    }
+    override fun findById(id: String): User? = _users.value.find { it.id == id }
 
-    override fun findByEmail(email: String): User? {
-        return _users.value.firstOrNull { it.email == email }
-    }
+    override fun findByEmail(email: String): User? = _users.value.find { it.email == email }
 
-    override fun updatePassword(email: String, newPassword: String): Boolean {
-        var updated = false
-        _users.update { currentList ->
-            currentList.map { 
-                if (it.email == email) {
-                    updated = true
-                    it.copy(password = newPassword)
-                } else it 
-            }
+    override suspend fun updatePassword(email: String, newPassword: String): Boolean {
+        val user = findByEmail(email)
+        user?.let {
+            firestore.collection("usuarios").document(it.id).update("password", newPassword).await()
+            return true
         }
-        return updated
+        return false
     }
 
     override fun login(email: String, password: String): User? {
-        return _users.value.firstOrNull { it.email == email && it.password == password }
+        return _users.value.find { it.email == email && it.password == password }
     }
 
     override fun getUsuariosConEstadisticas(): List<UsuarioEstadisticas> {
         return _users.value.map { UsuarioEstadisticas(it.name, it.departamento, it.city) }
     }
 
-    override fun deleteAccount(id: String) {
-        _users.update { it.filter { user -> user.id != id } }
+    override suspend fun deleteAccount(id: String) {
+        firestore.collection("usuarios").document(id).delete().await()
     }
 
     override suspend fun incrementRejectionCount(userId: String) {
-        _users.update { list ->
-            list.map { user ->
-                if (user.id == userId) {
-                    val newCount = user.rejectionCount + 1
-                    user.copy(rejectionCount = newCount)
-                } else user
-            }
-        }
+        val user = findById(userId) ?: return
+        firestore.collection("usuarios").document(userId).update("rejectionCount", user.rejectionCount + 1).await()
     }
 
     override suspend fun resetRejectionCount(userId: String) {
-        _users.update { list ->
-            list.map { user ->
-                if (user.id == userId) user.copy(rejectionCount = 0) else user
-            }
-        }
+        firestore.collection("usuarios").document(userId).update("rejectionCount", 0).await()
     }
 
     override suspend fun applyPenalty(userId: String, durationMillis: Long) {
-        _users.update { list ->
-            list.map { user ->
-                if (user.id == userId) {
-                    user.copy(penaltyEndTime = System.currentTimeMillis() + durationMillis)
-                } else user
-            }
-        }
+        val endTime = System.currentTimeMillis() + durationMillis
+        firestore.collection("usuarios").document(userId).update("penaltyEndTime", endTime).await()
     }
 
     override suspend fun addPoints(userId: String, points: Int) {
-        _users.update { list ->
-            list.map { user ->
-                if (user.id == userId) {
-                    user.copy(points = user.points + points)
-                } else user
-            }
-        }
+        val user = findById(userId) ?: return
+        firestore.collection("usuarios").document(userId).update("points", user.points + points).await()
     }
 
     override suspend fun addBadge(userId: String, badgeId: String) {
-        _users.update { list ->
-            list.map { user ->
-                if (user.id == userId && !user.badges.contains(badgeId)) {
-                    user.copy(badges = user.badges + badgeId)
-                } else user
-            }
+        val user = findById(userId) ?: return
+        if (!user.badges.contains(badgeId)) {
+            val newList = user.badges + badgeId
+            firestore.collection("usuarios").document(userId).update("badges", newList).await()
         }
-    }
-
-    private fun fetchUsers(): List<User> {
-        return listOf(
-            User(
-                id = "user_colaborador",
-                name = resourceProvider.getString(R.string.mock_user_colaborador),
-                city = resourceProvider.getString(R.string.mock_location_bogota),
-                departamento = resourceProvider.getString(R.string.mock_dept_cundinamarca),
-                address = resourceProvider.getString(R.string.mock_address_1),
-                email = "colaborador@gmail.com",
-                password = "123",
-                profilePictureUrl = "https://picsum.photos/200?random=10",
-                role = UserRole.USER,
-                points = 450 
-            ),
-            User(
-                id = "user_protector",
-                name = resourceProvider.getString(R.string.mock_user_protector),
-                city = resourceProvider.getString(R.string.mock_location_medellin),
-                departamento = resourceProvider.getString(R.string.mock_dept_antioquia),
-                address = resourceProvider.getString(R.string.mock_address_2),
-                email = "protector@gmail.com",
-                password = "123",
-                profilePictureUrl = "https://picsum.photos/200?random=11",
-                role = UserRole.USER,
-                points = 850 
-            ),
-            User(
-                id = "user_heroe",
-                name = resourceProvider.getString(R.string.mock_user_heroe),
-                city = resourceProvider.getString(R.string.mock_location_cali),
-                departamento = resourceProvider.getString(R.string.mock_dept_valle),
-                address = resourceProvider.getString(R.string.mock_address_3),
-                email = "heroe@gmail.com",
-                password = "123",
-                profilePictureUrl = "https://picsum.photos/200?random=12",
-                role = UserRole.USER,
-                points = 1200 
-            ),
-            User(
-                id = "user_leyenda",
-                name = resourceProvider.getString(R.string.mock_user_leyenda),
-                city = resourceProvider.getString(R.string.mock_location_barranquilla),
-                departamento = resourceProvider.getString(R.string.mock_dept_atlantico),
-                address = resourceProvider.getString(R.string.mock_address_4),
-                email = "leyenda@gmail.com",
-                password = "123",
-                profilePictureUrl = "https://picsum.photos/200?random=13",
-                role = UserRole.USER,
-                points = 2000 
-            ),
-            User(
-                id = "admin_id",
-                name = resourceProvider.getString(R.string.mock_user_admin),
-                city = resourceProvider.getString(R.string.mock_location_armenia),
-                departamento = resourceProvider.getString(R.string.mock_dept_quindio),
-                address = resourceProvider.getString(R.string.mock_address_central),
-                email = "admin@gmail.com",
-                password = "admin",
-                profilePictureUrl = "https://picsum.photos/200?random=1",
-                role = UserRole.ADMIN,
-                points = 5000
-            )
-        )
     }
 }

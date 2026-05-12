@@ -113,18 +113,6 @@ fun NotificacionesScreen(
 fun NotificacionItem(notificacion: Notificacion, onRead: () -> Unit) {
     val naranjaApp = Color(0xFFE67E22)
     
-    val titulo = if (notificacion.tituloResId != null) {
-        stringResource(notificacion.tituloResId, *notificacion.tituloArgs.toTypedArray())
-    } else {
-        notificacion.titulo
-    }
-
-    val mensaje = if (notificacion.mensajeResId != null) {
-        stringResource(notificacion.mensajeResId, *notificacion.mensajeArgs.toTypedArray())
-    } else {
-        notificacion.mensaje
-    }
-
     Card(
         onClick = onRead,
         shape = RoundedCornerShape(16.dp),
@@ -154,13 +142,13 @@ fun NotificacionItem(notificacion: Notificacion, onRead: () -> Unit) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    titulo, 
+                    notificacion.titulo, 
                     fontWeight = if (notificacion.leida) FontWeight.Bold else FontWeight.Black, 
                     fontSize = 16.sp,
                     color = if (notificacion.leida) Color.Gray else Color.Black
                 )
                 Text(
-                    mensaje, 
+                    notificacion.mensaje, 
                     fontSize = 14.sp, 
                     color = if (notificacion.leida) Color.Gray.copy(alpha = 0.8f) else Color.DarkGray
                 )

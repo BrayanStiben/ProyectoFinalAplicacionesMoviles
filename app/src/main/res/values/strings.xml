@@ -466,6 +466,8 @@
     <string name="store_notif_redeem_success_title">Compra Exitosa 🎁</string>
     <string name="store_notif_redeem_success_msg">Has canjeado tus puntos por: %1$s. ¡Disfrútalo!</string>
     <string name="store_notif_redeem_success_msg_2">Has canjeado tus puntos por: %1$s. ¡Disfrútalo!</string>
+    <string name="notif_shop_purchase_title">Compra en Tienda</string>
+    <string name="notif_shop_purchase_msg">Has canjeado tus puntos por %1$s exitosamente.</string>
     <string name="store_default_food_name">Alimento Premium</string>
     <string name="store_default_food_desc">Nutrición balanceada formulada para el bienestar de tu mascota.</string>
     <string name="store_redeem_history">Historial de canje</string>

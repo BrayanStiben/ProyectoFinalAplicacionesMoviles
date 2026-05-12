@@ -36,10 +36,14 @@ class MisPublicacionesViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MisPublicacionesUiState(isLoading = true))
 
     fun resolverPublicacion(id: String) {
-        mascotaRepository.actualizarEstado(id, PublicacionEstado.RESUELTA)
+        viewModelScope.launch {
+            mascotaRepository.actualizarEstado(id, PublicacionEstado.RESUELTA)
+        }
     }
 
     fun eliminarPublicacion(id: String) {
-        mascotaRepository.delete(id)
+        viewModelScope.launch {
+            mascotaRepository.delete(id)
+        }
     }
 }

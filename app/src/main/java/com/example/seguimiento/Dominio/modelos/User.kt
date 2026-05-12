@@ -1,7 +1,6 @@
 package com.example.seguimiento.Dominio.modelos
 
 import androidx.compose.ui.graphics.Color
-
 import com.example.seguimiento.R
 
 enum class UserRole {
@@ -9,14 +8,14 @@ enum class UserRole {
 }
 
 data class User(
-    val id: String,
-    val name: String,
-    val city: String,
-    val departamento: String,
-    val address: String,
-    val email: String,
-    val password: String,
-    val profilePictureUrl: String,
+    val id: String = "",
+    val name: String = "",
+    val city: String = "",
+    val departamento: String = "",
+    val address: String = "",
+    val email: String = "",
+    val password: String = "",
+    val profilePictureUrl: String = "",
     val role: UserRole = UserRole.USER,
     val isBanned: Boolean = false,
     val banReason: String = "",
@@ -27,13 +26,12 @@ data class User(
     val rejectionCount: Int = 0,
     val penaltyEndTime: Long = 0
 ) {
-    // Rangos ajustados para ser alcanzables con los logros actuales (100 pts c/u)
     val level: Int get() = when {
-        points >= 1500 -> 5 // Leyenda
-        points >= 1000 -> 4 // Héroe
-        points >= 700 -> 3  // Protector
-        points >= 400 -> 2  // Colaborador
-        else -> 1           // Novato
+        points >= 1500 -> 5
+        points >= 1000 -> 4
+        points >= 700 -> 3
+        points >= 400 -> 2
+        else -> 1
     }
 
     fun getLevelNameResId(): Int = when (level) {
@@ -45,11 +43,11 @@ data class User(
     }
 
     fun getLevelColor(): Color = when (level) {
-        1 -> Color(0xFF9E9E9E) // Gris
-        2 -> Color(0xFF4CAF50) // Verde
-        3 -> Color(0xFF2196F3) // Azul
-        4 -> Color(0xFF9C27B0) // Morado
-        else -> Color(0xFFFFD700) // Dorado
+        1 -> Color(0xFF9E9E9E)
+        2 -> Color(0xFF4CAF50)
+        3 -> Color(0xFF2196F3)
+        4 -> Color(0xFF9C27B0)
+        else -> Color(0xFFFFD700)
     }
     
     val isPenalized: Boolean 

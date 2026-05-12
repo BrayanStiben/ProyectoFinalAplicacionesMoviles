@@ -56,22 +56,26 @@ class HistoriaMascotaViewModel @Inject constructor(
         val esAdmin = currentUser?.role == UserRole.ADMIN
         
         val historia = HistoriaFeliz(
+            id = UUID.randomUUID().toString(),
             autorId = currentUser?.id ?: "anonimo",
             autorNombre = currentUser?.name ?: "Usuario",
             mascotaNombre = _mascotaNombre.value.ifBlank { "Mascota" },
             texto = _textoHistoria.value,
-            imagenUrl = _imagenSeleccionada.value?.toString() ?: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500",
+            imagenUrl = "", // El repo se encargará si hay Uri
             estado = if (esAdmin) HistoriaEstado.APROBADA else HistoriaEstado.PENDIENTE
         )
-        repository.save(historia)
+        
+        viewModelScope.launch {
+            repository.save(historia, _imagenSeleccionada.value)
 
-        if (currentUser != null) {
-            notificacionRepository.addNotificacion(
-                tituloResId = R.string.stories_notif_shared_title,
-                mensajeResId = R.string.stories_notif_shared_msg,
-                mensajeArgs = listOf(_mascotaNombre.value),
-                userId = currentUser.id
-            )
+            if (currentUser != null) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.stories_notif_shared_title,
+                    mensajeResId = R.string.stories_notif_shared_msg,
+                    mensajeArgs = listOf(_mascotaNombre.value),
+                    userId = currentUser.id
+                )
+            }
         }
 
         _textoHistoria.value = ""
@@ -82,17 +86,23 @@ class HistoriaMascotaViewModel @Inject constructor(
 
     fun editarHistoria(id: String, nuevoTexto: String, nuevoNombre: String) {
         val historia = repository.historias.value.find { it.id == id } ?: return
-        repository.save(historia.copy(texto = nuevoTexto, mascotaNombre = nuevoNombre))
+        viewModelScope.launch {
+            repository.save(historia.copy(texto = nuevoTexto, mascotaNombre = nuevoNombre))
+        }
     }
 
     fun toggleLike(historiaId: String) {
         val userId = authRepository.currentUser.value?.id ?: return
-        repository.toggleLike(historiaId, userId)
+        viewModelScope.launch {
+            repository.toggleLike(historiaId, userId)
+        }
     }
 
     fun toggleFollow(historiaId: String) {
         val userId = authRepository.currentUser.value?.id ?: return
-        repository.toggleFollow(historiaId, userId)
+        viewModelScope.launch {
+            repository.toggleFollow(historiaId, userId)
+        }
     }
 
     fun getComentarios(historiaId: String) = comentarioRepository.getComentariosPorTarget(historiaId)
@@ -113,7 +123,9 @@ class HistoriaMascotaViewModel @Inject constructor(
     }
 
     fun eliminarHistoria(id: String) {
-        repository.delete(id)
+        viewModelScope.launch {
+            repository.delete(id)
+        }
     }
 
     fun aprobarHistoria(id: String) {

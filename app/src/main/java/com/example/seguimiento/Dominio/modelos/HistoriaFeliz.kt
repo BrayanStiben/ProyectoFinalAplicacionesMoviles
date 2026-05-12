@@ -7,12 +7,12 @@ enum class HistoriaEstado {
 }
 
 data class HistoriaFeliz(
-    val id: String = UUID.randomUUID().toString(),
-    val autorId: String,
-    val autorNombre: String,
-    val mascotaNombre: String,
-    val texto: String,
-    val imagenUrl: String,
+    val id: String = "",
+    val autorId: String = "",
+    val autorNombre: String = "",
+    val mascotaNombre: String = "",
+    val texto: String = "",
+    val imagenUrl: String = "",
     val estado: HistoriaEstado = HistoriaEstado.PENDIENTE,
     val fechaPublicacion: Long = System.currentTimeMillis(),
     val followersIds: List<String> = emptyList(), // Lista de IDs de usuarios que siguen esta historia

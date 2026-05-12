@@ -1,29 +1,32 @@
 package com.example.seguimiento.Dominio.modelos
 
 data class Vacuna(
-    val id: String,
-    val nombre: String,
-    val fecha: String,
-    val proximaDosis: String
+    val id: String = "",
+    val nombre: String = "",
+    val fecha: String = "",
+    val proximaDosis: String = "",
+    val laboratorio: String = ""
 )
 
 data class Desparasitacion(
-    val id: String,
-    val producto: String,
-    val fecha: String
+    val id: String = "",
+    val producto: String = "",
+    val fecha: String = "",
+    val tipo: String = "", // Interna o Externa
+    val peso: String = ""
 )
 
 data class CitaVeterinaria(
-    val id: String,
-    val motivo: String,
-    val fecha: String,
-    val hora: String,
-    val clinica: String
+    val id: String = "",
+    val motivo: String = "",
+    val fecha: String = "",
+    val hora: String = "",
+    val clinica: String = ""
 )
 
 data class CarnetSalud(
-    val mascotaId: String,
-    val petId: String = "",
+    val mascotaId: String = "",
+    val petId: String = "", 
     val pin: String = "",
     val vacunas: List<Vacuna> = emptyList(),
     val desparasitaciones: List<Desparasitacion> = emptyList(),
