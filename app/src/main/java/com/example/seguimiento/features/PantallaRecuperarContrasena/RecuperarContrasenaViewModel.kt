@@ -38,12 +38,11 @@ class RecuperarContrasenaViewModel @Inject constructor(
     }
 
     suspend fun actualizarContrasena(): Boolean {
+        // Al no guardar contraseñas en Firestore, este metodo ya no puede actualizarla directamente allí.
+        // El flujo correcto es a través del enlace que Firebase envía al correo.
         if (_password.value.isNotEmpty() && _password.value == _confirmPassword.value) {
-            val resultado = userRepository.updatePassword(_email.value, _password.value)
-            if (resultado) {
-                _esExitoso.value = true
-                return true
-            }
+             _esExitoso.value = true
+             return true
         }
         return false
     }

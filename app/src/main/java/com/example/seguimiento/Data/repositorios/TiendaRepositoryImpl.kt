@@ -75,8 +75,10 @@ class TiendaRepositoryImpl @Inject constructor(
             if (snapshot != null) {
                 val list = snapshot.toObjects(Producto::class.java)
                 _productos.value = list
-                if (list.isEmpty()) {
-                    loadProductsFromApisAndSaveToFirebase()
+                
+                // Si hay pocos productos, forzamos la carga de más desde la API
+                if (list.size < 30) {
+                    loadProductsFromApisAndSaveToFirebase(existingCount = list.size)
                 }
             }
         }
@@ -90,29 +92,54 @@ class TiendaRepositoryImpl @Inject constructor(
             }
     }
 
-    private fun loadProductsFromApisAndSaveToFirebase() {
+    private fun loadProductsFromApisAndSaveToFirebase(existingCount: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val catFood = "Alimentos"
             try {
                 val batch = firestore.batch()
-                val response = petFoodApi.search("pet food", limit = 10)
-                response.products?.take(10)?.forEach { item ->
-                    if (!item.product_name.isNullOrEmpty() && !item.image_url.isNullOrEmpty()) {
-                        val id = "pf_${item.product_name.hashCode()}"
-                        val p = Producto(
-                            id = id,
-                            nombre = item.product_name.take(30),
-                            descripcion = "Alimento premium",
-                            precioPuntos = 500,
-                            imagenUrl = item.image_url.replace("http://", "https://"),
-                            stock = 20,
-                            categoria = catFood
-                        )
-                        batch.set(collection.document(id), p)
+                val categories = listOf("dog food", "cat food", "pet snacks", "dog toy", "cat toy")
+                var totalAddedInThisRun = 0
+                val targetTotal = 40 // Apuntamos a un total de 40 productos
+
+                for (cat in categories) {
+                    if (existingCount + totalAddedInThisRun >= targetTotal) break
+                    
+                    val response = petFoodApi.search(cat, limit = 20)
+                    response.products?.forEach { item ->
+                        if (existingCount + totalAddedInThisRun < targetTotal && 
+                            !item.product_name.isNullOrEmpty() && 
+                            !item.image_url.isNullOrEmpty()) {
+                            
+                            val id = "pf_${item.product_name.hashCode()}_${existingCount + totalAddedInThisRun}"
+                            
+                            // Evitar duplicados si ya existen en la lista local (aunque el ID lleve un índice)
+                            if (_productos.value.none { it.nombre == item.product_name }) {
+                                val categoriaApp = when {
+                                    cat.contains("dog") -> "Perros"
+                                    cat.contains("cat") -> "Gatos"
+                                    else -> "Otros"
+                                }
+                                val p = Producto(
+                                    id = id,
+                                    nombre = item.product_name.take(40),
+                                    descripcion = "Producto premium para el cuidado de tu mascota.",
+                                    precioPuntos = (100..1200).random(),
+                                    imagenUrl = item.image_url.replace("http://", "https://"),
+                                    stock = (5..30).random(),
+                                    categoria = categoriaApp
+                                )
+                                batch.set(collection.document(id), p)
+                                totalAddedInThisRun++
+                            }
+                        }
                     }
                 }
-                batch.commit().await()
-            } catch (e: Exception) { e.printStackTrace() }
+                
+                if (totalAddedInThisRun > 0) {
+                    batch.commit().await()
+                }
+            } catch (e: Exception) { 
+                android.util.Log.e("TiendaRepo", "Error al cargar productos: ${e.message}")
+            }
         }
     }
 

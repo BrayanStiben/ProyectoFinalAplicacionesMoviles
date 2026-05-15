@@ -104,12 +104,23 @@ fun MapaFeedScreen(
         }
     }
 
+    // Corregido: Lanzador de permisos centrará el mapa inmediatamente
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val granted = permissions.values.any { it }
         hasLocationPermission = granted
-        if (granted) locationOverlay.enableMyLocation()
+        if (granted) {
+            locationOverlay.enableMyLocation()
+            // Obtener ubicación actual y centrar cámara
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { loc ->
+                    loc?.let {
+                        mapView.controller.animateTo(GeoPoint(it.latitude, it.longitude))
+                        mapView.controller.setZoom(16.0)
+                    }
+                }
+        }
     }
 
     LaunchedEffect(hasLocationPermission) {
@@ -202,9 +213,7 @@ fun MapaFeedScreen(
                                 return true
                             }
                         }))
-                        // 1. Mascotas al fondo
                         overlays.add(petFolder)
-                        // 2. Ubicación arriba de todo para que sea visible bajo/sobre los pines
                         overlays.add(locationOverlay)
                     }
                 },
@@ -282,19 +291,12 @@ private fun createRedDotBitmap(context: Context): Bitmap {
     val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    
-    // Anillo exterior blanco sólido para máximo contraste
     paint.color = android.graphics.Color.WHITE
     canvas.drawCircle(size / 2f, size / 2f, size / 2.5f, paint)
-    
-    // Punto rojo central nítido
     paint.color = android.graphics.Color.RED
     canvas.drawCircle(size / 2f, size / 2f, size / 4.5f, paint)
-    
-    // Pequeño brillo central para efecto 3D
     paint.color = android.graphics.Color.argb(150, 255, 255, 255)
     canvas.drawCircle(size / 2.2f, size / 2.2f, size / 12f, paint)
-    
     return bitmap
 }
 

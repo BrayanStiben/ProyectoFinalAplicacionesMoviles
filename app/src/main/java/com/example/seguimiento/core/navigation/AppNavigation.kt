@@ -507,7 +507,7 @@ fun AppNavigation() {
 
         composable(NavRoutes.OlvidoContrasena.route) {
             OlvidoContrasenaScreen(
-                onNavigateToCode = { email -> navController.navigate(NavRoutes.EnvioCodigo.route + "/$email") }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

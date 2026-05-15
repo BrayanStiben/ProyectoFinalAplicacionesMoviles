@@ -34,7 +34,7 @@ class FirebaseSeeder @Inject constructor(
 
             // 2. Forzar creación de categorías principales
             forceSeed("usuarios") {
-                userRepository.save(User(id = "admin_id", name = "Administrador", email = "admin@gmail.com", password = "admin", role = UserRole.ADMIN))
+                userRepository.save(User(id = "admin_id", name = "Administrador", email = "admin@gmail.com", role = UserRole.ADMIN))
             }
             
             forceSeed("mascotas") {

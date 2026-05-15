@@ -34,6 +34,7 @@
     <string name="error_invalid_credentials">Incorrect credentials</string>
     <string name="error_form_incomplete">Please complete the form correctly</string>
     <string name="error_register_failed">Registration error: %1$s</string>
+    <string name="error_recovery_failed">Error sending email: %1$s</string>
 
     <!-- Certificado Rechazo -->
     <string name="cert_rechazo_title">Review Record</string>
@@ -46,7 +47,7 @@
     <string name="cert_rechazo_retry_msg">Your request does not meet all requirements at this time. You may try again with this or another pet when you are ready, provided you do not exceed the attempt limit (%1$d of 3 used).</string>
     <string name="cert_rechazo_signature_label">ADMINISTRATOR SIGNATURE:</string>
     <string name="cert_rechazo_system_validated">Signature validated by the system</string>
-    <string name="cert_rechazo_btn_confirm">CONFIRMAR Y NOTIFICAR RECHAZO</string>
+    <string name="cert_rechazo_btn_confirm">CONFIRM AND NOTIFY REJECTION</string>
     <string name="cert_rechazo_user_penalized">USER PENALIZED</string>
     <string name="cert_rechazo_notified">REJECTION NOTIFIED</string>
     <string name="cert_rechazo_signature_hint">Administrator signature (Admin)</string>
@@ -93,10 +94,13 @@
 
     <!-- Recuperación de Contraseña -->
     <string name="forgot_password_title">Recover Password</string>
-    <string name="forgot_password_instruction">Enter your email and we will show you a security code.</string>
+    <string name="forgot_password_instruction">Enter your email and we will send you a reset link.</string>
     <string name="forgot_password_btn_get_code">Get Code</string>
+    <string name="forgot_password_btn_send_email">Send Email</string>
     <string name="forgot_password_dialog_title">Verification Code</string>
+    <string name="forgot_password_dialog_success_title">Email Sent</string>
     <string name="forgot_password_dialog_text">Your code to reset the password is:</string>
+    <string name="forgot_password_success_sent">A recovery email has been sent to your address. Please check your inbox.</string>
     <string name="forgot_password_btn_understood">Understood</string>
     <string name="forgot_password_error_invalid_email">Error: Invalid email</string>
     <string name="reset_password_title">New Password</string>
@@ -448,7 +452,7 @@
     <string name="admin_list_requests_btn_verify">Verify</string>
 
     <!-- Tienda (User) -->
-    <string name="store_market_title">PetAdopt Market Bone  Bone 🦴</string>
+    <string name="store_market_title">PetAdopt Market 🦴</string>
     <string name="store_market_subtitle">Redeem your points for prizes</string>
     <string name="store_cat_all">All</string>
     <string name="store_cat_food">Food</string>

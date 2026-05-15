@@ -34,6 +34,7 @@
     <string name="error_invalid_credentials">Credenciales incorrectas</string>
     <string name="error_form_incomplete">Por favor complete correctamente el formulario</string>
     <string name="error_register_failed">Error al registrar: %1$s</string>
+    <string name="error_recovery_failed">Error al enviar correo: %1$s</string>
 
     <!-- Certificado Rechazo -->
     <string name="cert_rechazo_title">Constancia de Revisión</string>
@@ -93,10 +94,13 @@
 
     <!-- Recuperación de Contraseña -->
     <string name="forgot_password_title">Recuperar Contraseña</string>
-    <string name="forgot_password_instruction">Ingresa tu correo y te mostraremos un código de seguridad.</string>
+    <string name="forgot_password_instruction">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</string>
     <string name="forgot_password_btn_get_code">Obtener Código</string>
+    <string name="forgot_password_btn_send_email">Enviar Correo</string>
     <string name="forgot_password_dialog_title">Código de Verificación</string>
+    <string name="forgot_password_dialog_success_title">Correo Enviado</string>
     <string name="forgot_password_dialog_text">Tu código para restablecer la contraseña es:</string>
+    <string name="forgot_password_success_sent">Se ha enviado un correo de recuperación a tu dirección de email. Revisa tu bandeja de entrada.</string>
     <string name="forgot_password_btn_understood">Entendido</string>
     <string name="forgot_password_error_invalid_email">Error: Correo inválido</string>
     <string name="reset_password_title">Nueva Contraseña</string>

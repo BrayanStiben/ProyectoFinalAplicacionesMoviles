@@ -25,50 +25,63 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.seguimiento.R
+import com.example.seguimiento.core.utils.ResultadoPeticion
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OlvidoContrasenaScreen(
     viewModel: OlvidoContrasenaViewModel = hiltViewModel(),
-    onNavigateToCode: (String) -> Unit = {}
+    onNavigateBack: () -> Unit = {}
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val email by viewModel.email.collectAsState()
     val esValido by viewModel.esEmailValido.collectAsState()
-    val codigoGenerado by viewModel.codigoGenerado.collectAsState()
+    val resultado by viewModel.resultado.collectAsState()
     
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Pop-up con el código generado
-    if (codigoGenerado != null) {
+    // Manejo del resultado de la recuperación
+    LaunchedEffect(resultado) {
+        resultado?.let {
+            when (it) {
+                is ResultadoPeticion.ExitoResId -> {
+                    // Mostrar diálogo de éxito o snackbar y navegar atrás
+                }
+                is ResultadoPeticion.ErrorResId -> {
+                    val errorMsg = context.getString(it.resId, *it.args.toTypedArray())
+                    snackbarHostState.showSnackbar(errorMsg)
+                    viewModel.limpiarResultado()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    if (resultado is ResultadoPeticion.ExitoResId) {
         AlertDialog(
-            onDismissRequest = { viewModel.limpiarCodigo() },
+            onDismissRequest = { 
+                viewModel.limpiarResultado()
+                onNavigateBack()
+            },
             confirmButton = {
                 Button(
                     onClick = { 
-                        val cod = codigoGenerado
-                        viewModel.limpiarCodigo()
-                        onNavigateToCode(email) 
+                        viewModel.limpiarResultado()
+                        onNavigateBack() 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                 ) {
                     Text(stringResource(id = R.string.forgot_password_btn_understood), color = Color.White)
                 }
             },
-            title = { Text(stringResource(id = R.string.forgot_password_dialog_title), fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(id = R.string.forgot_password_dialog_success_title), fontWeight = FontWeight.Bold) },
             text = { 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(stringResource(id = R.string.forgot_password_dialog_text), textAlign = TextAlign.Center)
-                    Text(
-                        text = codigoGenerado!!, 
-                        fontSize = 32.sp, 
-                        fontWeight = FontWeight.ExtraBold, 
-                        color = Color(0xFFE69160),
-                        modifier = Modifier.padding(top = 10.dp)
-                    )
-                }
+                Text(
+                    text = stringResource(id = (resultado as ResultadoPeticion.ExitoResId).resId),
+                    textAlign = TextAlign.Center
+                )
             },
             shape = RoundedCornerShape(24.dp)
         )
@@ -173,20 +186,13 @@ fun OlvidoContrasenaScreen(
 
                             Button(
                                 onClick = {
-                                    scope.launch {
-                                        if (viewModel.ejecutarValidacionFinal()) {
-                                            viewModel.generarCodigo()
-                                        } else {
-                                            val msg = context.getString(R.string.forgot_password_error_invalid_email)
-                                            snackbarHostState.showSnackbar(msg)
-                                        }
-                                    }
+                                    viewModel.enviarCorreoRecuperacion()
                                 },
                                 modifier = Modifier.fillMaxWidth().height(60.dp),
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE69160))
                             ) {
-                                Text(stringResource(id = R.string.forgot_password_btn_get_code), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(id = R.string.forgot_password_btn_send_email), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

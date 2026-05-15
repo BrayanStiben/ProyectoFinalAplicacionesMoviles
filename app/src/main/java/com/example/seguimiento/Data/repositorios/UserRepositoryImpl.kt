@@ -45,8 +45,8 @@ class UserRepositoryImpl @Inject constructor(
 
     private fun seedInitialData() {
         val initialUsers = listOf(
-            User(id = "admin_id", name = "Admin Sistema", email = "admin@gmail.com", password = "admin", role = UserRole.ADMIN, points = 5000),
-            User(id = "user_test", name = "Usuario Prueba", email = "test@gmail.com", password = "123", role = UserRole.USER, points = 100)
+            User(id = "admin_id", name = "Admin Sistema", email = "admin@gmail.com", role = UserRole.ADMIN, points = 5000),
+            User(id = "user_test", name = "Usuario Prueba", email = "test@gmail.com", role = UserRole.USER, points = 100)
         )
         val batch = firestore.batch()
         initialUsers.forEach { user ->
@@ -86,19 +86,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun findByEmail(email: String): User? = _users.value.find { it.email == email }
 
-    override suspend fun updatePassword(email: String, newPassword: String): Boolean {
-        val user = findByEmail(email)
-        user?.let {
-            firestore.collection("usuarios").document(it.id).update("password", newPassword).await()
-            return true
-        }
-        return false
-    }
-
-    override fun login(email: String, password: String): User? {
-        return _users.value.find { it.email == email && it.password == password }
-    }
-
     override fun getUsuariosConEstadisticas(): List<UsuarioEstadisticas> {
         return _users.value.map { UsuarioEstadisticas(it.name, it.departamento, it.city) }
     }
@@ -113,6 +100,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun resetRejectionCount(userId: String) {
+        val user = findById(userId) ?: return
         firestore.collection("usuarios").document(userId).update("rejectionCount", 0).await()
     }
 
@@ -132,5 +120,9 @@ class UserRepositoryImpl @Inject constructor(
             val newList = user.badges + badgeId
             firestore.collection("usuarios").document(userId).update("badges", newList).await()
         }
+    }
+
+    override suspend fun updateFcmToken(userId: String, token: String) {
+        firestore.collection("usuarios").document(userId).update("fcmToken", token).await()
     }
 }

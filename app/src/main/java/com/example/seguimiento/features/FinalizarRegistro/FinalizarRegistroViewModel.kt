@@ -6,6 +6,7 @@ import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
@@ -96,26 +97,35 @@ class FinalizarRegistroViewModel @Inject constructor(
         viewModelScope.launch {
             _estaCargando.value = true
             try {
-                // Obtenemos el usuario actual
-                val user = authRepository.currentUser.filterNotNull().first()
+                // Obtenemos el usuario actual con un timeout para evitar bloqueos infinitos
+                val user = withTimeoutOrNull(5000) {
+                    authRepository.currentUser.filterNotNull().first()
+                }
+                
+                if (user == null) {
+                    android.util.Log.e("FinalizarRegistro", "No se pudo obtener el usuario actual")
+                    return@launch
+                }
                 
                 // Convertimos el String a Uri si no está vacío
                 val uri = if (_fotoPerfil.value.isNotEmpty()) android.net.Uri.parse(_fotoPerfil.value) else null
                 
-                android.util.Log.d("FinalizarRegistro", "Iniciando registro con URI: $uri")
+                android.util.Log.d("FinalizarRegistro", "Iniciando actualización con URI: $uri")
                 
                 val updatedUser = user.copy(
                     departamento = _deptoSeleccionado.value,
                     city = _municipioSeleccionado.value
-                    // No seteamos profilePictureUrl aquí, lo hará el repositorio tras subir a Drive
                 )
                 
-                val result = authRepository.register(updatedUser, uri)
+                // USAMOS updateProfile en lugar de register para evitar error de "email in use"
+                val result = authRepository.updateProfile(updatedUser, uri)
                 if (result.isSuccess) {
                     onSuccess()
+                } else {
+                    android.util.Log.e("FinalizarRegistro", "Error al actualizar perfil: ${result.exceptionOrNull()?.message}")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("FinalizarRegistro", "Excepción en finalizarRegistro", e)
             } finally {
                 _estaCargando.value = false
             }

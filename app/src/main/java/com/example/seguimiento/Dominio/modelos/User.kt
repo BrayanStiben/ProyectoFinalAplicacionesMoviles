@@ -14,7 +14,6 @@ data class User(
     val departamento: String = "",
     val address: String = "",
     val email: String = "",
-    val password: String = "",
     val profilePictureUrl: String = "",
     val role: UserRole = UserRole.USER,
     val isBanned: Boolean = false,
@@ -24,7 +23,8 @@ data class User(
     val lat: Double = 0.0,
     val lng: Double = 0.0,
     val rejectionCount: Int = 0,
-    val penaltyEndTime: Long = 0
+    val penaltyEndTime: Long = 0,
+    val fcmToken: String = ""
 ) {
     val level: Int get() = when {
         points >= 1500 -> 5

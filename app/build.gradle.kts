@@ -89,6 +89,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.foundation)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

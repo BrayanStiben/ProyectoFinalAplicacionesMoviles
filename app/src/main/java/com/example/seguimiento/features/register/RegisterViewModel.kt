@@ -43,6 +43,9 @@ class RegisterViewModel @Inject constructor(
     private val _resultadoRegistro = MutableStateFlow<ResultadoPeticion?>(null)
     val resultadoRegistro: StateFlow<ResultadoPeticion?> = _resultadoRegistro.asStateFlow()
 
+    private val _estaCargando = MutableStateFlow(false)
+    val estaCargando = _estaCargando.asStateFlow()
+
     fun registrar() {
         if (
             !nombre.isValid ||
@@ -56,28 +59,32 @@ class RegisterViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val newUser = User(
-                id = java.util.UUID.randomUUID().toString(),
-                name = nombre.value,
-                city = "",
-                departamento = "",
-                address = "",
-                email = correo.value,
-                password = contrasena.value,
-                profilePictureUrl = ""
-            )
-            val result = authRepository.register(newUser)
-            if (result.isSuccess) {
-                // El AuthRepositoryImpl debe actualizar el currentUser para que FinalizarRegistro lo tome
-                authRepository.login(correo.value, contrasena.value)
-                _resultadoRegistro.value =
-                    ResultadoPeticion.ExitoResId(com.example.seguimiento.R.string.register_success)
-            } else {
-                _resultadoRegistro.value =
-                    ResultadoPeticion.ErrorResId(
-                        com.example.seguimiento.R.string.error_register_failed,
-                        listOf(result.exceptionOrNull()?.message ?: "Unknown error")
-                    )
+            _estaCargando.value = true
+            try {
+                val newUser = User(
+                    id = "", // Se asignará el UID de Firebase Auth
+                    name = nombre.value,
+                    city = "",
+                    departamento = "",
+                    address = "",
+                    email = correo.value,
+                    profilePictureUrl = ""
+                )
+                val result = authRepository.register(newUser, contrasena.value)
+                if (result.isSuccess) {
+                    _resultadoRegistro.value =
+                        ResultadoPeticion.ExitoResId(com.example.seguimiento.R.string.register_success)
+                } else {
+                    _resultadoRegistro.value =
+                        ResultadoPeticion.ErrorResId(
+                            com.example.seguimiento.R.string.error_register_failed,
+                            listOf(result.exceptionOrNull()?.message ?: "Unknown error")
+                        )
+                }
+            } catch (e: Exception) {
+                _resultadoRegistro.value = ResultadoPeticion.Error(e.message ?: "Error desconocido")
+            } finally {
+                _estaCargando.value = false
             }
         }
     }
