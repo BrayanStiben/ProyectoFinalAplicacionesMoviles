@@ -24,7 +24,6 @@ class UserRepositoryImpl @Inject constructor(
     override val users: StateFlow<List<User>> = _users.asStateFlow()
 
     init {
-        // Escucha en tiempo real
         firestore.collection("usuarios")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -34,8 +33,6 @@ class UserRepositoryImpl @Inject constructor(
                 if (snapshot != null) {
                     val userList = snapshot.toObjects(User::class.java)
                     _users.value = userList
-                    
-                    // Si la colección está vacía en Firebase, subimos los datos iniciales
                     if (userList.isEmpty()) {
                         seedInitialData()
                     }
@@ -58,31 +55,28 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun save(user: User, imageUri: Uri?) {
         val id = if (user.id.isEmpty()) firestore.collection("usuarios").document().id else user.id
-        
         var finalUrl = user.profilePictureUrl
-        android.util.Log.d("UserRepository", "Iniciando save para usuario $id. Uri recibida: $imageUri")
         
         imageUri?.let { uri ->
-            android.util.Log.d("UserRepository", "Subiendo imagen a ImgBB...")
             val imageUrl = imageStorageRepository.uploadImage(uri, "usuarios", "${id}_profile.jpg")
-            if (imageUrl != null) {
-                finalUrl = imageUrl
-                android.util.Log.d("UserRepository", "URL de imagen obtenida: $finalUrl")
-            } else {
-                android.util.Log.e("UserRepository", "Error: No se pudo subir la imagen a ImgBB.")
-            }
-        } ?: run {
-            android.util.Log.w("UserRepository", "No se recibió Uri de imagen para subir.")
+            if (imageUrl != null) finalUrl = imageUrl
         }
 
         val userToSave = user.copy(id = id, profilePictureUrl = finalUrl)
-        android.util.Log.d("UserRepository", "Guardando en Firestore: $userToSave")
-        
         firestore.collection("usuarios").document(id).set(userToSave).await()
-        android.util.Log.d("UserRepository", "Guardado exitoso en Firestore.")
     }
 
-    override fun findById(id: String): User? = _users.value.find { it.id == id }
+    // MODIFICADO: Ahora busca en el servidor si no está en la memoria local
+    override suspend fun findById(id: String): User? {
+        val local = _users.value.find { it.id == id }
+        if (local != null) return local
+
+        return try {
+            firestore.collection("usuarios").document(id).get().await().toObject(User::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     override fun findByEmail(email: String): User? = _users.value.find { it.email == email }
 
@@ -100,7 +94,6 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun resetRejectionCount(userId: String) {
-        val user = findById(userId) ?: return
         firestore.collection("usuarios").document(userId).update("rejectionCount", 0).await()
     }
 

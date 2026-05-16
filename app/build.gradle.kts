@@ -1,24 +1,20 @@
 plugins {
-
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.gms.google.services)
-
 }
 
 android {
     namespace = "com.example.seguimiento"
-
     compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.seguimiento"
         minSdk = 28
         targetSdk = 34
-
         versionCode = 1
         versionName = "1.0"
 
@@ -36,12 +32,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -57,13 +53,10 @@ android {
 }
 
 dependencies {
-
     // Navegación
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
     // Imágenes
     implementation("io.coil-kt:coil-compose:2.4.0")
-
     // Iconos
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.seguimiento.core.utils.CampoValidado
 import androidx.lifecycle.viewModelScope
 import com.example.seguimiento.Dominio.modelos.User
+import com.example.seguimiento.Dominio.modelos.UserRole
 import com.example.seguimiento.Dominio.repositorios.AuthRepository
 import com.example.seguimiento.core.utils.ResultadoPeticion
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,14 +48,8 @@ class RegisterViewModel @Inject constructor(
     val estaCargando = _estaCargando.asStateFlow()
 
     fun registrar() {
-        if (
-            !nombre.isValid ||
-            !correo.isValid ||
-            !contrasena.isValid ||
-            !confirmarContrasena.isValid
-        ) {
-            _resultadoRegistro.value =
-                ResultadoPeticion.ErrorResId(com.example.seguimiento.R.string.error_form_incomplete)
+        if (!nombre.isValid || !correo.isValid || !contrasena.isValid || !confirmarContrasena.isValid) {
+            _resultadoRegistro.value = ResultadoPeticion.ErrorResId(com.example.seguimiento.R.string.error_form_incomplete)
             return
         }
 
@@ -62,27 +57,22 @@ class RegisterViewModel @Inject constructor(
             _estaCargando.value = true
             try {
                 val newUser = User(
-                    id = "", // Se asignará el UID de Firebase Auth
-                    name = nombre.value,
-                    city = "",
-                    departamento = "",
-                    address = "",
-                    email = correo.value,
-                    profilePictureUrl = ""
+                    id = "", 
+                    name = nombre.value.trim(),
+                    email = correo.value.trim().lowercase(),
+                    role = UserRole.USER
                 )
-                val result = authRepository.register(newUser, contrasena.value)
+                
+                // Registro sin imagen aquí, ya que se hará en "Finalizar Registro"
+                val result = authRepository.register(newUser, contrasena.value, null)
+                
                 if (result.isSuccess) {
-                    _resultadoRegistro.value =
-                        ResultadoPeticion.ExitoResId(com.example.seguimiento.R.string.register_success)
+                    _resultadoRegistro.value = ResultadoPeticion.ExitoResId(com.example.seguimiento.R.string.register_success)
                 } else {
-                    _resultadoRegistro.value =
-                        ResultadoPeticion.ErrorResId(
-                            com.example.seguimiento.R.string.error_register_failed,
-                            listOf(result.exceptionOrNull()?.message ?: "Unknown error")
-                        )
+                    _resultadoRegistro.value = ResultadoPeticion.Error(result.exceptionOrNull()?.message ?: "Error")
                 }
             } catch (e: Exception) {
-                _resultadoRegistro.value = ResultadoPeticion.Error(e.message ?: "Error desconocido")
+                _resultadoRegistro.value = ResultadoPeticion.Error(e.message ?: "Error")
             } finally {
                 _estaCargando.value = false
             }

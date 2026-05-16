@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface UserRepository {
     val users: StateFlow<List<User>>
     suspend fun save(user: User, imageUri: Uri? = null)
-    fun findById(id: String): User?
+    suspend fun findById(id: String): User?
     fun findByEmail(email: String): User?
     fun getUsuariosConEstadisticas(): List<UsuarioEstadisticas>
     suspend fun deleteAccount(id: String)

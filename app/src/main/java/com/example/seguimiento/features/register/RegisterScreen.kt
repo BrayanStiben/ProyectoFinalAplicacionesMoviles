@@ -16,12 +16,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.seguimiento.R
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.seguimiento.R
 import com.example.seguimiento.core.utils.CampoValidado
 import com.example.seguimiento.core.utils.ResultadoPeticion
 import kotlinx.coroutines.launch
@@ -43,7 +43,6 @@ fun RegisterScreen(
 
     val context = androidx.compose.ui.platform.LocalContext.current
 
-    // Observar el resultado del registro
     LaunchedEffect(resultadoRegistro) {
         when (val resultado = resultadoRegistro) {
             is ResultadoPeticion.Exito -> {
@@ -75,7 +74,6 @@ fun RegisterScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 1. FONDO
         Image(
             painter = painterResource(id = R.drawable.fondo2),
             contentDescription = null,
@@ -90,21 +88,19 @@ fun RegisterScreen(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // LOGO PETADOPTA
             Image(
                 painter = painterResource(id = R.drawable.petadopticono),
                 contentDescription = "Logo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .size(320.dp)
+                    .size(300.dp)
                     .padding(top = 10.dp)
             )
 
-            // CONTENEDOR FORMULARIO
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-110).dp),
+                    .offset(y = (-90).dp),
                 shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
@@ -121,31 +117,33 @@ fun RegisterScreen(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_name_label), viewModel.nombre, Icons.Default.Person)
                     CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_email_label), viewModel.correo, Icons.Default.Email)
                     CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_password_label), viewModel.contrasena, Icons.Default.Lock, true)
                     CampoTextoStyle(stringResource(id = com.example.seguimiento.R.string.register_confirm_password_label), viewModel.confirmarContrasena, Icons.Default.LockReset, true)
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(
-                        onClick = {
-                            viewModel.registrar()
-                        },
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text(stringResource(id = com.example.seguimiento.R.string.register_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    if (viewModel.estaCargando.collectAsState().value) {
+                        CircularProgressIndicator(color = NaranjaApp)
+                    } else {
+                        Button(
+                            onClick = { viewModel.registrar() },
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaApp),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(stringResource(id = com.example.seguimiento.R.string.register_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        }
                     }
                 }
             }
             
             TextButton(
                 onClick = { onNavigateToLogin() }, 
-                modifier = Modifier.offset(y = (-100).dp)
+                modifier = Modifier.offset(y = (-80).dp)
             ) {
                 Text(
                     text = stringResource(id = com.example.seguimiento.R.string.register_already_have_account), 
@@ -167,7 +165,7 @@ fun RegisterScreen(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 80.dp) // Elevamos el snackbar para que sea visible
+                .padding(bottom = 80.dp)
         )
     }
 }

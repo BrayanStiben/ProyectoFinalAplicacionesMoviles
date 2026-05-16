@@ -18,7 +18,6 @@ import retrofit2.http.Query
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// --- API DEFINITION ---
 data class ImgBBResponse(
     val data: ImgBBData?,
     val success: Boolean,
@@ -45,7 +44,6 @@ class ImgBBRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ImageStorageRepository {
 
-    // TODO: REEMPLAZA ESTO CON TU API KEY DE IMGBB (api.imgbb.com)
     private val API_KEY = "d4715557700e7cb470f662466a2383bf"
 
     private val api: ImgBBApi by lazy {
@@ -58,8 +56,6 @@ class ImgBBRepositoryImpl @Inject constructor(
 
     override suspend fun uploadImage(uri: Uri, category: String, fileName: String): String? = withContext(Dispatchers.IO) {
         try {
-            android.util.Log.d("ImgBB", "Iniciando subida a ImgBB: $fileName")
-            
             val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext null
             val bytes = inputStream.readBytes()
             inputStream.close()
@@ -70,20 +66,19 @@ class ImgBBRepositoryImpl @Inject constructor(
             val response = api.uploadImage(API_KEY, body)
 
             if (response.success && response.data != null) {
-                android.util.Log.d("ImgBB", "Subida exitosa: ${response.data.url}")
-                response.data.url
+                // IMPORTANTÍSIMO: Usamos 'url' que es el link directo al .jpg
+                // y limpiamos los caracteres de escape \/ que pone la API de ImgBB
+                val directUrl = response.data.url.replace("\\/", "/")
+                android.util.Log.d("ImgBB", "Enlace directo generado: $directUrl")
+                directUrl
             } else {
-                android.util.Log.e("ImgBB", "Error en respuesta ImgBB: Status ${response.status}")
                 null
             }
         } catch (e: Exception) {
-            android.util.Log.e("ImgBB", "Error crítico subiendo a ImgBB", e)
+            android.util.Log.e("ImgBB", "Error crítico en subida", e)
             null
         }
     }
 
-    override suspend fun getImageUrl(fileId: String): String? {
-        // En ImgBB, el "id" que guardamos es directamente la URL pública
-        return fileId
-    }
+    override suspend fun getImageUrl(fileId: String): String? = fileId
 }

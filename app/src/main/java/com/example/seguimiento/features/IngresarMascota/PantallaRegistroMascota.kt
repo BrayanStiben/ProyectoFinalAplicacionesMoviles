@@ -309,7 +309,7 @@ fun SelectorMascota(
             leadingIcon = { Icon(icon, null, tint = Color(0xFFE67E22)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
             enabled = enabled,
-            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = enabled).fillMaxWidth(),
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFE67E22),

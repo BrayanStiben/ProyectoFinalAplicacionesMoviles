@@ -34,6 +34,7 @@ class AuthRepositoryImpl @Inject constructor(
     }.flatMapLatest { uid ->
         if (uid == null) flowOf(null)
         else {
+            // Intentamos obtener el usuario del flujo de la base de datos
             userRepository.users.map { users -> 
                 users.find { it.id == uid }
             }
@@ -48,28 +49,37 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Result<User> {
         return try {
+            // 1. Autenticación con Firebase Auth
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val firebaseUser = result.user ?: throw Exception("Error al iniciar sesión")
-            val user = userRepository.findById(firebaseUser.uid) ?: throw Exception("Usuario no encontrado en la base de datos")
+            val firebaseUser = result.user ?: throw Exception("No se pudo obtener el usuario de Auth")
+            
+            // 2. Obtener el perfil de la base de datos (Usamos el findById suspendido que busca en servidor)
+            val user = userRepository.findById(firebaseUser.uid) 
+                ?: throw Exception("Perfil de usuario no encontrado en la base de datos")
             
             sessionManager.saveSession(user.id)
             Result.success(user)
         } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Error en login: ${e.message}")
             Result.failure(e)
         }
     }
 
     override suspend fun register(user: User, password: String, imageUri: Uri?): Result<Unit> {
         return try {
+            // 1. Crear usuario en Auth
             val result = firebaseAuth.createUserWithEmailAndPassword(user.email, password).await()
-            val firebaseUser = result.user ?: throw Exception("Error al crear cuenta")
+            val firebaseUser = result.user ?: throw Exception("Error al crear la cuenta de autenticación")
             
+            // 2. Guardar perfil en Firestore con el UID correcto
             val newUser = user.copy(id = firebaseUser.uid)
             userRepository.save(newUser, imageUri)
             
+            // 3. Guardar sesión local
             sessionManager.saveSession(newUser.id)
             Result.success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Error en registro: ${e.message}")
             Result.failure(e)
         }
     }
