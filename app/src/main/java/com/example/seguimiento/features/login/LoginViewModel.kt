@@ -53,15 +53,8 @@ class LoginViewModel @Inject constructor(
                     val user = result.getOrNull()
                     
                     user?.let {
-                        // REQUISITO: NOTIFICACIÓN Y LOGRO - Se ejecutan en la corrutina de login
+                        // REQUISITO: LOGRO - Se ejecuta en la corrutina de login
                         logrosRepository.ganarLogro(it.id, "sys_1")
-                        notificacionRepository.addNotificacion(
-                            tituloResId = com.example.seguimiento.R.string.login_welcome_back_title,
-                            mensajeResId = com.example.seguimiento.R.string.login_welcome_back_message,
-                            mensajeArgs = listOf(it.name),
-                            tipo = "INFO",
-                            userId = it.id
-                        )
                     }
 
                     _loginState.value = LoginResult.Success(isAdmin = user?.role == UserRole.ADMIN)

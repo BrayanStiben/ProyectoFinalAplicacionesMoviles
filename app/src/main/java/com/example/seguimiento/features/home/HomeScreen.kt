@@ -349,7 +349,8 @@ fun BottomNav(selectedItem: Int, onNavigateToHome: () -> Unit = {}, onNavigateTo
                 label = { Text(label) },
                 selected = selectedItem == index,
                 onClick = { when(index) { 0 -> onNavigateToHome(); 1 -> onNavigateToFiltros(); 2 -> onNavigateToFavoritos(); 3 -> onNavigateToProfile() } },
-                colors = NavigationBarItemDefaults.colors(selectedIconColor = naranjaNav, selectedTextColor = naranjaNav, unselectedIconColor = Color.Gray, indicatorColor = Color(0xFFFFF4C2))
+                colors = NavigationBarItemDefaults.colors(selectedIconColor = naranjaNav, selectedTextColor = naranjaNav, unselectedIconColor = Color.Gray, indicatorColor = Color(0xFFFFF4C2)
+                )
             )
         }
     }

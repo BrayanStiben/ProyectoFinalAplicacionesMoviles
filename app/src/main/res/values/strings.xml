@@ -10,7 +10,7 @@
     <string name="login_register_link">Regístrate</string>
     <string name="login_error_prefix">❌ %1$s</string>
     <string name="login_form_invalid">⚠️ Completa los campos correctamente</string>
-    <string name="login_welcome_back_title">¡Hola de nuevo, %1$s! 🐾</string>
+    <string name="login_welcome_back_title">¡Hola de nuevo! 🐾</string>
     <string name="login_welcome_back_message">Qué alegría verte. Explora las nuevas mascotas que buscan un hogar hoy.</string>
 
     <!-- Register Screen -->
@@ -346,10 +346,39 @@
 
     <string name="nav_notifications_title">Notificaciones</string>
 
-    <string name="ai_inappropriate_content_warning">El contenido parece inapropiado. Sugerencia: Por favor, utiliza un lenguaje más respetuoso y positivo.</string>
     <string name="ai_summary_template">Resumen IA: Publicación sobre un %1$s. Puntos clave: %2$s… Relevancia estimada: %3$s. Acción recomendada: %4$s.</string>
     <string name="ai_relevance_medium">Media</string>
     <string name="ai_action_verify">Verificar ubicación</string>
+    <string name="ai_inappropriate_content_warning">El contenido parece inapropiado. Sugerencia: Por favor, utiliza un lenguaje más respetuoso y positivo.</string>
+
+    <!-- IA and Moderation -->
+    <string name="ai_report_title">🔍 REPORTE DE ANÁLISIS IA (ESTRICTO):</string>
+    <string name="ai_fields_incomplete">❌ CAMPOS INCOMPLETOS: Debes llenar [%1$s]. No se permiten campos vacíos.</string>
+    <string name="ai_fields_complete">✅ INTEGRIDAD: Todos los campos obligatorios están diligenciados.</string>
+    <string name="ai_insult_detected">❌ LENGUAJE PROHIBIDO: %1$s</string>
+    <string name="ai_insult_global">Detectado por filtro global de lenguaje ofensivo.</string>
+    <string name="ai_language_clean">✅ LENGUAJE: Verificado como limpio y respetuoso.</string>
+    <string name="ai_consistency_error">❌ ERROR DE CONSISTENCIA: Has marcado \'Perro\' pero la raza es de \'Gato\'.</string>
+    <string name="ai_consistency_ok">✅ CONSISTENCIA: Datos coherentes.</string>
+    <string name="ai_status_apta">✅ PUBLICACIÓN APTA: Cumple con lenguaje limpio y datos completos.</string>
+    <string name="ai_status_error">🚨 ERROR: La publicación será rechazada. Corrija los puntos marcados en rojo.</string>
+    <string name="ai_label_apta">ANÁLISIS IA: APTA ✅</string>
+    <string name="ai_label_rejection">ANÁLISIS IA: RECHAZO SUGERIDO 🚨</string>
+    <string name="pet_author_label">Por: %1$s</string>
+    <string name="ai_resumen_auto">Resumen generado automáticamente.</string>
+
+    <string name="ai_moderation_alert_title">Moderación IA: Contenido Ofensivo</string>
+    <string name="ai_moderation_alert_msg">La publicación \'%1$s\' ha sido rechazada automáticamente por la IA. Motivo: %2$s</string>
+    <string name="ai_approval_title">¡Publicación Aprobada!</string>
+    <string name="ai_approval_msg">Tu mascota %1$s ha pasado la validación y ya es pública.</string>
+    <string name="ai_rejection_title">Publicación Rechazada</string>
+    <string name="ai_rejection_msg">Tu publicación %1$s no fue aprobada. Motivo: %2$s</string>
+
+    <string name="admin_pet_reject_title">Rechazar Publicación</string>
+    <string name="admin_pet_reject_confirm">¿Estás seguro de rechazar la publicación de %1$s?</string>
+    <string name="admin_pet_reject_reason_label">Motivo del rechazo (será visible para el usuario)</string>
+    <string name="admin_pet_btn_reject">RECHAZAR</string>
+    <string name="admin_pet_btn_cancel">CANCELAR</string>
 
     <string name="app_version">PetAdopta App v1.2</string>
     <string name="app_copyright">© Copyright PetAdopta apy Inc.</string>

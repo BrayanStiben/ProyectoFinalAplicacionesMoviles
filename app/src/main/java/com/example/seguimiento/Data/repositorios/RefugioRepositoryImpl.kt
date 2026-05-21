@@ -28,26 +28,8 @@ class RefugioRepositoryImpl @Inject constructor(
             if (snapshot != null) {
                 val list = snapshot.toObjects(Refugio::class.java)
                 _refugios.value = list
-                if (list.isEmpty()) seedInitialRefugios()
             }
         }
-    }
-
-    private fun seedInitialRefugios() {
-        val initialData = listOf(
-            Refugio(
-                id = "ref_001",
-                nombre = "Huellitas de Amor",
-                direccion = "Calle 123 #45-67",
-                ciudad = "Bogotá",
-                telefono = "3001234567",
-                descripcion = "Refugio dedicado al rescate de perros ancianos.",
-                estado = RefugioEstado.APROBADO
-            )
-        )
-        val batch = firestore.batch()
-        initialData.forEach { batch.set(collection.document(it.id), it) }
-        batch.commit()
     }
 
     override fun getAll(): List<Refugio> = _refugios.value

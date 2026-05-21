@@ -84,9 +84,8 @@ class HomeViewModel @Inject constructor(
         authRepository.currentUser
     ) { lista, categoria, depto, ciudad, user ->
         lista.filter { mascota ->
-            val esPropia = user != null && mascota.autorId == user.id
-            val esVisible = esPropia || 
-                          mascota.estado == PublicacionEstado.VERIFICADA || 
+            // REGLA: Solo publicaciones aprobadas por el Admin son visibles en el Feed público
+            val esVisible = mascota.estado == PublicacionEstado.VERIFICADA ||
                           mascota.estado == PublicacionEstado.RESUELTA ||
                           mascota.estado == PublicacionEstado.ADOPTADA
             

@@ -176,20 +176,53 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                         Icon(Icons.Default.LocationOn, null, tint = NaranjaApp, modifier = Modifier.size(14.dp))
                         Text(solicitud.ubicacion, fontSize = 13.sp, color = Color.Gray)
                     }
+                    if (solicitud.autorNombre.isNotEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.pet_author_label, solicitud.autorNombre), 
+                            fontSize = 12.sp, 
+                            color = NaranjaApp, 
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
             if (solicitud.resumenIA.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
+                val esValida = solicitud.iaEsValida
+                val colorFeedback = if (esValida) Color(0xFF4CAF50) else Color(0xFFD32F2F)
+                val colorFondo = if (esValida) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+
                 Surface(
-                    color = Color(0xFFE3F2FD),
+                    color = colorFondo,
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(2.dp, colorFeedback.copy(alpha = 0.5f))
                 ) {
-                    Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Info, null, tint = Color(0xFF1976D2), modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(solicitud.resumenIA, fontSize = 12.sp, color = Color(0xFF1976D2), lineHeight = 16.sp)
+                    Column(Modifier.padding(12.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (esValida) Icons.Default.CheckCircle else Icons.Default.Info, 
+                                null, 
+                                tint = colorFeedback, 
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = if (esValida) stringResource(R.string.ai_label_apta) else stringResource(R.string.ai_label_rejection),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Black,
+                                color = colorFeedback
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            solicitud.resumenIA, 
+                            fontSize = 12.sp, 
+                            color = Color.Black, 
+                            lineHeight = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }

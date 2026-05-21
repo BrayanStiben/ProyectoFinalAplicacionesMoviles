@@ -28,43 +28,8 @@ class MascotaRepositoryImpl @Inject constructor(
                 if (snapshot != null) {
                     val list = snapshot.toObjects(Mascota::class.java)
                     _mascotas.value = list
-                    if (list.isEmpty()) {
-                        seedInitialMascotas()
-                    }
                 }
             }
-    }
-
-    private fun seedInitialMascotas() {
-        val initialData = listOf(
-            Mascota(
-                id = "pet_001",
-                nombre = "Firulais",
-                tipo = "Perro",
-                raza = "Labrador",
-                ubicacion = "Bogotá, DC",
-                estado = PublicacionEstado.VERIFICADA,
-                lat = 4.6097, lng = -74.0817,
-                imagenUrl = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500"
-            ),
-            Mascota(
-                id = "pet_002",
-                nombre = "Misi",
-                tipo = "Gato",
-                raza = "Común",
-                ubicacion = "Medellín, ANT",
-                estado = PublicacionEstado.VERIFICADA,
-                lat = 6.2442, lng = -75.5812,
-                imagenUrl = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=500"
-            )
-        )
-        
-        val batch = firestore.batch()
-        initialData.forEach { mascota ->
-            val docRef = firestore.collection("mascotas").document(mascota.id)
-            batch.set(docRef, mascota)
-        }
-        batch.commit().addOnFailureListener { it.printStackTrace() }
     }
 
     override fun getAll(): List<Mascota> = _mascotas.value
@@ -75,13 +40,11 @@ class MascotaRepositoryImpl @Inject constructor(
         val id = if (mascota.id.isEmpty()) firestore.collection("mascotas").document().id else mascota.id
         
         var finalUrl = mascota.imagenUrl
-        android.util.Log.d("MascotaRepository", "Guardando mascota $id. Uri: $imageUri")
         
         imageUri?.let { uri ->
             val imageUrl = imageStorageRepository.uploadImage(uri, "mascotas", "${id}_${mascota.nombre}.jpg")
             if (imageUrl != null) {
                 finalUrl = imageUrl
-                android.util.Log.d("MascotaRepository", "URL Imagen: $finalUrl")
             }
         }
 
@@ -90,6 +53,7 @@ class MascotaRepositoryImpl @Inject constructor(
     }
 
     override suspend fun delete(id: String) {
+        // ELIMINACIÓN PERMANENTE DE FIREBASE
         firestore.collection("mascotas").document(id).delete().await()
     }
 

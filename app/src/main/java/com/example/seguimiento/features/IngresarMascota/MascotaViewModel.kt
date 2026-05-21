@@ -264,21 +264,28 @@ class MascotaViewModel @Inject constructor(
         viewModelScope.launch {
             _estado.update { it.copy(isLoading = true, aiWarning = null) }
 
-            val advertenciaNombre = aiService.analizarContenido(datos.nombre)
-            val advertenciaDesc = aiService.analizarContenido(datos.descripcion)
-
-            if (advertenciaNombre != null || advertenciaDesc != null) {
-                _estado.update { it.copy(isLoading = false, aiWarning = advertenciaNombre ?: advertenciaDesc) }
-                return@launch
-            }
-
-            val resumen = aiService.generarResumen(datos.descripcion, datos.tipo)
-
             val currentUser = authRepository.currentUser.value
             val userId = currentUser?.id ?: "1"
+            val currentUserName = currentUser?.name ?: "Usuario Desconocido"
             val esAdmin = currentUser?.role == UserRole.ADMIN
 
             val mascotaExistente = idEdicion?.let { mascotaRepository.getById(it) }
+
+            // Creamos objeto temporal para validar con IA
+            val mascotaTemp = Mascota(
+                nombre = datos.nombre,
+                descripcion = datos.descripcion,
+                tipo = datos.tipo,
+                raza = datos.raza,
+                ubicacion = "${datos.ciudad}, ${datos.departamento}"
+            )
+
+            // Validación Inteligente con IA
+            val validacionIA = aiService.validarPublicacion(mascotaTemp)
+
+            // REGLA: Toda publicación de usuario queda PENDIENTE para revisión del Admin, 
+            // incluso si la IA detecta insultos (el Admin decide final).
+            val estadoFinal = if (esAdmin) PublicacionEstado.VERIFICADA else PublicacionEstado.PENDIENTE
 
             val mascotaParaGuardar = Mascota(
                 id = idEdicion ?: UUID.randomUUID().toString(),
@@ -288,16 +295,31 @@ class MascotaViewModel @Inject constructor(
                 raza = datos.raza,
                 ubicacion = "${datos.ciudad}, ${datos.departamento}",
                 descripcion = datos.descripcion,
-                imagenUrl = mascotaExistente?.imagenUrl ?: "", // El repo se encargará de actualizar esto si hay Uri
+                imagenUrl = mascotaExistente?.imagenUrl ?: "",
                 lat = datos.lat,
                 lng = datos.lng,
                 autorId = mascotaExistente?.autorId ?: userId,
-                estado = mascotaExistente?.estado ?: if (esAdmin) PublicacionEstado.VERIFICADA else PublicacionEstado.PENDIENTE,
-                resumenIA = resumen,
+                autorNombre = if (mascotaExistente?.autorNombre.isNullOrBlank()) currentUserName else mascotaExistente!!.autorNombre,
+                estado = estadoFinal,
+                resumenIA = validacionIA.feedback,
+                iaEsValida = validacionIA.isValid && !validacionIA.isOffensive,
+                motivoRechazo = if (validacionIA.isOffensive) context.getString(R.string.ai_inappropriate_content_warning) else "",
                 likerIds = mascotaExistente?.likerIds ?: emptyList()
             )
 
             mascotaRepository.save(mascotaParaGuardar, datos.fotoUri)
+
+            // Si es ofensivo, generamos alerta para el administrador
+            if (validacionIA.isOffensive) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.ai_moderation_alert_title,
+                    mensajeResId = R.string.ai_moderation_alert_msg,
+                    mensajeArgs = listOf(datos.nombre, validacionIA.feedback),
+                    tipo = "ADMIN_ALERT",
+                    userId = "admin_id" // En un sistema real, esto iría a todos los admins
+                )
+            }
+
             onSuccess()
         }
     }

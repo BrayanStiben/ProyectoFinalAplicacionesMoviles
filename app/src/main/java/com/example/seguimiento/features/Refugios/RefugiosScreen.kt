@@ -168,8 +168,18 @@ fun TarjetaRefugioPublica(refugio: Refugio) {
                 Text(refugio.descripcion, fontSize = 13.sp, color = Color.DarkGray, maxLines = 3)
                 
                 Spacer(Modifier.height(16.dp))
+                val context = androidx.compose.ui.platform.LocalContext.current
                 Button(
-                    onClick = { /* Acción de contacto */ },
+                    onClick = { 
+                        try {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_DIAL).apply {
+                                data = android.net.Uri.parse("tel:${refugio.telefono}")
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = naranjaApp),
                     shape = RoundedCornerShape(12.dp)

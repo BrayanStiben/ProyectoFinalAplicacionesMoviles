@@ -39,4 +39,38 @@ class AdopcionViewModel @Inject constructor(
             }
         }
     }
+
+    fun aprobarMascota(id: String) {
+        viewModelScope.launch {
+            mascotaRepository.actualizarEstado(id, PublicacionEstado.VERIFICADA)
+            
+            val mascota = mascotaRepository.getById(id)
+            if (mascota != null) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.ai_approval_title,
+                    mensajeResId = R.string.ai_approval_msg,
+                    mensajeArgs = listOf(mascota.nombre),
+                    tipo = "SUCCESS",
+                    userId = mascota.autorId
+                )
+            }
+        }
+    }
+
+    fun rechazarMascota(id: String, motivo: String) {
+        viewModelScope.launch {
+            mascotaRepository.actualizarEstado(id, PublicacionEstado.RECHAZADA, motivo)
+            
+            val mascota = mascotaRepository.getById(id)
+            if (mascota != null) {
+                notificacionRepository.addNotificacion(
+                    tituloResId = R.string.ai_rejection_title,
+                    mensajeResId = R.string.ai_rejection_msg,
+                    mensajeArgs = listOf(mascota.nombre, motivo),
+                    tipo = "ERROR",
+                    userId = mascota.autorId
+                )
+            }
+        }
+    }
 }

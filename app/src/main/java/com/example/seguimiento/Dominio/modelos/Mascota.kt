@@ -17,10 +17,12 @@ data class Mascota(
     val lat: Double = 0.0,
     val lng: Double = 0.0,
     val autorId: String = "",
+    val autorNombre: String = "", // Nombre del usuario que publicó
     val estado: PublicacionEstado = PublicacionEstado.PENDIENTE,
     val motivoRechazo: String = "",
     val likerIds: List<String> = emptyList(), // Usuarios que dieron like
-    val resumenIA: String = "" // Para el requisito de IA 4
+    val resumenIA: String = "", 
+    val iaEsValida: Boolean = true
 ) {
     val totalLikes: Int get() = likerIds.size
 }

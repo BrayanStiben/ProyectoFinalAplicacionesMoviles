@@ -61,7 +61,7 @@ fun PantallaAdopcion(
                 VerticalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize(),
-                    key = { mascotas[it].id }
+                    key = { index -> if (index < mascotas.size) mascotas[index].id else index }
                 ) { index ->
                     ReelMascotaAdmin(
                         mascota = mascotas[index],
@@ -145,6 +145,7 @@ fun ReelMascotaAdmin(
                     PublicacionEstado.ADOPTADA -> Color(0xFF4CAF50)
                     PublicacionEstado.PENDIENTE -> Color(0xFFFFA000)
                     PublicacionEstado.VERIFICADA -> Color(0xFF2196F3)
+                    PublicacionEstado.RECHAZADA -> Color.Red
                     else -> Color.Gray
                 }
                 
@@ -152,21 +153,35 @@ fun ReelMascotaAdmin(
                     PublicacionEstado.ADOPTADA -> stringResource(R.string.status_adopted)
                     PublicacionEstado.PENDIENTE -> stringResource(R.string.status_pending)
                     PublicacionEstado.VERIFICADA -> stringResource(R.string.status_verified)
+                    PublicacionEstado.RECHAZADA -> stringResource(R.string.status_rejected)
                     else -> mascota.estado.name
                 }
                 
-                Surface(
-                    color = colorEstado,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    Text(
-                        labelEstado,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        color = colorEstado,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        Text(
+                            labelEstado,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    
+                    if (mascota.autorNombre.isNotEmpty()) {
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.pet_author_label, mascota.autorNombre),
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
                 }
 
                 Text(
