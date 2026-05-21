@@ -98,7 +98,10 @@ fun ListaSolicitudesScreen(
                         ModeracionItem(
                             solicitud = solicitud,
                             onApprove = { viewModel.aprobarPublicacion(solicitud.id) },
-                            onReject = { showRejectDialog = solicitud.id }
+                            onReject = { 
+                                showRejectDialog = solicitud.id
+                                rejectReason = solicitud.resumenIA
+                            }
                         )
                     }
                 }

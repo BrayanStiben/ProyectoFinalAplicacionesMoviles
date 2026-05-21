@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.FilterAltOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,6 +63,7 @@ fun MapaFeedScreen(
     onNavigateToCreateWithCoords: (Double, Double) -> Unit
 ) {
     val mascotas by viewModel.mascotasMapa.collectAsState()
+    val filtroCercania by viewModel.filtroCercania.collectAsState()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -104,7 +107,6 @@ fun MapaFeedScreen(
         }
     }
 
-    // Corregido: Lanzador de permisos centrará el mapa inmediatamente
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -112,10 +114,10 @@ fun MapaFeedScreen(
         hasLocationPermission = granted
         if (granted) {
             locationOverlay.enableMyLocation()
-            // Obtener ubicación actual y centrar cámara
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener { loc ->
                     loc?.let {
+                        viewModel.updateUserLocation(it.latitude, it.longitude)
                         mapView.controller.animateTo(GeoPoint(it.latitude, it.longitude))
                         mapView.controller.setZoom(16.0)
                     }
@@ -126,6 +128,10 @@ fun MapaFeedScreen(
     LaunchedEffect(hasLocationPermission) {
         if (hasLocationPermission) {
             locationOverlay.enableMyLocation()
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { loc ->
+                    loc?.let { viewModel.updateUserLocation(it.latitude, it.longitude) }
+                }
         }
     }
 
@@ -165,36 +171,58 @@ fun MapaFeedScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (hasLocationPermission) {
-                        locationOverlay.enableMyLocation()
-                        locationOverlay.enableFollowLocation()
-                        
-                        val myLoc = locationOverlay.myLocation
-                        if (myLoc != null) {
-                            mapView.controller.animateTo(myLoc)
-                            mapView.controller.setZoom(18.5)
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                // BOTÓN FILTRO CERCANÍA
+                FloatingActionButton(
+                    onClick = {
+                        if (hasLocationPermission) {
+                            viewModel.toggleFiltroCercania()
                         } else {
-                            scope.launch { snackbarHostState.showSnackbar("Obteniendo ubicación...") }
-                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                                .addOnSuccessListener { location ->
-                                    location?.let {
-                                        val geo = GeoPoint(it.latitude, it.longitude)
-                                        mapView.controller.animateTo(geo)
-                                        mapView.controller.setZoom(18.5)
-                                        mapView.invalidate()
-                                    }
-                                }
+                            permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                         }
-                    } else {
-                        permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
-                    }
-                },
-                containerColor = Color.White,
-                contentColor = azulNav
-            ) {
-                Icon(Icons.Default.MyLocation, contentDescription = "Ubicación")
+                    },
+                    containerColor = if (filtroCercania) naranjaAppColor else Color.White,
+                    contentColor = if (filtroCercania) Color.White else naranjaAppColor
+                ) {
+                    Icon(
+                        imageVector = if (filtroCercania) Icons.Default.FilterAlt else Icons.Default.FilterAltOff, 
+                        contentDescription = "Mascotas Cercanas"
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = {
+                        if (hasLocationPermission) {
+                            locationOverlay.enableMyLocation()
+                            locationOverlay.enableFollowLocation()
+                            
+                            val myLoc = locationOverlay.myLocation
+                            if (myLoc != null) {
+                                viewModel.updateUserLocation(myLoc.latitude, myLoc.longitude)
+                                mapView.controller.animateTo(myLoc)
+                                mapView.controller.setZoom(18.5)
+                            } else {
+                                scope.launch { snackbarHostState.showSnackbar("Obteniendo ubicación...") }
+                                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                                    .addOnSuccessListener { location ->
+                                        location?.let {
+                                            viewModel.updateUserLocation(it.latitude, it.longitude)
+                                            val geo = GeoPoint(it.latitude, it.longitude)
+                                            mapView.controller.animateTo(geo)
+                                            mapView.controller.setZoom(18.5)
+                                            mapView.invalidate()
+                                        }
+                                    }
+                            }
+                        } else {
+                            permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+                        }
+                    },
+                    containerColor = Color.White,
+                    contentColor = azulNav
+                ) {
+                    Icon(Icons.Default.MyLocation, contentDescription = "Ubicación")
+                }
             }
         }
     ) { padding ->

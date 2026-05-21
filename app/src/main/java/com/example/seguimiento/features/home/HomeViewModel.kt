@@ -76,6 +76,11 @@ class HomeViewModel @Inject constructor(
     private val _filtroCiudad = MutableStateFlow("")
     val filtroCiudad = _filtroCiudad.asStateFlow()
 
+    private val _filtroCercania = MutableStateFlow(false)
+    val filtroCercania = _filtroCercania.asStateFlow()
+
+    private val _userLocation = MutableStateFlow<Pair<Double, Double>?>(null)
+
     val mascotasFeed: StateFlow<List<Mascota>> = combine(
         mascotaRepository.mascotas,
         _filtroCategoria,
@@ -84,7 +89,6 @@ class HomeViewModel @Inject constructor(
         authRepository.currentUser
     ) { lista, categoria, depto, ciudad, user ->
         lista.filter { mascota ->
-            // REGLA: Solo publicaciones aprobadas por el Admin son visibles en el Feed público
             val esVisible = mascota.estado == PublicacionEstado.VERIFICADA ||
                           mascota.estado == PublicacionEstado.RESUELTA ||
                           mascota.estado == PublicacionEstado.ADOPTADA
@@ -97,7 +101,47 @@ class HomeViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val mascotasMapa: StateFlow<List<Mascota>> = mascotasFeed
+    val mascotasMapa: StateFlow<List<Mascota>> = combine(
+        mascotaRepository.mascotas,
+        _filtroCercania,
+        _userLocation
+    ) { lista, soloCercanas, location ->
+        lista.filter { mascota ->
+            val esVisible = mascota.estado == PublicacionEstado.VERIFICADA ||
+                          mascota.estado == PublicacionEstado.RESUELTA ||
+                          mascota.estado == PublicacionEstado.ADOPTADA
+            
+            if (!esVisible) return@filter false
+            
+            // Si el botón de "Cercanas" está activado Y tenemos ubicación, filtramos.
+            // Si el botón está desactivado, mostramos TODO (true).
+            if (soloCercanas && location != null) {
+                val distance = calcularDistancia(location.first, location.second, mascota.lat, mascota.lng)
+                distance < 50.0 
+            } else {
+                true
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private fun calcularDistancia(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val r = 6371 // Radio de la Tierra en km
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return r * c
+    }
+
+    fun toggleFiltroCercania() {
+        _filtroCercania.value = !_filtroCercania.value
+    }
+
+    fun updateUserLocation(lat: Double, lng: Double) {
+        _userLocation.value = Pair(lat, lng)
+    }
 
     val mascotasRecomendadas: StateFlow<List<Mascota>> = mascotaRepository.mascotas
         .map { lista -> lista.filter { it.esDestacada } }

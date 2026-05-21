@@ -26,4 +26,13 @@ interface AIService {
      * Realiza una validación completa de la publicación.
      */
     suspend fun validarPublicacion(mascota: Mascota): ValidationResult
+
+    /**
+     * Genera un análisis narrativo y amigable de las estadísticas para el administrador.
+     */
+    suspend fun analizarEstadisticas(
+        mascotasPorEspecie: Map<String, Int>,
+        adoptadasVsDisponibles: Map<String, Int>,
+        solicitudesPorEstado: Map<String, Int>
+    ): String
 }

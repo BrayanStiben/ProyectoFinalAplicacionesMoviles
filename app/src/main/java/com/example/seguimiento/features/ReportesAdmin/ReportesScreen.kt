@@ -123,6 +123,45 @@ fun ReportesScreen(
                         }
                     }
                 } else if (uiState.mascotasPorEspecie.isNotEmpty()) {
+                    // --- SECCIÓN: ANÁLISIS INTELIGENTE IA (NUEVO) ---
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(28.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
+                            border = BorderStroke(2.dp, Color(0xFFFF9800).copy(alpha = 0.5f)),
+                            elevation = CardDefaults.cardElevation(6.dp)
+                        ) {
+                            Column(Modifier.padding(24.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(45.dp)
+                                            .background(Color(0xFFFF9800), CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(Icons.Default.AutoAwesome, null, tint = Color.White, modifier = Modifier.size(24.dp))
+                                    }
+                                    Spacer(Modifier.width(16.dp))
+                                    Text(
+                                        text = "ANÁLISIS INTELIGENTE IA",
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 16.sp,
+                                        color = Color(0xFFE65100)
+                                    )
+                                }
+                                Spacer(Modifier.height(20.dp))
+                                Text(
+                                    text = uiState.analisisIA,
+                                    fontSize = 14.sp,
+                                    color = Color.DarkGray,
+                                    lineHeight = 22.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+
                     // --- SECCIÓN MASCOTAS ---
                     item { SectionHeader(stringResource(R.string.admin_reports_sec_pets)) }
                     item { ChartCard(stringResource(R.string.admin_reports_chart_species), Icons.Default.Pets, Color(0xFF2196F3)) { BarChartDiagram(uiState.mascotasPorEspecie) } }
