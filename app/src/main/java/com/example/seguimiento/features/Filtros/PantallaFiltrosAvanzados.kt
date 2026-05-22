@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +27,7 @@ import com.example.seguimiento.R
 import com.example.seguimiento.features.Favoritos.FavoritePetCard
 import com.example.seguimiento.features.home.BottomNav
 
+// Colores de la paleta de la app
 val NaranjaPrincipal = Color(0xFFE67E22)
 val FondoCrema = Color(0xFFFEF9E7)
 val GrisChip = Color(0xFFE5D3B3)
@@ -55,15 +57,18 @@ fun PantallaFiltrosAvanzado(
             )
         },
         floatingActionButton = {
-            // BOTÓN AZUL ESTILO NAVEGACIÓN
+            // Botón flotante actualizado con color naranja y icono de ubicación
             FloatingActionButton(
                 onClick = { onNavigateToMapa() },
-                containerColor = Color(0xFF2196F3),
+                containerColor = NaranjaPrincipal,
                 contentColor = Color.White,
                 shape = CircleShape,
-                modifier = Modifier.padding(bottom = 80.dp).size(65.dp)
+                modifier = Modifier
+                    .padding(bottom = 80.dp)
+                    .size(60.dp),
+                elevation = FloatingActionButtonDefaults.elevation(8.dp)
             ) {
-                Icon(Icons.Default.Navigation, "Ver Mapa", modifier = Modifier.size(35.dp))
+                Icon(Icons.Default.LocationOn, "Ver en Mapa", modifier = Modifier.size(32.dp))
             }
         }
     ) { padding ->
@@ -73,20 +78,29 @@ fun PantallaFiltrosAvanzado(
                 .background(NaranjaPrincipal)
                 .padding(padding)
         ) {
+            // Header con diseño limpio
             Row(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 20.dp)
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = { onNavigateToHome() },
-                    modifier = Modifier.background(Color.White.copy(alpha = 0.3f), CircleShape)
+                    modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(stringResource(R.string.filters_title), color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = stringResource(R.string.filters_title),
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Black
+                )
             }
 
+            // Contenedor principal
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,146 +111,187 @@ fun PantallaFiltrosAvanzado(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = false)
-                        .padding(24.dp)
+                        .padding(horizontal = 24.dp, vertical = 24.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FiltroCheckboxRow(
+                    // Filtro por Nombre
+                    FiltroSection(
                         label = stringResource(R.string.filters_label_name),
                         isEnabled = modelo.habilitarNombre,
                         onToggle = { modelo.habilitarNombre = it }
-                    )
-                    CustomInputField(
-                        value = modelo.nombreFiltro,
-                        onValueChange = { modelo.nombreFiltro = it },
-                        placeholder = stringResource(R.string.filters_placeholder_name),
-                        isEnabled = modelo.habilitarNombre
-                    )
+                    ) {
+                        CustomInputField(
+                            value = modelo.nombreFiltro,
+                            onValueChange = { modelo.nombreFiltro = it },
+                            placeholder = stringResource(R.string.filters_placeholder_name),
+                            isEnabled = modelo.habilitarNombre,
+                            icon = Icons.Default.Search
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    FiltroCheckboxRow(
+                    // Filtro por Tipo de Animal
+                    FiltroSection(
                         label = stringResource(R.string.filters_label_type),
                         isEnabled = modelo.habilitarTipo,
                         onToggle = { modelo.habilitarTipo = it }
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .alphaIfDisabled(!modelo.habilitarTipo), 
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        listOf(
-                            stringResource(R.string.home_category_dog),
-                            stringResource(R.string.home_category_cat),
-                            stringResource(R.string.home_category_other)
-                        ).forEach { tipo ->
-                            ChipFiltro(
-                                texto = tipo,
-                                seleccionado = (modelo.tipoSeleccionado == tipo || 
-                                              (tipo == stringResource(R.string.home_category_dog) && modelo.tipoSeleccionado == "Perro") ||
-                                              (tipo == stringResource(R.string.home_category_cat) && modelo.tipoSeleccionado == "Gato") ||
-                                              (tipo == stringResource(R.string.home_category_other) && modelo.tipoSeleccionado == "Otro")) && modelo.habilitarTipo,
-                                alClick = { if(modelo.habilitarTipo) modelo.tipoSeleccionado = tipo }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .alphaIfDisabled(!modelo.habilitarTipo),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            AnimalTypeChip(
+                                label = stringResource(R.string.home_category_dog),
+                                icon = Icons.Default.Pets,
+                                selected = (modelo.tipoSeleccionado == "Perro" || modelo.tipoSeleccionado == stringResource(R.string.home_category_dog)) && modelo.habilitarTipo,
+                                onClick = { if (modelo.habilitarTipo) modelo.tipoSeleccionado = "Perro" }
+                            )
+                            AnimalTypeChip(
+                                label = stringResource(R.string.home_category_cat),
+                                icon = Icons.Default.Pets,
+                                selected = (modelo.tipoSeleccionado == "Gato" || modelo.tipoSeleccionado == stringResource(R.string.home_category_cat)) && modelo.habilitarTipo,
+                                onClick = { if (modelo.habilitarTipo) modelo.tipoSeleccionado = "Gato" }
+                            )
+                            AnimalTypeChip(
+                                label = stringResource(R.string.home_category_other),
+                                icon = Icons.Default.Extension,
+                                selected = (modelo.tipoSeleccionado == "Otro" || modelo.tipoSeleccionado == stringResource(R.string.home_category_other)) && modelo.habilitarTipo,
+                                onClick = { if (modelo.habilitarTipo) modelo.tipoSeleccionado = "Otro" }
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    FiltroCheckboxRow(
+                    // Filtro por Ubicación
+                    FiltroSection(
                         label = stringResource(R.string.filters_label_location),
                         isEnabled = modelo.habilitarUbicacion,
                         onToggle = { modelo.habilitarUbicacion = it }
-                    )
-                    
-                    Column(
-                        modifier = Modifier.alphaIfDisabled(!modelo.habilitarUbicacion),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        SelectorFiltro(
-                            label = stringResource(R.string.reg_pet_label_dept),
-                            seleccionado = modelo.departamentoSeleccionado,
-                            opciones = modelo.listaDepartamentos,
-                            isEnabled = modelo.habilitarUbicacion,
-                            onSeleccion = { modelo.cambiarDepartamento(it) }
-                        )
-                        
-                        SelectorFiltro(
-                            label = stringResource(R.string.reg_pet_label_city),
-                            seleccionado = modelo.ciudadSeleccionada,
-                            opciones = modelo.listaCiudades,
-                            isEnabled = modelo.habilitarUbicacion && modelo.departamentoSeleccionado.isNotEmpty(),
-                            onSeleccion = { modelo.ciudadSeleccionada = it }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    FiltroCheckboxRow(
-                        label = stringResource(R.string.filters_label_age),
-                        isEnabled = modelo.habilitarEdad,
-                        onToggle = { modelo.habilitarEdad = it }
-                    )
-                    CustomInputField(
-                        value = modelo.edadFiltro,
-                        onValueChange = { modelo.edadFiltro = it },
-                        placeholder = stringResource(R.string.filters_placeholder_age),
-                        isEnabled = modelo.habilitarEdad
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Button(
-                            onClick = { modelo.aplicarFiltros() },
-                            modifier = Modifier.fillMaxWidth().height(55.dp),
-                            shape = RoundedCornerShape(28.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = NaranjaPrincipal)
+                        Column(
+                            modifier = Modifier.alphaIfDisabled(!modelo.habilitarUbicacion),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Icon(Icons.Default.FilterAlt, null, tint = Color.White)
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.filters_btn_apply), color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
-                        }
-                    }
-                    
-                    TextButton(
-                        onClick = { modelo.limpiarFiltros() },
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(stringResource(R.string.filters_btn_clear), color = Color.Gray, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                if (resultados.isNotEmpty()) {
-                    HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
-                    Text(
-                        stringResource(R.string.filters_results_header),
-                        modifier = Modifier.padding(start = 24.dp, top = 16.dp, bottom = 8.dp),
-                        fontWeight = FontWeight.Bold,
-                        color = TextoMarron
-                    )
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(resultados) { mascota ->
-                            FavoritePetCard(
-                                mascota = mascota,
-                                currentUserId = "",
-                                onLikeClick = { },
-                                onDetailClick = {
-                                    onNavigateToDetail(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl)
-                                }
+                            SelectorFiltro(
+                                label = stringResource(R.string.reg_pet_label_dept),
+                                seleccionado = modelo.departamentoSeleccionado,
+                                opciones = modelo.listaDepartamentos,
+                                isEnabled = modelo.habilitarUbicacion,
+                                onSeleccion = { modelo.cambiarDepartamento(it) }
+                            )
+                            SelectorFiltro(
+                                label = stringResource(R.string.reg_pet_label_city),
+                                seleccionado = modelo.ciudadSeleccionada,
+                                opciones = modelo.listaCiudades,
+                                isEnabled = modelo.habilitarUbicacion && modelo.departamentoSeleccionado.isNotEmpty(),
+                                onSeleccion = { modelo.ciudadSeleccionada = it }
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Filtro por Edad
+                    FiltroSection(
+                        label = stringResource(R.string.filters_label_age),
+                        isEnabled = modelo.habilitarEdad,
+                        onToggle = { modelo.habilitarEdad = it }
+                    ) {
+                        CustomInputField(
+                            value = modelo.edadFiltro,
+                            onValueChange = { modelo.edadFiltro = it },
+                            placeholder = stringResource(R.string.filters_placeholder_age),
+                            isEnabled = modelo.habilitarEdad,
+                            icon = Icons.Default.Cake
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Botón Aplicar
+                    Button(
+                        onClick = { modelo.aplicarFiltros() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = NaranjaPrincipal),
+                        elevation = ButtonDefaults.buttonElevation(4.dp)
+                    ) {
+                        Icon(Icons.Default.FilterAlt, null)
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.filters_btn_apply),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    TextButton(
+                        onClick = { modelo.limpiarFiltros() },
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.filters_btn_clear),
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                // Lista de Resultados
+                if (resultados.isNotEmpty()) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.White,
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.filters_results_header),
+                                fontWeight = FontWeight.ExtraBold,
+                                color = TextoMarron,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(bottom = 12.dp, start = 8.dp)
+                            )
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(resultados) { mascota ->
+                                    FavoritePetCard(
+                                        mascota = mascota,
+                                        currentUserId = "",
+                                        onLikeClick = { },
+                                        onDetailClick = {
+                                            onNavigateToDetail(mascota.id, mascota.nombre, mascota.edad, mascota.ubicacion, mascota.imagenUrl)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 } else if (resultados.isEmpty() && (modelo.habilitarNombre || modelo.habilitarTipo || modelo.habilitarUbicacion || modelo.habilitarEdad)) {
-                    Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.filters_empty_results), color = Color.Gray)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.filters_empty_results),
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
@@ -245,55 +300,107 @@ fun PantallaFiltrosAvanzado(
 }
 
 @Composable
-fun FiltroCheckboxRow(label: String, isEnabled: Boolean, onToggle: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().clickable { onToggle(!isEnabled) }.padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, fontWeight = FontWeight.Bold, color = TextoMarron, fontSize = 16.sp)
-        Checkbox(
-            checked = isEnabled,
-            onCheckedChange = onToggle,
-            colors = CheckboxDefaults.colors(
-                checkedColor = NaranjaPrincipal,
-                uncheckedColor = Color.Gray
+fun FiltroSection(
+    label: String,
+    isEnabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onToggle(!isEnabled) }
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                fontWeight = FontWeight.Bold,
+                color = TextoMarron,
+                fontSize = 17.sp
             )
-        )
+            Checkbox(
+                checked = isEnabled,
+                onCheckedChange = onToggle,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = NaranjaPrincipal,
+                    uncheckedColor = Color.Gray.copy(alpha = 0.6f)
+                )
+            )
+        }
+        content()
     }
 }
 
 @Composable
-fun CustomInputField(value: String, onValueChange: (String) -> Unit, placeholder: String, isEnabled: Boolean) {
-    OutlinedTextField(
+fun CustomInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    isEnabled: Boolean,
+    icon: ImageVector
+) {
+    TextField(
         value = if (isEnabled) value else "",
         onValueChange = onValueChange,
         enabled = isEnabled,
-        placeholder = { Text(placeholder) },
-        modifier = Modifier.fillMaxWidth().padding(top = 4.dp).background(
-            if (isEnabled) Color.White else Color.LightGray.copy(alpha = 0.1f), 
-            RoundedCornerShape(12.dp)
-        ),
-        shape = RoundedCornerShape(12.dp),
+        placeholder = { Text(placeholder, color = Color.Gray.copy(alpha = 0.7f)) },
+        leadingIcon = { Icon(icon, null, tint = if (isEnabled) NaranjaPrincipal else Color.Gray) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (isEnabled) Color.White else Color.Gray.copy(alpha = 0.05f)),
+        shape = RoundedCornerShape(16.dp),
         singleLine = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = NaranjaPrincipal,
-            unfocusedBorderColor = Color.LightGray.copy(alpha = 0.5f),
-            disabledBorderColor = Color.LightGray.copy(alpha = 0.2f),
-            disabledPlaceholderColor = Color.Gray.copy(alpha = 0.5f)
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            disabledContainerColor = Color.Gray.copy(alpha = 0.05f),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            cursorColor = NaranjaPrincipal
         )
     )
 }
 
 @Composable
-fun ChipFiltro(texto: String, seleccionado: Boolean, alClick: () -> Unit) {
+fun AnimalTypeChip(
+    label: String,
+    icon: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     Surface(
-        modifier = Modifier.clickable { alClick() }.height(40.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = if (seleccionado) NaranjaPrincipal else GrisChip
+        onClick = onClick,
+        modifier = Modifier
+            .height(44.dp)
+            .widthIn(min = 90.dp),
+        shape = RoundedCornerShape(22.dp),
+        color = if (selected) NaranjaPrincipal else GrisChip,
+        shadowElevation = if (selected) 4.dp else 0.dp
     ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 20.dp)) {
-            Text(texto, color = if (seleccionado) Color.White else TextoMarron, fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (selected) Color.White else TextoMarron,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = label,
+                color = if (selected) Color.White else TextoMarron,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
         }
     }
 }
@@ -312,32 +419,37 @@ fun SelectorFiltro(
     ExposedDropdownMenuBox(
         expanded = expandido && isEnabled,
         onExpandedChange = { if (isEnabled) expandido = !expandido },
-        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
-        OutlinedTextField(
+        TextField(
             value = seleccionado,
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
             enabled = isEnabled,
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = NaranjaPrincipal,
-                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.5f),
-                disabledBorderColor = Color.LightGray.copy(alpha = 0.2f),
-                disabledPlaceholderColor = Color.Gray.copy(alpha = 0.5f)
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.Gray.copy(alpha = 0.05f),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
             )
         )
 
         ExposedDropdownMenu(
             expanded = expandido && isEnabled,
-            onDismissRequest = { expandido = false }
+            onDismissRequest = { expandido = false },
+            modifier = Modifier.background(Color.White)
         ) {
             opciones.forEach { opcion ->
                 DropdownMenuItem(
-                    text = { Text(opcion) },
+                    text = { Text(opcion, color = TextoMarron) },
                     onClick = {
                         onSeleccion(opcion)
                         expandido = false

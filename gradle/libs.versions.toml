@@ -30,6 +30,7 @@ kotlinxCoroutinesPlayServices = "1.9.0"
 googleApiClient = "2.2.0"
 googleDriveApi = "v3-rev20220815-2.0.0"
 googleHttpClient = "1.43.3"
+generativeAiVersion = "0.9.0"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
@@ -71,6 +72,7 @@ google-api-services-drive = { group = "com.google.apis", name = "google-api-serv
 google-auth-library-oauth2-http = { group = "com.google.auth", name = "google-auth-library-oauth2-http", version = "1.19.0" }
 google-http-client-gson = { group = "com.google.http-client", name = "google-http-client-gson", version.ref = "googleHttpClient" }
 google-http-client-android = { group = "com.google.http-client", name = "google-http-client-android", version.ref = "googleHttpClient" }
+google-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeAiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

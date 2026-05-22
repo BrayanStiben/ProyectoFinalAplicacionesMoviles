@@ -43,6 +43,7 @@ fun ListaSolicitudesScreen(
     onLogout: () -> Unit
 ) {
     val solicitudes by viewModel.solicitudes.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var showRejectDialog by remember { mutableStateOf<String?>(null) }
     var rejectReason by remember { mutableStateOf("") }
 
@@ -57,60 +58,88 @@ fun ListaSolicitudesScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color(0xFFFDFBFA))
-        ) {
-            // --- HEADER ESTILO PANEL/MASCOTAS ---
-            Box(
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
-                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
-                    )
-                    .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(Color(0xFFFDFBFA))
             ) {
-                Column {
-                    Text(
-                        stringResource(R.string.admin_list_requests_title),
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        stringResource(R.string.admin_list_requests_subtitle),
-                        color = Color.White.copy(0.9f),
-                        fontSize = 15.sp
-                    )
-                }
-            }
-
-            if (solicitudes.isNotEmpty()) {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
+                // --- HEADER ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(listOf(Color(0xFFE65100), Color(0xFFFF9800))),
+                            shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                        )
+                        .padding(top = 45.dp, bottom = 30.dp, start = 20.dp, end = 20.dp)
                 ) {
-                    items(solicitudes) { solicitud ->
-                        ModeracionItem(
-                            solicitud = solicitud,
-                            onApprove = { viewModel.aprobarPublicacion(solicitud.id) },
-                            onReject = { 
-                                showRejectDialog = solicitud.id
-                                rejectReason = solicitud.resumenIA
-                            }
+                    Column {
+                        Text(
+                            stringResource(R.string.admin_list_requests_title),
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            stringResource(R.string.admin_list_requests_subtitle),
+                            color = Color.White.copy(0.9f),
+                            fontSize = 15.sp
                         )
                     }
                 }
-            } else {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.CheckCircle, null, tint = Color.LightGray, modifier = Modifier.size(64.dp))
-                        Spacer(Modifier.height(8.dp))
-                        Text(stringResource(R.string.admin_adoption_no_pending), color = Color.Gray, fontWeight = FontWeight.Bold)
+
+                if (solicitudes.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(solicitudes) { solicitud ->
+                            ModeracionItem(
+                                solicitud = solicitud,
+                                onApprove = { viewModel.aprobarPublicacion(solicitud.id) },
+                                onReject = { 
+                                    showRejectDialog = solicitud.id
+                                    rejectReason = solicitud.resumenIA
+                                }
+                            )
+                        }
+                    }
+                } else {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.CheckCircle, null, tint = Color.LightGray, modifier = Modifier.size(64.dp))
+                            Spacer(Modifier.height(8.dp))
+                            Text(stringResource(R.string.admin_adoption_no_pending), color = Color.Gray, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            // --- CARGADOR (OVERLAY) ---
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                        .clickable(enabled = false) {}, // Bloquear clics
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator(color = NaranjaApp)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("Procesando...", fontWeight = FontWeight.Bold, color = CafeApp)
+                        }
                     }
                 }
             }
@@ -190,6 +219,7 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                 }
             }
 
+            // FEEDBACK IA
             if (solicitud.resumenIA.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 val esValida = solicitud.iaEsValida
@@ -212,7 +242,7 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                text = if (esValida) stringResource(R.string.ai_label_apta) else stringResource(R.string.ai_label_rejection),
+                                text = if (esValida) "APTA SEGÚN IA" else "REVISIÓN IA REQUERIDA",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Black,
                                 color = colorFeedback
@@ -227,6 +257,14 @@ fun ModeracionItem(solicitud: Mascota, onApprove: () -> Unit, onReject: () -> Un
                             fontWeight = FontWeight.Medium
                         )
                     }
+                }
+            } else {
+                // Cargador individual para el análisis IA
+                Spacer(Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = NaranjaApp)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Analizando con GPT-4o...", fontSize = 12.sp, color = Color.Gray)
                 }
             }
 

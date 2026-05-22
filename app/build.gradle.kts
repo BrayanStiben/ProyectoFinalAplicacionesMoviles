@@ -19,6 +19,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Configuración de la API Key de Gemini
+        buildConfigField("String", "GEMINI_API_KEY", "\"AIzaSyDMIU1XwxdO9y-8WW8gZqNBkn4XZIkVS2g\"")
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -40,10 +48,6 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures {
-        compose = true
-    }
-    
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -69,6 +73,7 @@ dependencies {
     
     // Mapas
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.maps.android:maps-compose:4.4.1")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
 
@@ -94,6 +99,9 @@ dependencies {
     implementation(libs.google.http.client.gson)
     implementation(libs.google.http.client.android)
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Gemini AI (Referencia corregida)
+    implementation(libs.google.generativeai)
 
     // Compose (BOM)
     implementation(platform(libs.androidx.compose.bom))
